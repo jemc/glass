@@ -1,0 +1,88 @@
+The following gemstone names are not yet in use or planned for use by one of the sub-libraries of Glass. They are listed here to make it easier to select a name for a new sub-library when needed.
+
+---
+
+- Ruby
+- Jade
+- Moti (Pearl)
+- Agate
+- Amber
+- Beryl
+- Neeli (Iolite)
+- Panna (Emerald)
+- Feroza (Firoza)
+- Garnet
+- Jasper
+- Neelam (Sapphire)
+- Pyrope
+- Quartz
+- Sphene (Titanite)
+- Spinel
+- Sunela (Citrine)
+- Apatite
+- Azurite
+- Bixbite
+- Doublet
+- Howlite
+- Jadeite
+- Kunzite
+- Kyanite
+- Paraiba
+- Peridot
+- Pukhraj
+- Amethyst
+- Ametrine
+- Ammolite
+- Cabochon
+- Diopside
+- Fluorite
+- Heliodor
+- Lehsunia
+- Monazite
+- Navratna
+- Nephrite
+- Obsidian
+- Petalite
+- Prehnite
+- Sodalite
+- Sunstone
+- Titanite
+- Zirconia
+- Carnelian
+- Danburite
+- Goshenite
+- Hessonite
+- Malachite
+- Moldavite
+- Moonstone
+- Morganite
+- Rhodonite
+- Rubellite
+- Scapolite
+- Taaffeite
+- Tanzanite
+- Tsavorite
+- Turquoise
+- Verdelite
+- Zultanite
+- Andalusite
+- Aquamarine
+- Aventurine
+- Bloodstone
+- Indicolite
+- Orthoclase
+- Prasiolite
+- Serpentine
+- Sphalerite
+- Tourmaline
+- Alexandrite
+- Chrysoberyl
+- Chrysocolla
+- Clinohumite
+- Indraneelam
+- Labradorite
+- Sillimanite
+- Spectrolite
+- Spessartite
+- Grandidierite
+- Rhodochrosite

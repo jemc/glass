@@ -1,0 +1,90 @@
+import { registerComponent, World } from "@glass/core"
+import { Context } from "./Context"
+import { Position } from "./Position"
+import { Renderable } from "./Renderable"
+
+export class Sprite {
+  static readonly componentId = registerComponent(this)
+
+  animationId: string
+  framesElapsed = 0
+
+  animation?: SpriteAnimation
+  renderable?: Renderable
+
+  constructor(animationId: string) {
+    this.animationId = animationId
+    this.use(animationId)
+  }
+
+  use(animationId: string, opts?: { shouldNotResetTime?: boolean }) {
+    if (this.animationId === animationId) return
+
+    delete this.animation
+    this.animationId = animationId
+
+    if (!opts?.shouldNotResetTime) this.framesElapsed = 0
+  }
+}
+
+export class SpriteAnimation {
+  frameIndices: number[] = []
+
+  constructor(
+    public id: string,
+    public frames: string[],
+    frameCounts?: number[],
+  ) {
+    if (frameCounts) {
+      frameCounts.forEach((count, index) => {
+        for (let i = 0; i < count; i++) {
+          if (index >= frames.length) continue
+
+          if (i === 0) this.frameIndices.push(index)
+          else this.frameIndices.push(-1)
+        }
+      })
+    } else {
+      frames.forEach((frame, index) => {
+        this.frameIndices.push(index)
+      })
+    }
+  }
+
+  get length() {
+    return this.frameIndices.length
+  }
+}
+
+export const SpriteAnimationSystem = (world: World) =>
+  world.systemFor([Context, Position, Renderable, Sprite], {
+    runEach(entity, context, position, renderable, sprite) {
+      // TODO: Get rid of the distinction between the Position and the Renderable transform
+      renderable.position = position.coords
+      renderable.scale.copyFrom(position.direction)
+
+      if (!sprite.animation) {
+        sprite.animation = context.animations?.get(sprite.animationId)
+      }
+
+      const { animation } = sprite
+      if (animation) {
+        const framesElapsed = sprite.framesElapsed % animation.length
+        const frameIndex = animation.frameIndices[framesElapsed] ?? 0
+        sprite.framesElapsed = framesElapsed + 1
+
+        if (frameIndex >= 0) {
+          const frame = animation.frames[frameIndex]
+
+          if (frame) {
+            const texture = context.textures.get(frame)
+
+            if (texture) {
+              renderable.texture = texture
+              renderable.pivot.copyFrom(texture.pivot)
+            }
+          }
+        }
+      }
+    },
+  })

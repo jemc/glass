@@ -1,0 +1,59 @@
+{
+  "name": "@glass/opal",
+  "version": "0.0.1",
+  "description": "General-purpose 2D graphical framework for Glass Engine",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "scripts": {
+    "tsconfig": "jq '.tsconfig' package.json > tsconfig.json",
+    "format": "prettier --write '{src,tests}/**/*.ts'",
+    "format:check": "prettier --check '{src,tests}/**/*.ts'",
+    "test": "pnpm run tsconfig && jest",
+    "prepare": "pnpm run tsconfig && tsc"
+  },
+  "tsconfig": {
+    "extends": "../../tsconfig.base.json",
+    "exclude": [
+      "node_modules/**",
+      "dist/**",
+      "tests/**"
+    ],
+    "compilerOptions": {
+      "outDir": "./dist/"
+    }
+  },
+  "prettier": {
+    "semi": false,
+    "trailingComma": "all"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "transform": {
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "diagnostics": {
+            "ignoreCodes": [
+              151001
+            ]
+          }
+        }
+      ]
+    },
+    "transformIgnorePatterns": [
+      "node_modules/.*\\.js"
+    ]
+  },
+  "dependencies": {
+    "ase-parser": "git+https://github.com/jemc/ase-parser.git#294a69e66d6ea6fc6a6622a60ae40f7ee27166a4",
+    "@glass/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.11",
+    "node-jq": "^4.3.0",
+    "prettier": "^3.2.4",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.3.3"
+  }
+}
