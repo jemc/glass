@@ -5,22 +5,10 @@
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
-    "tsconfig": "jq '.tsconfig' package.json > tsconfig.json",
     "format": "prettier --write '{src,tests}/**/*.ts'",
     "format:check": "prettier --check '{src,tests}/**/*.ts'",
-    "test": "pnpm run tsconfig && jest",
-    "prepare": "pnpm run tsconfig && tsc"
-  },
-  "tsconfig": {
-    "extends": "../../tsconfig.base.json",
-    "exclude": [
-      "node_modules/**",
-      "dist/**",
-      "tests/**"
-    ],
-    "compilerOptions": {
-      "outDir": "./dist/"
-    }
+    "test": "jest",
+    "prepare": "tsc"
   },
   "prettier": {
     "semi": false,
@@ -51,7 +39,6 @@
   "devDependencies": {
     "@types/jest": "^29.5.11",
     "@types/node": "^20.11.16",
-    "node-jq": "^4.3.0",
     "prettier": "^3.2.4",
     "ts-jest": "^29.1.2",
     "typescript": "^5.3.3"
