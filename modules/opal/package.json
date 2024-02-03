@@ -46,11 +46,12 @@
     ]
   },
   "dependencies": {
-    "ase-parser": "git+https://github.com/jemc/ase-parser.git#294a69e66d6ea6fc6a6622a60ae40f7ee27166a4",
-    "@glass/core": "workspace:*"
+    "@glass/core": "workspace:*",
+    "ase-parser": "git+https://github.com/jemc/ase-parser.git#294a69e66d6ea6fc6a6622a60ae40f7ee27166a4"
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",
+    "@types/node": "^20.11.16",
     "node-jq": "^4.3.0",
     "prettier": "^3.2.4",
     "ts-jest": "^29.1.2",

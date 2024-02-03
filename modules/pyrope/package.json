@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",
+    "@types/node": "^20.11.16",
     "node-jq": "^4.3.0",
     "prettier": "^3.2.4",
     "ts-jest": "^29.1.2",
