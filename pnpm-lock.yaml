@@ -8,6 +8,9 @@ importers:
 
   modules/core:
     devDependencies:
+      '@jest/globals':
+        specifier: ^29.7.0
+        version: 29.7.0
       '@types/jest':
         specifier: ^29.5.11
         version: 29.5.11
@@ -33,6 +36,9 @@ importers:
         specifier: workspace:*
         version: link:../core
     devDependencies:
+      '@jest/globals':
+        specifier: ^29.7.0
+        version: 29.7.0
       '@types/jest':
         specifier: ^29.5.11
         version: 29.5.11
@@ -58,6 +64,9 @@ importers:
         specifier: git+https://github.com/jemc/ase-parser.git#294a69e66d6ea6fc6a6622a60ae40f7ee27166a4
         version: github.com/jemc/ase-parser/294a69e66d6ea6fc6a6622a60ae40f7ee27166a4
     devDependencies:
+      '@jest/globals':
+        specifier: ^29.7.0
+        version: 29.7.0
       '@types/jest':
         specifier: ^29.5.11
         version: 29.5.11
@@ -83,6 +92,9 @@ importers:
         specifier: workspace:*
         version: link:../opal
     devDependencies:
+      '@jest/globals':
+        specifier: ^29.7.0
+        version: 29.7.0
       '@types/jest':
         specifier: ^29.5.11
         version: 29.5.11
@@ -111,6 +123,9 @@ importers:
         specifier: workspace:*
         version: link:../opal
     devDependencies:
+      '@jest/globals':
+        specifier: ^29.7.0
+        version: 29.7.0
       '@types/jest':
         specifier: ^29.5.11
         version: 29.5.11
@@ -136,6 +151,9 @@ importers:
         specifier: workspace:*
         version: link:../opal
     devDependencies:
+      '@jest/globals':
+        specifier: ^29.7.0
+        version: 29.7.0
       '@types/jest':
         specifier: ^29.5.11
         version: 29.5.11
