@@ -45,6 +45,8 @@ describe("OscAudioWorkletProcessor", () => {
     freq: number[],
     gain: number[],
     timbre: number[],
+    vibrato: number[],
+    vibratoFreq: number[],
   ) {
     const processor = new OscAudioWorkletProcessor()
     const output = new Float32Array(count)
@@ -52,6 +54,8 @@ describe("OscAudioWorkletProcessor", () => {
       freq: new Float32Array(freq),
       gain: new Float32Array(gain),
       timbre: new Float32Array(timbre),
+      vibrato: new Float32Array(vibrato),
+      vibratoFreq: new Float32Array(vibratoFreq),
     })
     expect(result).toBe(true)
 
@@ -61,7 +65,14 @@ describe("OscAudioWorkletProcessor", () => {
   function timbreTest(timbre: number) {
     const WAVELENGTH = 32 // samples to capture
 
-    return generalTest(WAVELENGTH, [SAMPLE_RATE / WAVELENGTH], [1], [timbre])
+    return generalTest(
+      WAVELENGTH,
+      [SAMPLE_RATE / WAVELENGTH],
+      [1],
+      [timbre],
+      [0],
+      [0],
+    )
   }
 
   test("generates a sine wave with timbre of 0.0", () => {
@@ -555,6 +566,8 @@ describe("OscAudioWorkletProcessor", () => {
           ...[4, 0, 0, 0, 0, 0, 0, 4],
           ...[0, 0, 0],
         ],
+        [0],
+        [0],
       ),
     ).toEqual(
       [
@@ -599,6 +612,84 @@ describe("OscAudioWorkletProcessor", () => {
         "|                                X                                |",
         "|                                X                                |",
         "|                                X                                |",
+      ].join("\n"),
+    )
+  })
+
+  test("generates a vibrato-modulated frequency", () => {
+    const samples = 64
+    const vibratoPerWindow = 2
+    const baseWavesPerWindow = 8
+    const baseFreq = (SAMPLE_RATE / samples) * baseWavesPerWindow
+    const vibratoFreq = (SAMPLE_RATE / samples) * vibratoPerWindow
+    expect(
+      generalTest(samples, [baseFreq], [1], [3], [12], [vibratoFreq]),
+    ).toEqual(
+      [
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|X                               |                                |",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|                                |                               X|",
+        "|X                               |                                |",
+        "|X                               |                                |",
       ].join("\n"),
     )
   })

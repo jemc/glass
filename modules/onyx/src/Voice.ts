@@ -1,6 +1,5 @@
 import { registerComponent } from "@glass/core"
 import { Context } from "./Context"
-import { Riff, riffSeqToVoiceNotes } from "./Riff"
 import { makeAudioWorkletNodeFactory } from "./AudioWorklet"
 import { OscAudioWorkletNodeFactory } from "./Osc"
 
@@ -8,11 +7,8 @@ export interface VoiceConfig {
   readonly gain: number
   readonly pan: number
   readonly timbre?: number
-  readonly waveShapeMapping?: Float32Array
-  readonly harmonicCoefficients?: {
-    real: Float32Array
-    imaginary: Float32Array
-  }
+  readonly vibrato?: number
+  readonly vibratoFreq?: number
   readonly worklet?: ReturnType<typeof makeAudioWorkletNodeFactory>
 }
 
@@ -30,133 +26,6 @@ interface VoiceNoteSlide {
   deltaEnd: number
 }
 
-// const busterCharging: Riff = {
-//   bpm: 480,
-//   key: "G#-minor",
-//   div: "|               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               ",
-//   seq: "0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---0-----1-2-3-5---",
-//   oct: "4                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ",
-//   gls: "````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ````p           ",
-// }
-// const exampleRiff = busterCharging
-
-// const oneUp: Riff = {
-//   bpm: 120,
-//   key: "C#-major",
-//   div: "|       |       ",
-//   seq: "1234567812345678",
-//   oct: "6               ",
-//   vol: "        44444444",
-// }
-// const exampleRiff = oneUp
-
-// const mrXIntro: Riff = {
-//   bpm: 260,
-//   key: "A-minor",
-//   div: "| | | |   | | | | | | | |   | | | | | | |   |   |     |     |     |     | | |     |     |   |   |   |   ",
-//   seq: "  1-- 1 1 1 p 1 2   3-- 3 3 3 2 3 4 r-4-r-r r r r-- 2-- r-- r-- 2-- r-- 5-- 5-- r-- 5-- u-7-u-7-u-7-u-- ",
-//   gls: "                                      ^-^--                                               ^-^-^-^-^-^-- ",
-//   oct: "4",
-// }
-// const exampleRiff = mrXIntro
-
-// const mrXIntro2: Riff = {
-//   bpm: 260,
-//   key: "A-minor",
-//   div: "|     |     |     |     | | | | |     |     |     |     | | | | |     |     |     |     |     |     |     |     | | |     |     |   |   |   |   ",
-//   seq: "1-- 3-- 1-- 5-- 3-- 1-- 3 2 3 4 3-- 5-- 3-- 7-- 5-- 3-- 5 4 5 6 2-- r-- 2-- y-- r-- 2-- y-- r-- y-- y-- r-- y-- u-- u-- y-- u-- 9-i-9-i-9-i-9-- ",
-//   gls: "                                                                                                                                  ^-^-^-^-^-^-- ",
-//   oct: "3",
-// }
-// const exampleRiff2 = mrXIntro2
-
-const mrX: Riff = {
-  bpm: 180,
-  key: "D-minor",
-  div: "|           | | | | | | | | | | | | | | | |",
-  seq: "           8--97-8-5-7-4-32-32-0--7--4--5--",
-  gls: "           ,1                     `q    ,1",
-  vol: "                                       6  ",
-}
-const exampleRiff = mrX
-
-const mrX2: Riff = {
-  bpm: 180,
-  key: "D-minor",
-  div: "|           |           |           |           |           |           |           |           |           ",
-  seq: "0-----1-----3-----5-----------4-----------3-----------1-----4-----3-----------2-----------0-----5-----------",
-  oct: "4                                                                                               3           ",
-  vol: "@38261@38261@38261@38261514131@38261514131@38261514131@38261@38261@38261514131@38261514131@38261@38261514131",
-}
-// const exampleRiff = mrX2
-const exampleRiff2 = mrX2
-
-const pulse1 = {}
-const pulse2 = {}
-
-const mrXStage = {
-  voices: { pulse1, pulse2 },
-
-  sections: {
-    intro: {
-      pulse1: [mrX, mrX],
-      pulse2: [mrX2],
-    },
-  },
-
-  pre: ["intro"],
-  loop: [],
-  post: [],
-}
-
-// const exampleRiff: Riff = {
-//   bpm: 420,
-//   key: "C#-minor",
-//   div: "|               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               ",
-//   seq: "5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---5-----6-7-8-9---",
-//   gls: "````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ````p       ``1 ",
-//   oct: "4                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ",
-// }
-
-// const exampleRiff: Riff = {
-//   bpm: 120,
-//   key: "A-minor",
-//   div: "|       |       |       |       |       |       |       |       ",
-//   seq: "1 1 0 0 1 1 0 0 1 1 0 3-----0 0 1 1 0 0 1 1 0 0 1 1 0 5-----0 0 ",
-//   oct: "                                                                ",
-//   gls: "                      ,,2                             ,,4       ",
-// }
-// const exampleRiff2 = exampleRiff
-
-// const exampleRiff: Riff = {
-//   bpm: 120,
-//   key: "A-minor",
-//   div: "|       |   |   |   |   |   |   |   ",
-//   seq: "1 1 1 1 0-1-5------ 4-- 5-4-  3---- ",
-//   oct: "2                                   ",
-//   gls: "            ,2,2,2,2             `2 ",
-// }
-// const exampleRiff2 = exampleRiff
-
-// const exampleRiff: Riff = {
-//   bpm: 120,
-//   key: "A-minor",
-//   div: "|   |   |   |   |   ",
-//   seq: "1-3 4---- 3-5-----  ",
-//   oct: "5                   ",
-//   gls: "/1          ^--     ",
-// }
-// const exampleRiff2 = exampleRiff
-
-// const exampleRiff: Riff = {
-//   bpm: 120,
-//   key: "A-minor",
-//   div: "|   |   |   |   |   ",
-//   seq: "1-3 4---- 3-5-----  ",
-//   oct: "4                   ",
-//   gls: "/1                  ",
-// }
-
 function newThrowawayAudioParam(audio: AudioContext): AudioParam {
   // Create a throwaway gain node (not connected to anything)
   // and return its gain parameter as an AudioParam that will do nothing.
@@ -169,6 +38,9 @@ export class Voice {
   private freq: AudioParam
   private gain: AudioParam
   private timbre: AudioParam
+  private vibrato: AudioParam
+  private vibratoFreq: AudioParam
+
   private finalGain: AudioParam
   private finalPan: AudioParam
 
@@ -192,6 +64,11 @@ export class Voice {
       node.parameters.get("gain") ?? newThrowawayAudioParam(context.audio)
     this.timbre =
       node.parameters.get("timbre") ?? newThrowawayAudioParam(context.audio)
+    this.vibrato =
+      node.parameters.get("vibrato") ?? newThrowawayAudioParam(context.audio)
+    this.vibratoFreq =
+      node.parameters.get("vibratoFreq") ??
+      newThrowawayAudioParam(context.audio)
     this.finalGain = finalGain.gain
     this.finalPan = finalPan.pan
 
@@ -199,6 +76,8 @@ export class Voice {
     this.freq.value = 440
     this.gain.value = 0
     this.timbre.value = this.config.timbre ?? 0
+    this.vibrato.value = this.config.vibrato ?? 0
+    this.vibratoFreq.value = this.config.vibratoFreq ?? 4
     this.finalGain.value = this.config.gain
     this.finalPan.value = this.config.pan
   }
