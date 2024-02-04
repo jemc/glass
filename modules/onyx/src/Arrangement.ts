@@ -1,7 +1,7 @@
 import { Voice, VoiceConfig, VoiceNote } from "./Voice"
 import { Clock, World, registerComponent } from "@glass/core"
 import { Context } from "./Context"
-import { Riff, riffDuration } from "./Riff"
+import { Riff, riffDuration, riffSeqToVoiceNotes } from "./Riff"
 
 export interface Arrangement {
   // Named voices, with their configuration.
@@ -23,6 +23,7 @@ export interface Arrangement {
 export class ArrangementPlay {
   static readonly componentId = registerComponent(this)
 
+  private startTimestamp = 0
   private voices: { [name: string]: Voice } = {}
   private pendingNotes: { [name: string]: [number, VoiceNote][] } = {}
 
@@ -40,7 +41,6 @@ export class ArrangementPlay {
 
   scheduleSectionsIfNeeded(finishTime: number) {
     if (finishTime <= this.scheduleFinishTime) return
-    console.log(finishTime, this.scheduleFinishTime)
 
     const { pre, loop } = this.config
     const preSectionCount = pre?.length ?? 0
@@ -52,9 +52,6 @@ export class ArrangementPlay {
       )
       this.scheduledSections++
     } else if (loop) {
-      console.log(
-        `Scheduling loop section ${this.scheduledSections - preSectionCount}`,
-      )
       let loopIndex = this.scheduledSections - preSectionCount
       while (loopIndex >= loop.length) loopIndex -= loop.length
       this.scheduleSection(loop[loopIndex]!, this.scheduleFinishTime)
@@ -63,7 +60,6 @@ export class ArrangementPlay {
   }
 
   scheduleSection(name: string, timeOffset = 0) {
-    console.log(`Scheduling section ${name} at ${timeOffset}`)
     const section = this.config.sections[name]
     if (!section) throw new Error(`No section named ${name}`)
 
@@ -75,7 +71,9 @@ export class ArrangementPlay {
 
       let riffTimeOffset = timeOffset
       for (const riff of riffs) {
-        voice.applyRiff(riff, riffTimeOffset)
+        riffSeqToVoiceNotes(riff).forEach(([time, note]) => {
+          this.pendingNotes[voiceName]!.push([time + riffTimeOffset, note])
+        })
         riffTimeOffset += riffDuration(riff)
       }
       if (riffTimeOffset > greatestRiffTimeOffset) {
@@ -87,8 +85,29 @@ export class ArrangementPlay {
   }
 
   continuePlaying(context: Context, clock: Clock) {
-    const foresightTime = 0.1 // TODO: determine dynamically?
-    this.scheduleSectionsIfNeeded(clock.timestamp / 1000 + foresightTime)
+    const timestamp = clock.timestamp / 1000
+
+    if (this.startTimestamp === 0) {
+      this.startTimestamp = timestamp
+      this.scheduleFinishTime = this.startTimestamp
+    }
+
+    const foresightTime = 2 / clock.currentFramesPerSecond // 2 frame
+    const foresightTimestamp = timestamp + foresightTime
+    this.scheduleSectionsIfNeeded(foresightTimestamp)
+
+    for (const [name, voice] of Object.entries(this.voices)) {
+      const pendingNotes = this.pendingNotes[name]!
+      while (pendingNotes.length > 0) {
+        const [time, note] = pendingNotes[0]!
+        if (time > foresightTimestamp) {
+          break
+        } else {
+          pendingNotes.shift()
+          voice.scheduleNote(time, note)
+        }
+      }
+    }
 
     this
   }
@@ -99,8 +118,10 @@ export const ArrangementPlaySystem = (world: World) =>
     runEach(entity, context, play) {
       context.audio.resume() // TODO: move to another system, and add suspend when tab loses focus
 
-      play.setupVoicesIfNeeded(context)
-
       play.continuePlaying(context, world.clock)
+    },
+
+    runEachSet(entity, context, play) {
+      play.setupVoicesIfNeeded(context)
     },
   })

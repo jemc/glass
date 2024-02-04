@@ -203,14 +203,6 @@ export class Voice {
     this.finalPan.value = this.config.pan
   }
 
-  applyRiff(riff: Riff, timeOffset = 0) {
-    const notes = riffSeqToVoiceNotes(riff)
-
-    notes.forEach(([noteTimeOffset, note]) => {
-      this.scheduleNote(noteTimeOffset + timeOffset, note)
-    })
-  }
-
   scheduleNote(timeOffset: number, note: VoiceNote) {
     const timeStart = timeOffset
     const timeEnd = timeStart + note.duration
