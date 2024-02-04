@@ -74,6 +74,7 @@ export class OscAudioWorkletProcessor extends AudioWorkletProcessor {
   ): boolean {
     const channel = outputs[0][0]
     const inverseSampleRate = 1 / 44100
+    const cls = OscAudioWorkletProcessor
 
     for (let i = 0; i < channel.length; i++) {
       let freq = params.freq[i] ?? params.freq[0]!
@@ -105,8 +106,8 @@ export class OscAudioWorkletProcessor extends AudioWorkletProcessor {
 
       // Apply vibrato to the frequency.
       const vibratoTimbre = 1.0 // triangle // TODO: configurable
-      freq *= semitonesToRatio(
-        vibratoAmount * waveform(vibratoTravel, vibratoTimbre),
+      freq *= cls.semitonesToRatio(
+        vibratoAmount * cls.waveform(vibratoTravel, vibratoTimbre),
       )
 
       // Travel forward in the waveform, based on the desired frequency.
@@ -125,7 +126,7 @@ export class OscAudioWorkletProcessor extends AudioWorkletProcessor {
       const { travel } = this
 
       // Emit a waveform sample, scaled by the gain.
-      channel[i] = waveform(travel, timbre) * gain
+      channel[i] = cls.waveform(travel, timbre) * gain
 
       // Remember the gain and timbre for the next sample.
       this.priorGain = gain
@@ -135,63 +136,63 @@ export class OscAudioWorkletProcessor extends AudioWorkletProcessor {
 
     return true
   }
-}
 
-function semitonesToRatio(semitones: number): number {
-  return Math.pow(2, semitones / 12)
-}
+  static semitonesToRatio(semitones: number): number {
+    return Math.pow(2, semitones / 12)
+  }
 
-function waveform(travel: number, timbre: number): number {
-  if (timbre === 0) {
-    // Sine wave
-    return Math.sin(travel * 2 * Math.PI)
-  } else if (timbre === 1) {
-    // Triangle wave
-    return travel <= 0.25
-      ? travel * 4
-      : travel <= 0.75
-        ? 2 - travel * 4
-        : travel * 4 - 4
-  } else if (timbre === 2) {
-    // Sawtooth wave
-    return 1 - travel * 2
-  } else if (timbre < 1) {
-    // Between Sine wave and Triangle wave
-    const sine = Math.sin(travel * 2 * Math.PI)
-    const triangle =
-      travel <= 0.25
+  static waveform(travel: number, timbre: number): number {
+    if (timbre === 0) {
+      // Sine wave
+      return Math.sin(travel * 2 * Math.PI)
+    } else if (timbre === 1) {
+      // Triangle wave
+      return travel <= 0.25
         ? travel * 4
         : travel <= 0.75
           ? 2 - travel * 4
           : travel * 4 - 4
-    return (1 - timbre) * sine + timbre * triangle
-  } else if (timbre < 2) {
-    // Between Triangle wave and Sawtooth wave
-    const toothStart = timbre * -0.25 + 0.5
-    const upSlope = 1 / toothStart
-    const downSlope = 2 / (1 - toothStart * 2)
-    return travel <= toothStart
-      ? travel * upSlope
-      : travel < 1 - toothStart
-        ? 1 - (travel - toothStart) * downSlope
-        : (travel - 1) * upSlope
-  } else if (timbre < 3) {
-    // Between Sawtooth wave and Square wave
-    const sawtooth = 1 - travel * 2
-    const square = travel <= 0.5 ? 1 : -1
-    return (3 - timbre) * sawtooth + (timbre - 2) * square
-  } else if (timbre <= 4) {
-    // Square/Pulse wave
-    // The duty cycle is:
-    // - 50% at timbre 3.0
-    // - 25% at timbre 3.5
-    // - 12.5% at timbre 4.0
-    const dutyCycle = 0.5 * Math.pow(0.25, timbre - 3)
-    return travel <= dutyCycle ? 1 : -1
-  }
+    } else if (timbre === 2) {
+      // Sawtooth wave
+      return 1 - travel * 2
+    } else if (timbre < 1) {
+      // Between Sine wave and Triangle wave
+      const sine = Math.sin(travel * 2 * Math.PI)
+      const triangle =
+        travel <= 0.25
+          ? travel * 4
+          : travel <= 0.75
+            ? 2 - travel * 4
+            : travel * 4 - 4
+      return (1 - timbre) * sine + timbre * triangle
+    } else if (timbre < 2) {
+      // Between Triangle wave and Sawtooth wave
+      const toothStart = timbre * -0.25 + 0.5
+      const upSlope = 1 / toothStart
+      const downSlope = 2 / (1 - toothStart * 2)
+      return travel <= toothStart
+        ? travel * upSlope
+        : travel < 1 - toothStart
+          ? 1 - (travel - toothStart) * downSlope
+          : (travel - 1) * upSlope
+    } else if (timbre < 3) {
+      // Between Sawtooth wave and Square wave
+      const sawtooth = 1 - travel * 2
+      const square = travel <= 0.5 ? 1 : -1
+      return (3 - timbre) * sawtooth + (timbre - 2) * square
+    } else if (timbre <= 4) {
+      // Square/Pulse wave
+      // The duty cycle is:
+      // - 50% at timbre 3.0
+      // - 25% at timbre 3.5
+      // - 12.5% at timbre 4.0
+      const dutyCycle = 0.5 * Math.pow(0.25, timbre - 3)
+      return travel <= dutyCycle ? 1 : -1
+    }
 
-  // Invalid timbre: you get silence
-  return 0
+    // Invalid timbre: you get silence
+    return 0
+  }
 }
 
 export const OscAudioWorkletNodeFactory = makeAudioWorkletNodeFactory(
