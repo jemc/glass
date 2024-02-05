@@ -2,13 +2,36 @@
   "name": "@glass/opal",
   "version": "0.0.1",
   "description": "General-purpose 2D graphical framework for Glass Engine",
+  "repository": "https://www.github.com/jemc/glass.git",
   "license": "MIT",
   "main": "dist/index.js",
+  "dependencies": {
+    "@glass/core": "workspace:*",
+    "ase-parser": "git+https://github.com/jemc/ase-parser.git#294a69e66d6ea6fc6a6622a60ae40f7ee27166a4"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.11",
+    "@types/node": "^20.11.16",
+    "prettier": "^3.2.4",
+    "semantic-release": "^23.0.0",
+    "semantic-release-monorepo": "^8.0.1",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.3.3"
+  },
   "scripts": {
+    "sync-base-files": "sh ../../base-files/sync.sh",
     "format": "prettier --write '{src,tests}/**/*.ts'",
     "format:check": "prettier --check '{src,tests}/**/*.ts'",
     "test": "jest",
-    "prepare": "tsc"
+    "prepare": "tsc",
+    "release": "semantic-release"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "extends": "semantic-release-monorepo"
   },
   "prettier": {
     "semi": false,
@@ -32,17 +55,5 @@
     "transformIgnorePatterns": [
       "node_modules/.*\\.js"
     ]
-  },
-  "dependencies": {
-    "@glass/core": "workspace:*",
-    "ase-parser": "git+https://github.com/jemc/ase-parser.git#294a69e66d6ea6fc6a6622a60ae40f7ee27166a4"
-  },
-  "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "@types/jest": "^29.5.11",
-    "@types/node": "^20.11.16",
-    "prettier": "^3.2.4",
-    "ts-jest": "^29.1.2",
-    "typescript": "^5.3.3"
   }
 }

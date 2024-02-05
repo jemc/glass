@@ -1,25 +1,7 @@
 {
-  "name": "@glass/pyrope",
-  "version": "0.0.1",
-  "description": "Tile-based side-scroller interaction modes for Glass Engine",
   "repository": "https://www.github.com/jemc/glass.git",
   "license": "MIT",
   "main": "dist/index.js",
-  "dependencies": {
-    "@glass/core": "workspace:*",
-    "@glass/opal": "workspace:*"
-  },
-  "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "@types/jest": "^29.5.11",
-    "@types/node": "^20.11.16",
-    "prettier": "^3.2.4",
-    "semantic-release": "^23.0.0",
-    "semantic-release-monorepo": "^8.0.1",
-    "ts-jest": "^29.1.2",
-    "type-fest": "^4.10.2",
-    "typescript": "^5.3.3"
-  },
   "scripts": {
     "sync-base-files": "sh ../../base-files/sync.sh",
     "format": "prettier --write '{src,tests}/**/*.ts'",
@@ -29,9 +11,7 @@
     "release": "semantic-release"
   },
   "release": {
-    "branches": [
-      "main"
-    ],
+    "branches": ["main"],
     "extends": "semantic-release-monorepo"
   },
   "prettier": {
@@ -52,9 +32,6 @@
           }
         }
       ]
-    },
-    "transformIgnorePatterns": [
-      "node_modules/.*\\.js"
-    ]
+    }
   }
 }
