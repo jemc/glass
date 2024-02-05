@@ -26,4 +26,5 @@ jobs:
       - run: pnpm run -r test
       - run: pnpm run -r release
         env:
-          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
