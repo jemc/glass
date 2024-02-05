@@ -17,6 +17,9 @@ importers:
       '@types/node':
         specifier: ^20.11.16
         version: 20.11.16
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@20.11.16)
       prettier:
         specifier: ^3.2.4
         version: 3.2.4
@@ -51,6 +54,9 @@ importers:
       '@types/node':
         specifier: ^20.11.16
         version: 20.11.16
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@20.11.16)
       prettier:
         specifier: ^3.2.4
         version: 3.2.4
@@ -85,6 +91,9 @@ importers:
       '@types/node':
         specifier: ^20.11.16
         version: 20.11.16
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@20.11.16)
       prettier:
         specifier: ^3.2.4
         version: 3.2.4
@@ -119,6 +128,9 @@ importers:
       '@types/node':
         specifier: ^20.11.16
         version: 20.11.16
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@20.11.16)
       prettier:
         specifier: ^3.2.4
         version: 3.2.4
@@ -156,6 +168,9 @@ importers:
       '@types/node':
         specifier: ^20.11.16
         version: 20.11.16
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@20.11.16)
       prettier:
         specifier: ^3.2.4
         version: 3.2.4
@@ -190,6 +205,9 @@ importers:
       '@types/node':
         specifier: ^20.11.16
         version: 20.11.16
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@20.11.16)
       prettier:
         specifier: ^3.2.4
         version: 3.2.4

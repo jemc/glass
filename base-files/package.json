@@ -1,7 +1,7 @@
 {
   "repository": "https://www.github.com/jemc/glass.git",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "sync-base-files": "sh ../../base-files/sync.sh",
     "format": "prettier --write '{src,tests}/**/*.ts'",

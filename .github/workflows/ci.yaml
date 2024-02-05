@@ -1,0 +1,25 @@
+name: ci
+
+on:
+  workflow_dispatch: # allow manual trigger
+  pull_request:      # on pull request changes
+  push:
+    branches: [main] # on commits to the main branch
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2.5.1
+        with: { node-version: 20.x }
+      - run: npm install -g pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run -r sync-base-files && git diff --exit-code
+      - run: pnpm run -r format:check
+      - run: pnpm run -r test
+      - run: pnpm run -r release
