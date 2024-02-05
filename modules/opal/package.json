@@ -2,7 +2,7 @@
   "name": "@glass/opal",
   "version": "0.0.1",
   "description": "General-purpose 2D graphical framework for Glass Engine",
-  "repository": "https://www.github.com/jemc/glass.git",
+  "repository": "github:jemc/glass",
   "license": "MIT",
   "main": "dist/src/index.js",
   "dependencies": {

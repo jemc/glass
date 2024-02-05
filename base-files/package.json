@@ -1,5 +1,5 @@
 {
-  "repository": "https://www.github.com/jemc/glass.git",
+  "repository": "github:jemc/glass",
   "license": "MIT",
   "main": "dist/src/index.js",
   "scripts": {

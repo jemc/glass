@@ -2,7 +2,7 @@
   "name": "@glass/onyx",
   "version": "1.0.0",
   "description": "General-purpose audio & chiptune framework for Glass Engine",
-  "repository": "https://www.github.com/jemc/glass.git",
+  "repository": "github:jemc/glass",
   "license": "MIT",
   "main": "dist/src/index.js",
   "dependencies": {
