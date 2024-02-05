@@ -11,7 +11,7 @@
     "allowJs": false,
     "composite": true,
     "target": "es6",
-    "module": "CommonJS",
+    "module": "commonjs",
     "moduleResolution": "node",
     "esModuleInterop": false,
     "lib": [
