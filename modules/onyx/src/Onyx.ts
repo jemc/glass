@@ -1,6 +1,7 @@
 export * from "./Arrangement"
 export * from "./AudioWorklet"
 export * from "./Context"
+export * from "./Key"
 export * from "./Riff"
 export * from "./Voice"
 export * from "./NESNoise"
