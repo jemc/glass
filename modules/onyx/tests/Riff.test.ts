@@ -1,10 +1,9 @@
 import { describe, expect, test } from "@jest/globals"
+import { Key } from "../src/Key"
 import {
   riffCharCodeToOctave,
   riffCharCodeToScaleNumber,
   riffComputeStepSizes,
-  riffScaleNumberToFrequency,
-  riffScaleNumberToSemitoneOffset,
   riffSeqToVoiceNotes,
 } from "../src/Riff"
 
@@ -24,127 +23,56 @@ describe("riffComputeStepSizes", () => {
 
 describe("riffCharCodeToScaleNumber", () => {
   test("converts a char code to a scale number", () => {
-    expect(riffCharCodeToScaleNumber("o".charCodeAt(0))).toEqual(-0.5)
+    expect(riffCharCodeToScaleNumber("l".charCodeAt(0))).toEqual(-0.8)
+    expect(riffCharCodeToScaleNumber("o".charCodeAt(0))).toEqual(-0.6)
+    expect(riffCharCodeToScaleNumber("O".charCodeAt(0))).toEqual(-0.4)
+    expect(riffCharCodeToScaleNumber("L".charCodeAt(0))).toEqual(-0.2)
     expect(riffCharCodeToScaleNumber("0".charCodeAt(0))).toEqual(0)
-    expect(riffCharCodeToScaleNumber("p".charCodeAt(0))).toEqual(0.5)
+    expect(riffCharCodeToScaleNumber(";".charCodeAt(0))).toEqual(0.2)
+    expect(riffCharCodeToScaleNumber("p".charCodeAt(0))).toEqual(0.4)
+    expect(riffCharCodeToScaleNumber("P".charCodeAt(0))).toEqual(0.6)
+    expect(riffCharCodeToScaleNumber(":".charCodeAt(0))).toEqual(0.8)
     expect(riffCharCodeToScaleNumber("1".charCodeAt(0))).toEqual(1)
-    expect(riffCharCodeToScaleNumber("q".charCodeAt(0))).toEqual(1.5)
+    expect(riffCharCodeToScaleNumber("a".charCodeAt(0))).toEqual(1.2)
+    expect(riffCharCodeToScaleNumber("q".charCodeAt(0))).toEqual(1.4)
+    expect(riffCharCodeToScaleNumber("Q".charCodeAt(0))).toEqual(1.6)
+    expect(riffCharCodeToScaleNumber("A".charCodeAt(0))).toEqual(1.8)
     expect(riffCharCodeToScaleNumber("2".charCodeAt(0))).toEqual(2)
-    expect(riffCharCodeToScaleNumber("w".charCodeAt(0))).toEqual(2.5)
+    expect(riffCharCodeToScaleNumber("s".charCodeAt(0))).toEqual(2.2)
+    expect(riffCharCodeToScaleNumber("w".charCodeAt(0))).toEqual(2.4)
+    expect(riffCharCodeToScaleNumber("W".charCodeAt(0))).toEqual(2.6)
+    expect(riffCharCodeToScaleNumber("S".charCodeAt(0))).toEqual(2.8)
     expect(riffCharCodeToScaleNumber("3".charCodeAt(0))).toEqual(3)
-    expect(riffCharCodeToScaleNumber("e".charCodeAt(0))).toEqual(3.5)
+    expect(riffCharCodeToScaleNumber("d".charCodeAt(0))).toEqual(3.2)
+    expect(riffCharCodeToScaleNumber("e".charCodeAt(0))).toEqual(3.4)
+    expect(riffCharCodeToScaleNumber("E".charCodeAt(0))).toEqual(3.6)
+    expect(riffCharCodeToScaleNumber("D".charCodeAt(0))).toEqual(3.8)
     expect(riffCharCodeToScaleNumber("4".charCodeAt(0))).toEqual(4)
-    expect(riffCharCodeToScaleNumber("r".charCodeAt(0))).toEqual(4.5)
+    expect(riffCharCodeToScaleNumber("f".charCodeAt(0))).toEqual(4.2)
+    expect(riffCharCodeToScaleNumber("r".charCodeAt(0))).toEqual(4.4)
+    expect(riffCharCodeToScaleNumber("R".charCodeAt(0))).toEqual(4.6)
+    expect(riffCharCodeToScaleNumber("F".charCodeAt(0))).toEqual(4.8)
     expect(riffCharCodeToScaleNumber("5".charCodeAt(0))).toEqual(5)
-    expect(riffCharCodeToScaleNumber("t".charCodeAt(0))).toEqual(5.5)
+    expect(riffCharCodeToScaleNumber("g".charCodeAt(0))).toEqual(5.2)
+    expect(riffCharCodeToScaleNumber("t".charCodeAt(0))).toEqual(5.4)
+    expect(riffCharCodeToScaleNumber("T".charCodeAt(0))).toEqual(5.6)
+    expect(riffCharCodeToScaleNumber("G".charCodeAt(0))).toEqual(5.8)
     expect(riffCharCodeToScaleNumber("6".charCodeAt(0))).toEqual(6)
-    expect(riffCharCodeToScaleNumber("y".charCodeAt(0))).toEqual(6.5)
+    expect(riffCharCodeToScaleNumber("h".charCodeAt(0))).toEqual(6.2)
+    expect(riffCharCodeToScaleNumber("y".charCodeAt(0))).toEqual(6.4)
+    expect(riffCharCodeToScaleNumber("Y".charCodeAt(0))).toEqual(6.6)
+    expect(riffCharCodeToScaleNumber("H".charCodeAt(0))).toEqual(6.8)
     expect(riffCharCodeToScaleNumber("7".charCodeAt(0))).toEqual(7)
-    expect(riffCharCodeToScaleNumber("u".charCodeAt(0))).toEqual(7.5)
+    expect(riffCharCodeToScaleNumber("j".charCodeAt(0))).toEqual(7.2)
+    expect(riffCharCodeToScaleNumber("u".charCodeAt(0))).toEqual(7.4)
+    expect(riffCharCodeToScaleNumber("U".charCodeAt(0))).toEqual(7.6)
+    expect(riffCharCodeToScaleNumber("J".charCodeAt(0))).toEqual(7.8)
     expect(riffCharCodeToScaleNumber("8".charCodeAt(0))).toEqual(8)
-    expect(riffCharCodeToScaleNumber("i".charCodeAt(0))).toEqual(8.5)
+    expect(riffCharCodeToScaleNumber("k".charCodeAt(0))).toEqual(8.2)
+    expect(riffCharCodeToScaleNumber("i".charCodeAt(0))).toEqual(8.4)
+    expect(riffCharCodeToScaleNumber("I".charCodeAt(0))).toEqual(8.6)
+    expect(riffCharCodeToScaleNumber("K".charCodeAt(0))).toEqual(8.8)
     expect(riffCharCodeToScaleNumber("9".charCodeAt(0))).toEqual(9)
-  })
-})
-
-describe("riffScaleNumberToSemitoneOffset", () => {
-  const toSemitones = riffScaleNumberToSemitoneOffset
-  test("converts a scale number to a semitone offset", () => {
-    const simpleScale = [1, 2, 3, 4, 5, 6, 7, 8]
-    const allScaleNumbers = [
-      -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8,
-      8.5, 9,
-    ]
-
-    const majorScale = simpleScale.map((n) => toSemitones(n, "C-major"))
-    const minorScale = simpleScale.map((n) => toSemitones(n, "C-minor"))
-    const majorAll = allScaleNumbers.map((n) => toSemitones(n, "C-major"))
-    const minorAll = allScaleNumbers.map((n) => toSemitones(n, "C-minor"))
-
-    expect(majorScale).toEqual([0, 2, 4, 5, 7, 9, 11, 12])
-    expect(minorScale).toEqual([0, 2, 3, 5, 7, 8, 10, 12])
-    expect(majorAll).toEqual([
-      -2, -1, -1, 0, 1, 2, 3, 4, 4, 5, 6, 7, 8, 9, 10, 11, 11, 12, 13, 14,
-    ])
-    expect(minorAll).toEqual([
-      -3, -2, -1, 0, 1, 2, 3, 3, 4, 5, 6, 7, 8, 8, 9, 10, 11, 12, 13, 14,
-    ])
-  })
-})
-
-describe("riffScaleNumberToFrequency", () => {
-  const toFreq = riffScaleNumberToFrequency
-  test("emits A4 as 440 when accessed from any key", () => {
-    expect(toFreq(-0.5, 5, "C-minor")).toEqual(440)
-    expect(toFreq(-0.5, 4, "B-major")).toEqual(440)
-    expect(toFreq(0, 4, "B-minor")).toEqual(440)
-    expect(toFreq(0.5, 4, "Bb-major")).toEqual(440)
-    expect(toFreq(0.5, 4, "Bb-minor")).toEqual(440)
-    expect(toFreq(0.5, 4, "A#-major")).toEqual(440)
-    expect(toFreq(0.5, 4, "A#-minor")).toEqual(440)
-    expect(toFreq(1, 4, "A-major")).toEqual(440)
-    expect(toFreq(1, 4, "A-minor")).toEqual(440)
-    expect(toFreq(1.5, 4, "Ab-major")).toEqual(440)
-    expect(toFreq(1.5, 4, "Ab-minor")).toEqual(440)
-    expect(toFreq(1.5, 4, "G#-major")).toEqual(440)
-    expect(toFreq(1.5, 4, "G#-minor")).toEqual(440)
-    expect(toFreq(2, 4, "G-major")).toEqual(440)
-    expect(toFreq(2, 4, "G-minor")).toEqual(440)
-    expect(toFreq(2.5, 4, "Gb-major")).toEqual(440)
-    expect(toFreq(2.5, 4, "Gb-minor")).toEqual(440)
-    expect(toFreq(2.5, 4, "F#-major")).toEqual(440)
-    expect(toFreq(2.5, 4, "F#-minor")).toEqual(440)
-    expect(toFreq(3, 4, "F-major")).toEqual(440)
-    expect(toFreq(3.5, 4, "F-minor")).toEqual(440)
-    expect(toFreq(4, 4, "E-major")).toEqual(440)
-    expect(toFreq(4, 4, "E-minor")).toEqual(440)
-    expect(toFreq(4.5, 4, "Eb-major")).toEqual(440)
-    expect(toFreq(4.5, 4, "Eb-minor")).toEqual(440)
-    expect(toFreq(4.5, 4, "D#-major")).toEqual(440)
-    expect(toFreq(4.5, 4, "D#-minor")).toEqual(440)
-    expect(toFreq(5, 4, "D-major")).toEqual(440)
-    expect(toFreq(5, 4, "D-minor")).toEqual(440)
-    expect(toFreq(5.5, 4, "Db-major")).toEqual(440)
-    expect(toFreq(5.5, 4, "Db-minor")).toEqual(440)
-    expect(toFreq(5.5, 4, "C#-major")).toEqual(440)
-    expect(toFreq(5.5, 4, "C#-minor")).toEqual(440)
-    expect(toFreq(6, 4, "C-major")).toEqual(440)
-    expect(toFreq(6.5, 4, "C-minor")).toEqual(440)
-    expect(toFreq(6.5, 3, "B-major")).toEqual(440)
-    expect(toFreq(7, 3, "B-minor")).toEqual(440)
-    expect(toFreq(7.5, 3, "Bb-major")).toEqual(440)
-    expect(toFreq(7.5, 3, "Bb-minor")).toEqual(440)
-    expect(toFreq(7.5, 3, "A#-major")).toEqual(440)
-    expect(toFreq(7.5, 3, "A#-minor")).toEqual(440)
-    expect(toFreq(8, 3, "A-major")).toEqual(440)
-    expect(toFreq(8, 3, "A-minor")).toEqual(440)
-    expect(toFreq(8.5, 3, "Ab-major")).toEqual(440)
-    expect(toFreq(8.5, 3, "Ab-minor")).toEqual(440)
-    expect(toFreq(8.5, 3, "G#-major")).toEqual(440)
-    expect(toFreq(8.5, 3, "G#-minor")).toEqual(440)
-    expect(toFreq(9, 3, "G-major")).toEqual(440)
-    expect(toFreq(9, 3, "G-minor")).toEqual(440)
-  })
-  test("emits the correct series of frequencies in a major key", () => {
-    expect(toFreq(-1, 5, "C-major")).toEqual(440) // A4
-    expect(toFreq(-0.5, 5, "C-major")).toEqual(466.1637615180899) // A#4
-    expect(toFreq(0, 5, "C-major")).toEqual(493.8833012561241) // B4
-    expect(toFreq(0.5, 5, "C-major")).toEqual(493.8833012561241) // also B4
-    expect(toFreq(1, 5, "C-major")).toEqual(523.2511306011972) // C5
-    expect(toFreq(1.5, 5, "C-major")).toEqual(554.3652619537442) // C#5
-    expect(toFreq(2, 5, "C-major")).toEqual(587.3295358348151) // D5
-    expect(toFreq(2.5, 5, "C-major")).toEqual(622.2539674441618) // D#5
-    expect(toFreq(3, 5, "C-major")).toEqual(659.2551138257398) // E5
-    expect(toFreq(3.5, 5, "C-major")).toEqual(659.2551138257398) // also E5
-    expect(toFreq(4, 5, "C-major")).toEqual(698.4564628660078) // F5
-    expect(toFreq(4.5, 5, "C-major")).toEqual(739.9888454232689) // F#5
-    expect(toFreq(5, 5, "C-major")).toEqual(783.9908719634986) // G5
-    expect(toFreq(5.5, 5, "C-major")).toEqual(830.6093951598903) // G#5
-    expect(toFreq(6, 5, "C-major")).toEqual(880) // A5
-    expect(toFreq(6.5, 5, "C-major")).toEqual(932.3275230361799) // A#5
-    expect(toFreq(7, 5, "C-major")).toEqual(987.7666025122483) // B5
-    expect(toFreq(7.5, 5, "C-major")).toEqual(987.7666025122483) // also B5
-    expect(toFreq(8, 5, "C-major")).toEqual(1046.5022612023945) // C6
   })
 })
 
@@ -205,7 +133,7 @@ describe("riffSeqToVoiceNotes", () => {
     expect(
       toNotes({
         bpm: 120,
-        key: "C-major",
+        key: Key.of("C4").major,
         div: "|   |   |   |   |   |   |   |   ",
         seq: "1-  2-  3---4-    5   6-7-  8-- ",
       }),
@@ -225,7 +153,7 @@ describe("riffSeqToVoiceNotes", () => {
     expect(
       toNotes({
         bpm: 120,
-        key: "C-major",
+        key: Key.of("C4").major,
         div: "| | | | | | | | | | | | | | | ",
         seq: "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 ",
         oct: "0   1 + 3 4 5 607 8 9 @ -   + ",
@@ -253,7 +181,7 @@ describe("riffSeqToVoiceNotes", () => {
     expect(
       toNotes({
         bpm: 120,
-        key: "A-minor",
+        key: Key.of("A").minor,
         div: "|   |   |   |   |   |   |   |   |   |   ",
         seq: "1---3---5---1---8---1---5---3---1---1---",
         oct: "            +           -           0   ",
@@ -333,7 +261,7 @@ describe("riffSeqToVoiceNotes", () => {
     expect(
       toNotes({
         bpm: 120,
-        key: "A-minor",
+        key: Key.of("A").minor,
         div: "|   |   |   |",
         seq: "1---1---1--- ",
         gls: ",1,1,,,2  ,,3",
@@ -382,7 +310,7 @@ describe("riffSeqToVoiceNotes", () => {
     expect(
       toNotes({
         bpm: 120,
-        key: "A-minor",
+        key: Key.of("A").minor,
         div: "|   |   |   |",
         seq: "1---1---1--- ",
         gls: "`1`1```2  ``3",
@@ -431,7 +359,7 @@ describe("riffSeqToVoiceNotes", () => {
     expect(
       toNotes({
         bpm: 120,
-        key: "A-minor",
+        key: Key.of("A").minor,
         div: "|   |   |   |   |   |   ",
         seq: "    1---1---1---1---1---",
         vol: "9    864 9752 0@ 31",

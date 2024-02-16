@@ -1,8 +1,9 @@
+import { Key } from "./Key"
 import type { VoiceNote } from "./Voice"
 
 export interface Riff {
   bpm: number
-  key: RiffKey
+  key: Key
   div: string
   seq: string
   oct?: string
@@ -10,61 +11,55 @@ export interface Riff {
   gls?: string
 }
 
-export type RiffKey =
-  | "Ab-minor"
-  | "A-minor"
-  | "A#-minor"
-  | "Bb-minor"
-  | "B-minor"
-  | "C-minor"
-  | "C#-minor"
-  | "Db-minor"
-  | "D-minor"
-  | "D#-minor"
-  | "Eb-minor"
-  | "E-minor"
-  | "F-minor"
-  | "F#-minor"
-  | "Gb-minor"
-  | "G-minor"
-  | "G#-minor"
-  | "Ab-major"
-  | "A-major"
-  | "A#-major"
-  | "Bb-major"
-  | "B-major"
-  | "C-major"
-  | "C#-major"
-  | "Db-major"
-  | "D-major"
-  | "D#-major"
-  | "Eb-major"
-  | "E-major"
-  | "F-major"
-  | "F#-major"
-  | "Gb-major"
-  | "G-major"
-  | "G#-major"
-
-const SCALE_CODE_0$ = "o".charCodeAt(0)
+const SCALE_CODE_NEG_0_8 = "l".charCodeAt(0)
+const SCALE_CODE_NEG_0_6 = "o".charCodeAt(0)
+const SCALE_CODE_NEG_0_4 = "O".charCodeAt(0)
+const SCALE_CODE_NEG_0_2 = "L".charCodeAt(0)
 const SCALE_CODE_0 = "0".charCodeAt(0)
-const SCALE_CODE_1$ = "p".charCodeAt(0)
+const SCALE_CODE_0_2 = ";".charCodeAt(0)
+const SCALE_CODE_0_4 = "p".charCodeAt(0)
+const SCALE_CODE_0_6 = "P".charCodeAt(0)
+const SCALE_CODE_0_8 = ":".charCodeAt(0)
 const SCALE_CODE_1 = "1".charCodeAt(0)
-const SCALE_CODE_2$ = "q".charCodeAt(0)
+const SCALE_CODE_1_2 = "a".charCodeAt(0)
+const SCALE_CODE_1_4 = "q".charCodeAt(0)
+const SCALE_CODE_1_6 = "Q".charCodeAt(0)
+const SCALE_CODE_1_8 = "A".charCodeAt(0)
 const SCALE_CODE_2 = "2".charCodeAt(0)
-const SCALE_CODE_3$ = "w".charCodeAt(0)
+const SCALE_CODE_2_2 = "s".charCodeAt(0)
+const SCALE_CODE_2_4 = "w".charCodeAt(0)
+const SCALE_CODE_2_6 = "W".charCodeAt(0)
+const SCALE_CODE_2_8 = "S".charCodeAt(0)
 const SCALE_CODE_3 = "3".charCodeAt(0)
-const SCALE_CODE_4$ = "e".charCodeAt(0)
+const SCALE_CODE_3_2 = "d".charCodeAt(0)
+const SCALE_CODE_3_4 = "e".charCodeAt(0)
+const SCALE_CODE_3_6 = "E".charCodeAt(0)
+const SCALE_CODE_3_8 = "D".charCodeAt(0)
 const SCALE_CODE_4 = "4".charCodeAt(0)
-const SCALE_CODE_5$ = "r".charCodeAt(0)
+const SCALE_CODE_4_2 = "f".charCodeAt(0)
+const SCALE_CODE_4_4 = "r".charCodeAt(0)
+const SCALE_CODE_4_6 = "R".charCodeAt(0)
+const SCALE_CODE_4_8 = "F".charCodeAt(0)
 const SCALE_CODE_5 = "5".charCodeAt(0)
-const SCALE_CODE_6$ = "t".charCodeAt(0)
+const SCALE_CODE_5_2 = "g".charCodeAt(0)
+const SCALE_CODE_5_4 = "t".charCodeAt(0)
+const SCALE_CODE_5_6 = "T".charCodeAt(0)
+const SCALE_CODE_5_8 = "G".charCodeAt(0)
 const SCALE_CODE_6 = "6".charCodeAt(0)
-const SCALE_CODE_7$ = "y".charCodeAt(0)
+const SCALE_CODE_6_2 = "h".charCodeAt(0)
+const SCALE_CODE_6_4 = "y".charCodeAt(0)
+const SCALE_CODE_6_6 = "Y".charCodeAt(0)
+const SCALE_CODE_6_8 = "H".charCodeAt(0)
 const SCALE_CODE_7 = "7".charCodeAt(0)
-const SCALE_CODE_8$ = "u".charCodeAt(0)
+const SCALE_CODE_7_2 = "j".charCodeAt(0)
+const SCALE_CODE_7_4 = "u".charCodeAt(0)
+const SCALE_CODE_7_6 = "U".charCodeAt(0)
+const SCALE_CODE_7_8 = "J".charCodeAt(0)
 const SCALE_CODE_8 = "8".charCodeAt(0)
-const SCALE_CODE_9$ = "i".charCodeAt(0)
+const SCALE_CODE_8_2 = "k".charCodeAt(0)
+const SCALE_CODE_8_4 = "i".charCodeAt(0)
+const SCALE_CODE_8_6 = "I".charCodeAt(0)
+const SCALE_CODE_8_8 = "K".charCodeAt(0)
 const SCALE_CODE_9 = "9".charCodeAt(0)
 
 const SEQ_CODE_SUSTAIN = "-".charCodeAt(0)
@@ -116,144 +111,109 @@ export function riffDuration(riff: Riff) {
 
 export function riffCharCodeToScaleNumber(code: number) {
   switch (code) {
-    case SCALE_CODE_0$:
-      return -0.5
+    case SCALE_CODE_NEG_0_8:
+      return -0.8
+    case SCALE_CODE_NEG_0_6:
+      return -0.6
+    case SCALE_CODE_NEG_0_4:
+      return -0.4
+    case SCALE_CODE_NEG_0_2:
+      return -0.2
     case SCALE_CODE_0:
       return 0
-    case SCALE_CODE_1$:
-      return 0.5
+    case SCALE_CODE_0_2:
+      return 0.2
+    case SCALE_CODE_0_4:
+      return 0.4
+    case SCALE_CODE_0_6:
+      return 0.6
+    case SCALE_CODE_0_8:
+      return 0.8
     case SCALE_CODE_1:
       return 1
-    case SCALE_CODE_2$:
-      return 1.5
+    case SCALE_CODE_1_2:
+      return 1.2
+    case SCALE_CODE_1_4:
+      return 1.4
+    case SCALE_CODE_1_6:
+      return 1.6
+    case SCALE_CODE_1_8:
+      return 1.8
     case SCALE_CODE_2:
       return 2
-    case SCALE_CODE_3$:
-      return 2.5
+    case SCALE_CODE_2_2:
+      return 2.2
+    case SCALE_CODE_2_4:
+      return 2.4
+    case SCALE_CODE_2_6:
+      return 2.6
+    case SCALE_CODE_2_8:
+      return 2.8
     case SCALE_CODE_3:
       return 3
-    case SCALE_CODE_4$:
-      return 3.5
+    case SCALE_CODE_3_2:
+      return 3.2
+    case SCALE_CODE_3_4:
+      return 3.4
+    case SCALE_CODE_3_6:
+      return 3.6
+    case SCALE_CODE_3_8:
+      return 3.8
     case SCALE_CODE_4:
       return 4
-    case SCALE_CODE_5$:
-      return 4.5
+    case SCALE_CODE_4_2:
+      return 4.2
+    case SCALE_CODE_4_4:
+      return 4.4
+    case SCALE_CODE_4_6:
+      return 4.6
+    case SCALE_CODE_4_8:
+      return 4.8
     case SCALE_CODE_5:
       return 5
-    case SCALE_CODE_6$:
-      return 5.5
+    case SCALE_CODE_5_2:
+      return 5.2
+    case SCALE_CODE_5_4:
+      return 5.4
+    case SCALE_CODE_5_6:
+      return 5.6
+    case SCALE_CODE_5_8:
+      return 5.8
     case SCALE_CODE_6:
       return 6
-    case SCALE_CODE_7$:
-      return 6.5
+    case SCALE_CODE_6_2:
+      return 6.2
+    case SCALE_CODE_6_4:
+      return 6.4
+    case SCALE_CODE_6_6:
+      return 6.6
+    case SCALE_CODE_6_8:
+      return 6.8
     case SCALE_CODE_7:
       return 7
-    case SCALE_CODE_8$:
-      return 7.5
+    case SCALE_CODE_7_2:
+      return 7.2
+    case SCALE_CODE_7_4:
+      return 7.4
+    case SCALE_CODE_7_6:
+      return 7.6
+    case SCALE_CODE_7_8:
+      return 7.8
     case SCALE_CODE_8:
       return 8
-    case SCALE_CODE_9$:
-      return 8.5
+    case SCALE_CODE_8_2:
+      return 8.2
+    case SCALE_CODE_8_4:
+      return 8.4
+    case SCALE_CODE_8_6:
+      return 8.6
+    case SCALE_CODE_8_8:
+      return 8.8
     case SCALE_CODE_9:
       return 9
   }
 
   throw new Error(`Unknown riff scale code: ${code}`)
-}
-
-export function riffScaleNumberToSemitoneOffset(
-  scaleNumber: number,
-  key: RiffKey,
-) {
-  let extra = 0
-  while (scaleNumber < 1) {
-    scaleNumber += 7
-    extra -= 12
-  }
-  while (scaleNumber >= 8) {
-    scaleNumber -= 7
-    extra += 12
-  }
-  switch (scaleNumber) {
-    case 1:
-      return extra + 0
-    case 1.5:
-      return extra + 1
-    case 2:
-      return extra + 2
-    case 2.5:
-      return extra + 3
-    case 3:
-      return extra + (key.endsWith("-minor") ? 3 : 4)
-    case 3.5:
-      return extra + 4
-    case 4:
-      return extra + 5
-    case 4.5:
-      return extra + 6
-    case 5:
-      return extra + 7
-    case 5.5:
-      return extra + 8
-    case 6:
-      return extra + (key.endsWith("-minor") ? 8 : 9)
-    case 6.5:
-      return extra + (key.endsWith("-minor") ? 9 : 10)
-    case 7:
-      return extra + (key.endsWith("-minor") ? 10 : 11)
-    case 7.5:
-      return extra + 11
-  }
-
-  throw new Error(`Unknown riff scale number: ${scaleNumber}`)
-}
-
-export function riffKeyToSemitoneOffset(key: RiffKey) {
-  switch (key.split("-")[0]) {
-    case "C":
-      return -9
-    case "C#":
-    case "Db":
-      return -8
-    case "D":
-      return -7
-    case "D#":
-    case "Eb":
-      return -6
-    case "E":
-      return -5
-    case "F":
-      return -4
-    case "F#":
-    case "Gb":
-      return -3
-    case "G":
-      return -2
-    case "G#":
-      return -1
-    case "Ab":
-      return -1
-    case "A":
-      return 0
-    case "A#":
-    case "Bb":
-      return 1
-    case "B":
-      return 2
-  }
-
-  throw new Error(`Unknown riff key: ${key}`)
-}
-
-export function riffScaleNumberToFrequency(
-  scaleNumber: number,
-  octave: number,
-  key: RiffKey,
-): number {
-  const semitoneOffset =
-    riffKeyToSemitoneOffset(key) +
-    riffScaleNumberToSemitoneOffset(scaleNumber, key)
-  return 440 * Math.pow(2, octave - 4 + semitoneOffset / 12)
 }
 
 export function riffCharCodeToOctave(code: number, currentOctave: number) {
@@ -363,10 +323,9 @@ function freqSlideFrom(
   const timeStart = note.duration - (steps[index] ?? 0) * beatDuration
   const timeEnd = timeStart + measured.duration * beatDuration
   const deltaStart =
-    riffScaleNumberToFrequency(
+    riff.key.getDegreeFrequency(
       note.scaleNumber + slideDelta,
       riffOctaveAt(riff, index),
-      riff.key,
     ) - note.freqBase
 
   note.freqSlides = note.freqSlides ?? []
@@ -399,7 +358,7 @@ function freqSlideTowardSeq(
   const timeEnd = timeStart + slideDuration
   const deltaStart = note.freqSlides[note.freqSlides.length - 1]?.deltaEnd ?? 0
   const deltaEnd =
-    riffScaleNumberToFrequency(target.scaleNumber, target.octave, riff.key) -
+    riff.key.getDegreeFrequency(target.scaleNumber, target.octave) -
     note.freqBase
   note.freqSlides.push({ timeStart, timeEnd, deltaStart, deltaEnd })
 }
@@ -439,11 +398,7 @@ export function riffSeqToVoiceNotes(riff: Riff): [number, VoiceNote][] {
       // Other character codes are used to start a note.
       const scaleNumber = riffCharCodeToScaleNumber(seqCharCode)
       const octave = riffOctaveAt(riff, i)
-      const frequency = riffScaleNumberToFrequency(
-        scaleNumber,
-        octave,
-        riff.key,
-      )
+      const frequency = riff.key.getDegreeFrequency(scaleNumber, octave)
       note = {
         duration: stepDuration,
         freqBase: frequency,

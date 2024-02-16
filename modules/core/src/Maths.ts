@@ -27,3 +27,11 @@ export function roundUpToPowerOfTwo(x: number) {
 export function isPowerOfTwo(x: number) {
   return (x & (x - 1)) === 0
 }
+
+export function countOneBits(v: number) {
+  // See Bit Twiddling Hack "Counting bits set, in parallel", from
+  // https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+  v = v - ((v >> 1) & 0x55555555)
+  v = (v & 0x33333333) + ((v >> 2) & 0x33333333)
+  return (((v + (v >> 4)) & 0x0f0f0f0f) * 0x01010101) >> 24
+}

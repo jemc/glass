@@ -4,6 +4,7 @@ import {
   toDegrees,
   roundUpToPowerOfTwo,
   isPowerOfTwo,
+  countOneBits,
 } from "../src/Maths"
 
 describe("roundUpToPowerOfTwo", () => {
@@ -54,5 +55,14 @@ describe("toDegrees", () => {
     expect(toDegrees(2 * Math.PI)).toBe(360)
     expect(toDegrees(4 * Math.PI)).toBe(720)
     expect(toDegrees(-2 * Math.PI)).toBe(-360)
+  })
+})
+
+describe("countOneBits", () => {
+  test("counts the number of 1 bits in the binary representation", () => {
+    const inputs = [0, 3, 4, 5, 6, 7, 8, 9, 255, 256, 0x7fffffff, 0x80000000]
+    const outputs = [0, 2, 1, 2, 2, 3, 1, 2, 8, 1, 31, 1]
+
+    expect(inputs.map(countOneBits)).toEqual(outputs)
   })
 })
