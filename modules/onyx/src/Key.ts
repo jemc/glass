@@ -7,7 +7,8 @@ export type KeyNoteLetter = "C" | "D" | "E" | "F" | "G" | "A" | "B"
 
 export type KeyNoteAccidental = "" | "b" | "#" | "bb" | "##"
 
-export type KeyNoteNudge = "" | "^" | "v" // used by microtonal tunings
+export type KeyNoteNudge = // used by microtonal tunings
+  "" | "^" | "v" | "^^" | "vv" | "^^^" | "vvv" | "^^^^" | "vvvv"
 
 export type KeyNoteOctave = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
 
@@ -32,6 +33,8 @@ function noteNormalize(note: KeyNote): KeyNote {
 export class KeyTuning {
   // TODO: Make this base frequency customizable
   private static baseFrequencyA4 = 440
+
+  private static perfectFifthStepsFrac = Math.log(1.5) / Math.log(2)
 
   private constructor(
     // The number of equal-sized steps to divide the 2:1 perfect octave interval
@@ -90,11 +93,11 @@ export class KeyTuning {
   frequencyOf(note: KeyNote): number {
     return (
       KeyTuning.baseFrequencyA4 *
-      Math.pow(2, this.stepsFromA4(note) / this.stepsPerOctave)
+      Math.pow(2, this.noteStepsFromA4(note) / this.stepsPerOctave)
     )
   }
 
-  private stepsFromA4(note: KeyNote): number {
+  noteStepsFromA4(note: KeyNote): number {
     const match = note.match(/^([v^]*)([A-G])([^\d]*)(\d+)$/)
     if (!match) throw new Error(`invalid note: ${note}`)
 
@@ -103,79 +106,165 @@ export class KeyTuning {
     const accidental = match[3]! as KeyNoteAccidental
     const octave = Number.parseInt(match[4]!) as KeyNoteOctave
 
-    if (this.stepsPerOctave === 12)
-      return KeyTuning.noteStepsFromA4In12edo(nudge, letter, accidental, octave)
-
-    if (this.stepsPerOctave === 31)
-      return KeyTuning.noteStepsFromA4In31edo(nudge, letter, accidental, octave)
-
-    throw new Error(`KeyTuning stepsFromA4 not yet implemented for ${this}`)
+    return this.noteStepsFromA4Inner(nudge, letter, accidental, octave)
   }
 
-  private static noteStepsFromA4In12edo(
+  private noteStepsFromA4Inner(
     nudge: KeyNoteNudge,
     letter: KeyNoteLetter,
     accidental: KeyNoteAccidental,
     octave: KeyNoteOctave,
   ): number {
-    const letterSteps = {
-      C: -9,
-      D: -7,
-      E: -5,
-      F: -4,
-      G: -2,
-      A: 0,
-      B: 2,
-    }[letter]
+    const {
+      minorityCount,
+      minorityInterval,
+      majorityInterval,
+      accidentalInterval,
+    } = KeyTuning.planLetterIntervals(this.stepsPerOctave)
 
-    const accidentalSteps = {
+    let letterMap: { [key in KeyNoteLetter]: number } = {} as typeof letterMap
+    letterMap.A = 0
+    letterMap.B = majorityInterval
+    letterMap.G = -majorityInterval
+    letterMap.F = letterMap.G - majorityInterval
+    letterMap.E =
+      letterMap.F - (minorityCount >= 2 ? minorityInterval : majorityInterval)
+    letterMap.D = letterMap.E - majorityInterval
+    letterMap.C = letterMap.D - majorityInterval
+
+    const accidentalMap = {
       "": 0,
-      b: -1,
-      "#": 1,
-      bb: -1,
-      "##": 1,
-    }[accidental]
+      b: -accidentalInterval,
+      "#": accidentalInterval,
+      bb: -2 * accidentalInterval,
+      "##": 2 * accidentalInterval,
+    }
 
-    return letterSteps + accidentalSteps + (octave - 4) * 12
-  }
-
-  private static noteStepsFromA4In31edo(
-    nudge: KeyNoteNudge,
-    letter: KeyNoteLetter,
-    accidental: KeyNoteAccidental,
-    octave: KeyNoteOctave,
-  ): number {
-    const letterSteps = {
-      C: -23,
-      D: -18,
-      E: -13,
-      F: -10,
-      G: -5,
-      A: 0,
-      B: 5,
-    }[letter]
-
-    const accidentalSteps = {
-      "": 0,
-      b: -2,
-      "#": 2,
-      bb: -4,
-      "##": 4,
-    }[accidental]
-
-    const nudgeSteps = {
+    const nudgeMap = {
       "": 0,
       "^": 1,
       v: -1,
-    }[nudge]
+      "^^": 2,
+      vv: -2,
+      "^^^": 3,
+      vvv: -3,
+      "^^^^": 4,
+      vvvv: -4,
+    }
 
-    return letterSteps + accidentalSteps + nudgeSteps + (octave - 4) * 31
+    return (
+      letterMap[letter] +
+      accidentalMap[accidental] +
+      nudgeMap[nudge] +
+      (octave - 4) * this.stepsPerOctave
+    )
+  }
+
+  // This method is public for testing purposes, but it should not be used
+  // externally, because it is not a stable API and does not validate inputs.
+  static planLetterIntervals(stepsPerOctave: number) {
+    const plan = this.planLetterIntervalsInner(stepsPerOctave)
+
+    if (!Number.isInteger(plan.minorityInterval))
+      throw new Error(
+        `planLetterIntervals failed to find an integer minorityInterval`,
+      )
+    if (!Number.isInteger(plan.majorityInterval))
+      throw new Error(
+        `planLetterIntervals failed to find an integer majorityInterval`,
+      )
+
+    // The interval represented by an accidental is not always one step,
+    // as it is in 12edo. The principled way to calculate it is based on
+    // the circle of fifths. Specifically, an accidental represents the
+    // amount of "drift" observed after stacking 7 perfect fifths (and
+    // adjusting back downward by 4 octaves to return to the original octave).
+    //
+    // See https://en.xen.wiki/w/Ups_and_downs_notation#Explanation_--_a_22-edo_example
+    //
+    // Every scale represents the perfect fifth somewhat imperfectly,
+    // so we need to use the tuning's version of the perfect fifth steps
+    // to calculate the accidental interval.
+    const perfectFifthStepsAdustment = -0.03 // TODO: this shouldn't be needed, but it is for 18edo...
+    const perfectFifthSteps = Math.round(
+      KeyTuning.perfectFifthStepsFrac * stepsPerOctave +
+        perfectFifthStepsAdustment,
+    )
+    const accidentalFreqRatio =
+      Math.pow(2, (7 * perfectFifthSteps) / stepsPerOctave) / 16
+    const accidentalStepsFrac = Math.log(accidentalFreqRatio) / Math.log(2)
+    const accidentalInterval = Math.round(accidentalStepsFrac * stepsPerOctave)
+
+    return { ...plan, accidentalInterval }
+  }
+
+  private static planLetterIntervalsInner(stepsPerOctave: number): {
+    minorityCount: number
+    minorityInterval: number
+    majorityCount: number
+    majorityInterval: number
+  } {
+    if (stepsPerOctave !== 12 && stepsPerOctave <= 13)
+      throw new Error(
+        `KeyTuning planLetterIntervals not yet implemented for ${stepsPerOctave}`,
+      )
+
+    // Try sizing two or one of the intervals at about 1/12 of the total steps,
+    // going a bit larger or smaller if needed, to make everything line up.
+    // This tries to match as closely as possible to a diatonic 12edo mapping.
+    const possibleMinorityCounts = [2, 1]
+    for (const minorityCount of possibleMinorityCounts) {
+      let minorityInterval = Math.floor(stepsPerOctave / 12)
+      let minorityIntervalSeenUpper = minorityInterval
+      let minorityIntervalSeenLower = minorityInterval
+      let majorityCount = 7 - minorityCount
+      while (minorityInterval >= 0 && minorityInterval < stepsPerOctave) {
+        const majorityTotal = stepsPerOctave - minorityCount * minorityInterval
+        if (majorityTotal % majorityCount === 0) {
+          const majorityInterval = majorityTotal / majorityCount
+          if (majorityInterval === minorityInterval) {
+            return {
+              minorityCount: 0,
+              minorityInterval: 0,
+              majorityCount: 7,
+              majorityInterval,
+            }
+          } else {
+            return {
+              minorityCount,
+              minorityInterval,
+              majorityCount,
+              majorityInterval,
+            }
+          }
+        }
+
+        // Go above or below the current minority interval, whichever is closer
+        // to the ideal 1/12 of the total steps, and try again.
+        const possibleUpper = minorityIntervalSeenUpper + 1
+        const possibleLower = minorityIntervalSeenLower - 1
+        if (
+          possibleUpper < stepsPerOctave / 4 &&
+          (possibleLower < 0 ||
+            possibleUpper / stepsPerOctave - 1 / 12 <
+              1 / 12 - possibleLower / stepsPerOctave)
+        ) {
+          minorityInterval = possibleUpper
+          minorityIntervalSeenUpper = possibleUpper
+        } else if (possibleLower >= 0) {
+          minorityInterval = possibleLower
+          minorityIntervalSeenLower = possibleLower
+        } else {
+          break
+        }
+      }
+    }
+
+    throw new Error(
+      `planLetterIntervals not yet implemented for ${stepsPerOctave} steps`,
+    )
   }
 }
-
-export const KeyTuning12edo = KeyTuning.edo(12)
-export const KeyTuning31edo = KeyTuning.edo(31)
-// TODO: add just intonation tunings
 
 export class Key {
   readonly root: KeyNote
@@ -189,7 +278,9 @@ export class Key {
     this.rootFrequency = tuning.frequencyOf(this.root)
   }
 
-  static fromBits(bits: number, tuning: KeyTuning = KeyTuning12edo) {
+  // This method is public for testing purposes, but it should not be used
+  // externally, because it is not a stable API and does not validate inputs.
+  static fromBits(bits: number, tuning: KeyTuning = KeyTuning.edo(12)) {
     return new Key(tuning, "C4", bits)
   }
 

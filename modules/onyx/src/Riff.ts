@@ -21,40 +21,54 @@ const SCALE_CODE_0_4 = "p".charCodeAt(0)
 const SCALE_CODE_0_6 = "P".charCodeAt(0)
 const SCALE_CODE_0_8 = ":".charCodeAt(0)
 const SCALE_CODE_1 = "1".charCodeAt(0)
+const SCALE_CODE_1_1 = "z".charCodeAt(0)
 const SCALE_CODE_1_2 = "a".charCodeAt(0)
 const SCALE_CODE_1_4 = "q".charCodeAt(0)
 const SCALE_CODE_1_6 = "Q".charCodeAt(0)
 const SCALE_CODE_1_8 = "A".charCodeAt(0)
+const SCALE_CODE_1_9 = "Z".charCodeAt(0)
 const SCALE_CODE_2 = "2".charCodeAt(0)
+const SCALE_CODE_2_1 = "x".charCodeAt(0)
 const SCALE_CODE_2_2 = "s".charCodeAt(0)
 const SCALE_CODE_2_4 = "w".charCodeAt(0)
 const SCALE_CODE_2_6 = "W".charCodeAt(0)
 const SCALE_CODE_2_8 = "S".charCodeAt(0)
+const SCALE_CODE_2_9 = "X".charCodeAt(0)
 const SCALE_CODE_3 = "3".charCodeAt(0)
+const SCALE_CODE_3_1 = "c".charCodeAt(0)
 const SCALE_CODE_3_2 = "d".charCodeAt(0)
 const SCALE_CODE_3_4 = "e".charCodeAt(0)
 const SCALE_CODE_3_6 = "E".charCodeAt(0)
 const SCALE_CODE_3_8 = "D".charCodeAt(0)
+const SCALE_CODE_3_9 = "C".charCodeAt(0)
 const SCALE_CODE_4 = "4".charCodeAt(0)
+const SCALE_CODE_4_1 = "v".charCodeAt(0)
 const SCALE_CODE_4_2 = "f".charCodeAt(0)
 const SCALE_CODE_4_4 = "r".charCodeAt(0)
 const SCALE_CODE_4_6 = "R".charCodeAt(0)
 const SCALE_CODE_4_8 = "F".charCodeAt(0)
+const SCALE_CODE_4_9 = "V".charCodeAt(0)
 const SCALE_CODE_5 = "5".charCodeAt(0)
+const SCALE_CODE_5_1 = "b".charCodeAt(0)
 const SCALE_CODE_5_2 = "g".charCodeAt(0)
 const SCALE_CODE_5_4 = "t".charCodeAt(0)
 const SCALE_CODE_5_6 = "T".charCodeAt(0)
 const SCALE_CODE_5_8 = "G".charCodeAt(0)
+const SCALE_CODE_5_9 = "B".charCodeAt(0)
 const SCALE_CODE_6 = "6".charCodeAt(0)
+const SCALE_CODE_6_1 = "n".charCodeAt(0)
 const SCALE_CODE_6_2 = "h".charCodeAt(0)
 const SCALE_CODE_6_4 = "y".charCodeAt(0)
 const SCALE_CODE_6_6 = "Y".charCodeAt(0)
 const SCALE_CODE_6_8 = "H".charCodeAt(0)
+const SCALE_CODE_6_9 = "N".charCodeAt(0)
 const SCALE_CODE_7 = "7".charCodeAt(0)
+const SCALE_CODE_7_1 = "m".charCodeAt(0)
 const SCALE_CODE_7_2 = "j".charCodeAt(0)
 const SCALE_CODE_7_4 = "u".charCodeAt(0)
 const SCALE_CODE_7_6 = "U".charCodeAt(0)
 const SCALE_CODE_7_8 = "J".charCodeAt(0)
+const SCALE_CODE_7_9 = "M".charCodeAt(0)
 const SCALE_CODE_8 = "8".charCodeAt(0)
 const SCALE_CODE_8_2 = "k".charCodeAt(0)
 const SCALE_CODE_8_4 = "i".charCodeAt(0)
@@ -131,6 +145,8 @@ export function riffCharCodeToScaleNumber(code: number) {
       return 0.8
     case SCALE_CODE_1:
       return 1
+    case SCALE_CODE_1_1:
+      return 1.1
     case SCALE_CODE_1_2:
       return 1.2
     case SCALE_CODE_1_4:
@@ -139,8 +155,12 @@ export function riffCharCodeToScaleNumber(code: number) {
       return 1.6
     case SCALE_CODE_1_8:
       return 1.8
+    case SCALE_CODE_1_9:
+      return 1.9
     case SCALE_CODE_2:
       return 2
+    case SCALE_CODE_2_1:
+      return 2.1
     case SCALE_CODE_2_2:
       return 2.2
     case SCALE_CODE_2_4:
@@ -149,8 +169,12 @@ export function riffCharCodeToScaleNumber(code: number) {
       return 2.6
     case SCALE_CODE_2_8:
       return 2.8
+    case SCALE_CODE_2_9:
+      return 2.9
     case SCALE_CODE_3:
       return 3
+    case SCALE_CODE_3_1:
+      return 3.1
     case SCALE_CODE_3_2:
       return 3.2
     case SCALE_CODE_3_4:
@@ -159,8 +183,12 @@ export function riffCharCodeToScaleNumber(code: number) {
       return 3.6
     case SCALE_CODE_3_8:
       return 3.8
+    case SCALE_CODE_3_9:
+      return 3.9
     case SCALE_CODE_4:
       return 4
+    case SCALE_CODE_4_1:
+      return 4.1
     case SCALE_CODE_4_2:
       return 4.2
     case SCALE_CODE_4_4:
@@ -169,8 +197,12 @@ export function riffCharCodeToScaleNumber(code: number) {
       return 4.6
     case SCALE_CODE_4_8:
       return 4.8
+    case SCALE_CODE_4_9:
+      return 4.9
     case SCALE_CODE_5:
       return 5
+    case SCALE_CODE_5_1:
+      return 5.1
     case SCALE_CODE_5_2:
       return 5.2
     case SCALE_CODE_5_4:
@@ -179,8 +211,12 @@ export function riffCharCodeToScaleNumber(code: number) {
       return 5.6
     case SCALE_CODE_5_8:
       return 5.8
+    case SCALE_CODE_5_9:
+      return 5.9
     case SCALE_CODE_6:
       return 6
+    case SCALE_CODE_6_1:
+      return 6.1
     case SCALE_CODE_6_2:
       return 6.2
     case SCALE_CODE_6_4:
@@ -189,8 +225,12 @@ export function riffCharCodeToScaleNumber(code: number) {
       return 6.6
     case SCALE_CODE_6_8:
       return 6.8
+    case SCALE_CODE_6_9:
+      return 6.9
     case SCALE_CODE_7:
       return 7
+    case SCALE_CODE_7_1:
+      return 7.1
     case SCALE_CODE_7_2:
       return 7.2
     case SCALE_CODE_7_4:
@@ -199,6 +239,8 @@ export function riffCharCodeToScaleNumber(code: number) {
       return 7.6
     case SCALE_CODE_7_8:
       return 7.8
+    case SCALE_CODE_7_9:
+      return 7.9
     case SCALE_CODE_8:
       return 8
     case SCALE_CODE_8_2:
