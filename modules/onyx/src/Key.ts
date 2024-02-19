@@ -91,10 +91,25 @@ export class KeyTuning {
   }
 
   frequencyOf(note: KeyNote): number {
-    return (
-      KeyTuning.baseFrequencyA4 *
-      Math.pow(2, this.noteStepsFromA4(note) / this.stepsPerOctave)
-    )
+    return this.frequencyOfStepsFromA4(this.noteStepsFromA4(note))
+  }
+
+  private frequencyOfStepsFromA4(steps: number): number {
+    return KeyTuning.baseFrequencyA4 * Math.pow(2, steps / this.stepsPerOctave)
+  }
+
+  frequencyApproximateStepsFromA4(freq: number): number {
+    const stepsFloat =
+      this.stepsPerOctave * Math.log2(freq / KeyTuning.baseFrequencyA4)
+
+    const stepsLower = Math.floor(stepsFloat)
+    const stepsUpper = Math.ceil(stepsFloat)
+    const freqLower = this.frequencyOfStepsFromA4(stepsLower)
+    const freqUpper = this.frequencyOfStepsFromA4(stepsUpper)
+
+    return Math.abs(freq - freqLower) < Math.abs(freq - freqUpper)
+      ? stepsLower
+      : stepsUpper
   }
 
   noteStepsFromA4(note: KeyNote): number {
@@ -310,6 +325,21 @@ export class Key {
 
   transposeTo(root: KeyNote): Key {
     return new Key(this.tuning, root, this.modeBits)
+  }
+
+  transferToTuning(newTuning: KeyTuning): Key {
+    const a4ThisKey = this.transposeTo("A4")
+    const newStepsAbs = Array.from({ length: this.noteCount }).map((_, i) =>
+      newTuning.frequencyApproximateStepsFromA4(
+        a4ThisKey.getDegreeFrequency(i + 1),
+      ),
+    )
+    const newSteps = newStepsAbs.map((steps) => steps - newStepsAbs[0]!)
+    let newBits = 0
+    for (const steps of newSteps) {
+      newBits |= 1 << steps
+    }
+    return new Key(newTuning, this.root, newBits)
   }
 
   relativeMode(modeNumber: number): Key {

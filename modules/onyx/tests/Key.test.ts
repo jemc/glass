@@ -242,9 +242,45 @@ describe("Key", () => {
       expect(freq("C5", "major", 8 /*****/)).toBeCloseTo(1046.50226120239) // C6
     })
   })
+
+  test("transferToTuning F# 12edo to 31edo", () => {
+    const key = Key.of("F#5").minor.transferToTuning(KeyTuning.edo(31))
+
+    expect(
+      Array.from({ length: key.noteCount }, (_, i) => i).map((i) =>
+        key.getDegreeDistance(i + 1),
+      ),
+    ).toEqual([0, 5, 8, 13, 18, 21, 26])
+    expect(key.root).toBe("F#5")
+  })
 })
 
 describe("KeyTuning", () => {
+  describe("frequencyApproximateStepsFromA4", () => {
+    const cases: [number, number][] = [
+      [440, 0],
+      [441, 0],
+      [453, 0],
+      [454, 1],
+
+      [880, 12],
+
+      [220, -12],
+
+      [1046, 15],
+      [1018, 15],
+      [1017, 14],
+    ]
+
+    cases.forEach(([freq, steps]) => {
+      test(`approximates ${freq} as ${steps} steps from A4 (in 12edo)`, () => {
+        expect(KeyTuning.edo(12).frequencyApproximateStepsFromA4(freq)).toBe(
+          steps,
+        )
+      })
+    })
+  })
+
   const testLetterIntervalPlan = (
     stepsPerOctave: number,
     plan: {
