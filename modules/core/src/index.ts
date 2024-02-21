@@ -1,4 +1,5 @@
 export * from "./AutoMap"
+export * from "./BitMask"
 export * from "./Box2"
 export * from "./Button"
 export * from "./ChildOf"

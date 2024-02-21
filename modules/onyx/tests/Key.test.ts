@@ -168,6 +168,8 @@ describe("Key", () => {
   describe("getDegreeFrequency", () => {
     const freq = (n: KeyNote, mode: "major" | "minor", d: number) =>
       Key.of(n)[mode].getDegreeFrequency(d)
+    const freq96 = (n: KeyNote, mode: "major" | "minor", d: number) =>
+      Key.of(n)[mode].transferToTuning(KeyTuning.edo(96)).getDegreeFrequency(d)
 
     test("emits A4 as 440 when accessed from any key", () => {
       expect(freq("C5", "minor", -0.5)).toBeCloseTo(440)
@@ -240,6 +242,35 @@ describe("Key", () => {
       expect(freq("C5", "major", 7 /*****/)).toBeCloseTo(987.76660251224) // B5
       expect(freq("C5", "major", 7.5 /***/)).toBeCloseTo(1046.50226120239) // C6
       expect(freq("C5", "major", 8 /*****/)).toBeCloseTo(1046.50226120239) // C6
+    })
+    test("emits the correct series of frequencies from 96edo", () => {
+      expect(freq96("C5", "major", -1 /****/)).toBeCloseTo(440) ////////////// A4
+      expect(freq96("C5", "major", -0.5 /**/)).toBeCloseTo(466.16376151808) // A#4
+      expect(freq96("C5", "major", 0 /*****/)).toBeCloseTo(493.88330125612) // B4
+      expect(freq96("C5", "major", 0.5 /***/)).toBeCloseTo(508.3551866238) // ^^^^B4/vvvvC5
+      expect(freq96("C5", "major", 1 /*****/)).toBeCloseTo(523.25113060119) // C5
+      expect(freq96("C5", "major", 1.5 /***/)).toBeCloseTo(554.36526195374) // C#5
+      expect(freq96("C5", "major", 2 /*****/)).toBeCloseTo(587.32953583481) // D5
+      expect(freq96("C5", "major", 2.5 /***/)).toBeCloseTo(622.25396744416) // D#5
+      expect(freq96("C5", "major", 3 /*****/)).toBeCloseTo(659.25511382573) // E5
+      expect(freq96("C5", "major", 3.5 /***/)).toBeCloseTo(678.57276317949) // ^^^^E5/vvvvF5
+      expect(freq96("C5", "major", 4 /*****/)).toBeCloseTo(698.45646286601) // F5
+      expect(freq96("C5", "major", 4.5 /***/)).toBeCloseTo(739.98884542326) // F#5
+      expect(freq96("C5", "major", 5 /*****/)).toBeCloseTo(783.99087196349) // G5
+      expect(freq96("C5", "major", 5.5 /***/)).toBeCloseTo(830.60939515989) // G#5
+      expect(freq96("C5", "major", 6 /*****/)).toBeCloseTo(880) ////////////// A5
+      expect(freq96("C5", "major", 6.5 /***/)).toBeCloseTo(932.32752303617) // A#5
+      expect(freq96("C5", "major", 7 /*****/)).toBeCloseTo(987.76660251224) // B5
+      expect(freq96("C5", "major", 7.12 /**/)).toBeCloseTo(994.92436649485) // ^B5
+      expect(freq96("C5", "major", 7.25 /**/)).toBeCloseTo(1002.13399858588) // ^^B5
+      expect(freq96("C5", "major", 7.37 /**/)).toBeCloseTo(1009.39587464303) // ^^^B5
+      expect(freq96("C5", "major", 7.5 /***/)).toBeCloseTo(1016.71037324761) // ^^^^B5/vvvvC6
+      expect(freq96("C5", "major", 7.62 /**/)).toBeCloseTo(1024.07787572426) // vvvC6
+      expect(freq96("C5", "major", 7.75 /**/)).toBeCloseTo(1031.49876616094) // vvv6
+      expect(freq96("C5", "major", 7.87 /**/)).toBeCloseTo(1038.97343142878) // vC6
+      expect(freq96("C5", "major", 7.92 /**/)).toBeCloseTo(1038.97343142878) // vC6
+      expect(freq96("C5", "major", 7.94 /**/)).toBeCloseTo(1046.50226120239) // C6
+      expect(freq96("C5", "major", 8 /*****/)).toBeCloseTo(1046.50226120239) // C6
     })
   })
 

@@ -1,4 +1,4 @@
-import { countOneBits } from "@glass/core"
+import { BitMask } from "@glass/core"
 
 export type KeyNote =
   `${KeyNoteNudge}${KeyNoteLetter}${KeyNoteAccidental}${KeyNoteOctave | ""}`
@@ -287,7 +287,7 @@ export class Key {
   private constructor(
     readonly tuning: KeyTuning,
     root: KeyNote,
-    private modeBits: number,
+    private modeBits: BitMask,
   ) {
     this.root = noteNormalize(root)
     this.rootFrequency = tuning.frequencyOf(this.root)
@@ -295,7 +295,7 @@ export class Key {
 
   // This method is public for testing purposes, but it should not be used
   // externally, because it is not a stable API and does not validate inputs.
-  static fromBits(bits: number, tuning: KeyTuning = KeyTuning.edo(12)) {
+  static fromBits(bits: BitMask, tuning: KeyTuning = KeyTuning.edo(12)) {
     return new Key(tuning, "C4", bits)
   }
 
@@ -312,11 +312,11 @@ export class Key {
 
   // See https://ianring.com/musictheory/scales/
   get ringScaleNumber(): number {
-    return this.modeBits
+    return this.modeBits.toNumber()
   }
 
   get noteCount(): number {
-    return countOneBits(this.modeBits)
+    return this.modeBits.countOneBits()
   }
 
   get rootOctave(): number {
@@ -335,34 +335,23 @@ export class Key {
       ),
     )
     const newSteps = newStepsAbs.map((steps) => steps - newStepsAbs[0]!)
-    let newBits = 0
+    let newBits = new BitMask(newTuning.stepsPerScaleOctave)
     for (const steps of newSteps) {
-      newBits |= 1 << steps
+      newBits.set(steps, true)
     }
     return new Key(newTuning, this.root, newBits)
   }
 
   relativeMode(modeNumber: number): Key {
-    if (modeNumber < 1) throw new Error("mode number must be positive")
-
-    const rotateDegrees = modeNumber - 1
-    const width = this.tuning.stepsPerScaleOctave
-    const mask = (1 << width) - 1
-
-    // If we encounter a key with zero notes, there is no need to rotate,
-    // and the below loop will not terminate, so we need to bail out here.
-    if (this.modeBits === 0) return this
-
-    // Rotate the bits, one note (i.e. one set bit) at a time.
-    // The result will always have the "one" bit set (the new root of the key).
-    let rotatedBits = this.modeBits
-    for (let i = 0; i < rotateDegrees; i++) {
-      do {
-        rotatedBits = (rotatedBits >> 1) | ((rotatedBits << (width - 1)) & mask)
-      } while ((rotatedBits & 1) === 0)
-    }
-
-    return new Key(this.tuning, this.root, rotatedBits)
+    return new Key(
+      this.tuning,
+      this.root,
+      this.modeBits.rotatedRight(
+        this.getDegreeDistance(modeNumber),
+        0,
+        this.tuning.stepsPerScaleOctave,
+      ),
+    )
   }
 
   getDegreeFrequency(degree: number, octave: number = this.rootOctave): number {
@@ -464,20 +453,21 @@ export class Key {
   private getPositiveIntegerDegreeDistance(degree: number) {
     if (degree < 1) throw new Error("integer scale degree must be positive")
 
-    const rotateDegrees = degree - 1
-    const width = this.tuning.stepsPerScaleOctave
-    const mask = (1 << width) - 1
+    let extraDistance = 0
+    let count = 0
+    while (true) {
+      for (const [bit, distance] of this.modeBits.bits()) {
+        if (bit) {
+          count++
+          if (count >= degree) {
+            return distance + extraDistance
+          }
+        }
+      }
+      if (count === 0) return 0
 
-    let rotatedBits = this.modeBits
-    let steps = 0
-    for (let i = 0; i < rotateDegrees; i++) {
-      do {
-        steps += 1
-        rotatedBits = (rotatedBits >> 1) | ((rotatedBits << (width - 1)) & mask)
-      } while ((rotatedBits & 1) === 0)
+      extraDistance += this.tuning.stepsPerScaleOctave
     }
-
-    return steps
   }
 
   private static tertianQualityMatrix12edo: (
@@ -594,14 +584,14 @@ export class Key {
     const d4 = octave - d4to8
     const d6 = d4 + d4to6
 
-    const bits =
-      (1 << d1) |
-      (1 << d2) |
-      (1 << d3) |
-      (1 << d4) |
-      (1 << d6) |
-      (1 << d5) |
-      (1 << d7)
+    const bits = new BitMask()
+    bits.set(d1, true)
+    bits.set(d2, true)
+    bits.set(d3, true)
+    bits.set(d4, true)
+    bits.set(d5, true)
+    bits.set(d6, true)
+    bits.set(d7, true)
 
     return Key.fromBits(bits).transposeTo(root)
   }
@@ -688,11 +678,14 @@ function mode12edo(...semitoneCounts: number[]): Key {
   if (semitoneCounts.reduce((acc, count) => acc + count, 0) !== 12)
     throw new Error("sum of semitone counts must be 12 when in 12edo")
 
-  return Key.fromBits(
-    semitoneCounts.reverse().reduce((acc, semitoneCount) => {
-      return (acc << semitoneCount) | 1
-    }, 0),
-  )
+  const bits = new BitMask(12)
+  let totalSteps = 0
+  for (const semitoneCount of semitoneCounts) {
+    bits.set(totalSteps, true)
+    totalSteps += semitoneCount
+  }
+
+  return Key.fromBits(bits)
 }
 
 const base = {
