@@ -7,7 +7,7 @@
     "format": "prettier --write '{src,tests}/**/*.ts'",
     "format:check": "prettier --check '{src,tests}/**/*.ts'",
     "test": "jest",
-    "prepare": "tsc",
+    "prepare": "tsc && cp src/*.glsl dist/src/",
     "release": "semantic-release"
   },
   "release": {
