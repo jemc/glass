@@ -1,7 +1,7 @@
 {
-  "name": "@glass/pyrope",
+  "name": "@glass/topaz",
   "version": "0.0.1",
-  "description": "Tile-based side-scroller interaction modes for Glass Engine",
+  "description": "Tile-based top-down interaction modes for Glass Engine",
   "repository": "github:jemc/glass",
   "license": "MIT",
   "main": "dist/src/index.js",
