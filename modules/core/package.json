@@ -22,7 +22,7 @@
     "format": "prettier --write '{src,tests}/**/*.ts'",
     "format:check": "prettier --check '{src,tests}/**/*.ts'",
     "test": "jest",
-    "prepare": "tsc && cp src/*.glsl dist/src/",
+    "prepare": "tsc && sh -c 'cp src/*.glsl dist/src/ 2>/dev/null || true'",
     "release": "semantic-release"
   },
   "release": {
