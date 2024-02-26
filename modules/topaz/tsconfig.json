@@ -13,7 +13,7 @@
     "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
-    "esModuleInterop": false,
+    "esModuleInterop": true,
     "lib": [
       "es2015",
       "dom"
