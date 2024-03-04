@@ -67,6 +67,34 @@ export class BitMask {
     }
   }
 
+  // Return a generator that yields the index of each "true" bit.
+  *oneBits(
+    startIndex = 0,
+    endIndex?: number,
+  ): Generator<number, void, unknown> {
+    endIndex = endIndex ?? this.data.length * 16
+
+    for (
+      let wordIndex = startIndex >> 4; // floored division by 16
+      wordIndex < this.data.length;
+      wordIndex++
+    ) {
+      const word = this.data[wordIndex]
+      if (!word) continue
+
+      for (let bitIndex = 0; bitIndex < 16; bitIndex++) {
+        const value = (word & (1 << bitIndex)) !== 0
+        if (!value) continue
+
+        const index = wordIndex * 16 + bitIndex
+        if (index < startIndex) continue
+        if (index >= endIndex) return
+
+        yield index
+      }
+    }
+  }
+
   // Return the total number of bits that are active in this mask.
   countOneBits() {
     let count = 0

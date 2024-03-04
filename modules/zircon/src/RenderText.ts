@@ -1,4 +1,4 @@
-import { ChildOf, registerComponent, World } from "@glass/core"
+import { registerComponent, World } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 
@@ -33,7 +33,7 @@ export const RenderTextSystem = (world: World) =>
 
         world.create([
           context.opal,
-          new ChildOf(entity),
+          new Opal.PositionWithin(entity),
           new Opal.Position(offset, 0),
           new Opal.Renderable({ depth: renderable.depth }),
           new Opal.Sprite(`font-${font}-${glyph}`),

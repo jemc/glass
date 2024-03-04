@@ -66,6 +66,8 @@ describe("BitMask", () => {
       [true, 18],
       [false, 19],
     ])
+
+    expect([...bits.oneBits(1, 20)]).toEqual([3, 6, 18])
   })
 
   test("can count the active bits in the mask", () => {

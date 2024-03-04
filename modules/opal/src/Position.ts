@@ -3,7 +3,14 @@ import {
   MutableVector2,
   ReadVector2,
   World,
+  Entity,
 } from "@glass/core"
+
+export class PositionWithin {
+  static readonly componentId = registerComponent(this)
+
+  constructor(readonly collectionEntity: Entity) {}
+}
 
 export class Position {
   static readonly componentId = registerComponent(this)

@@ -1,11 +1,15 @@
+import { Entity } from "./Entity"
 import { EntityPool } from "./EntityPool"
 
-export interface Component {}
+export interface Component {
+  readonly constructor: Function
+  readonly collectionEntity?: Entity
+}
 
-export type ComponentClass<T = any> = {
+export type ComponentClass<T extends {} = {}> = {
   readonly name: string
-  readonly prototype: T
-  readonly componentId: number
+  readonly prototype: T & Component
+  readonly componentId: Entity
 }
 
 // This hack forces TypeScript to treat the list of classes as a tuple

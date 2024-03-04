@@ -1,5 +1,5 @@
-import { ChildOf, Entity, World } from "@glass/core"
-import { Position } from "./Position"
+import { Entity, World } from "@glass/core"
+import { Position, PositionWithin } from "./Position"
 import { Renderable } from "./Renderable"
 
 export const UpdateTransformsSystem = (world: World) => {
@@ -25,7 +25,7 @@ function update(
 }
 
 function updateParent(world: World, entity: Entity) {
-  const parent = world.get(entity, ChildOf)?.parent
+  const parent = world.get(entity, PositionWithin)?.collectionEntity
   if (!parent) return
 
   const parentRenderable = world.get(parent, Renderable)
