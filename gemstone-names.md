@@ -4,12 +4,19 @@ The following gemstone names are not yet in use or planned for use by one of the
 
 - Ruby
 - Jade
+- Gold
 - Moti (Pearl)
 - Agate
 - Amber
 - Beryl
 - Neeli (Iolite)
 - Panna (Emerald)
+- Coral
+- Ebony
+- Ivory
+- Lapis
+- Manik
+- Pearl
 - Feroza (Firoza)
 - Garnet
 - Jasper
@@ -19,6 +26,11 @@ The following gemstone names are not yet in use or planned for use by one of the
 - Sphene (Titanite)
 - Spinel
 - Sunela (Citrine)
+- Galena
+- Hauyne
+- Iolite
+- Pyrite
+- Silver
 - Apatite
 - Azurite
 - Bixbite
@@ -30,6 +42,22 @@ The following gemstone names are not yet in use or planned for use by one of the
 - Paraiba
 - Peridot
 - Pukhraj
+- Calcite
+- Catseye
+- Citrine
+- Crystal
+- Diamond
+- Ekanite
+- Emerald
+- Epidote
+- Iridium
+- Jacinth
+- Jargoon
+- Leucite
+- Mellite
+- Olivine
+- Ulexite
+- Unakite
 - Amethyst
 - Ametrine
 - Ammolite
@@ -48,6 +76,16 @@ The following gemstone names are not yet in use or planned for use by one of the
 - Sunstone
 - Titanite
 - Zirconia
+- Feldspar
+- Gaspeite
+- Hematite
+- Idocrase
+- Lazulite
+- Orpiment
+- Sapphire
+- Sardonyx
+- Wurtzite
+- Xenotime
 - Carnelian
 - Danburite
 - Goshenite
@@ -65,6 +103,22 @@ The following gemstone names are not yet in use or planned for use by one of the
 - Turquoise
 - Verdelite
 - Zultanite
+- Almandine
+- Amazonite
+- Enstatite
+- Eudialyte
+- Grossular
+- Hiddenite
+- Marcasite
+- Natrolite
+- Neptunite
+- Quartzite
+- Rhodolite
+- Uvarovite
+- Variscite
+- Willemite
+- Wulfenite
+- Xonotlite
 - Andalusite
 - Aquamarine
 - Aventurine
@@ -75,6 +129,8 @@ The following gemstone names are not yet in use or planned for use by one of the
 - Serpentine
 - Sphalerite
 - Tourmaline
+- Chrysolite
+- Lepidolite
 - Alexandrite
 - Chrysoberyl
 - Chrysocolla
@@ -84,5 +140,14 @@ The following gemstone names are not yet in use or planned for use by one of the
 - Sillimanite
 - Spectrolite
 - Spessartite
+- Chrysoprase
+- Kornerupine
+- Kurnakovite
+- Vesuvianite
+- Yttrocerite
+- Dumortierite
+- Liddicoatite
+- Narsarsukite
+- Yttrocrasite
 - Grandidierite
 - Rhodochrosite
