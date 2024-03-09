@@ -24,6 +24,8 @@ jobs:
       - run: pnpm run -r sync-base-files && git diff --exit-code
       - run: pnpm run -r format:check
       - run: pnpm run -r test
+      - run: pnpm run -r test:playwright:install
+      - run: pnpm run -r test:playwright
       - run: pnpm run -r release
         env:
           GITHUB_TOKEN: ${{ github.token }}

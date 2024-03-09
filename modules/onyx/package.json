@@ -54,6 +54,9 @@
     },
     "transformIgnorePatterns": [
       "node_modules/.*\\.js"
+    ],
+    "testMatch": [
+      "**/tests/**/*.test.ts"
     ]
   }
 }
