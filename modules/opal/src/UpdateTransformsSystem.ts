@@ -20,7 +20,7 @@ function update(
 ) {
   const parentRenderable = updateParent(world, entity)
 
-  renderable.position = position.coords
+  renderable.position.copyFrom(position.coords)
   renderable.updateTransforms(world.clock.frame, parentRenderable)
 }
 

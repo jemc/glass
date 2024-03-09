@@ -1,4 +1,10 @@
-import { World, Vector2, ButtonSourceSystem, StatusSystem } from "@glass/core"
+import {
+  World,
+  Vector2,
+  ButtonSourceSystem,
+  StatusSystem,
+  ReadVector2,
+} from "@glass/core"
 import { Opal } from "../src"
 
 const TEST_NAME = window.location.hash.slice(1)
@@ -17,6 +23,9 @@ function setup(canvas: HTMLCanvasElement) {
   switch (TEST_NAME) {
     case "test-tile-map":
       setupTestTileMap(world, opal)
+      break
+    case "test-tile-map-offset":
+      setupTestTileMap(world, opal, { offset: new Vector2(53, 62) })
       break
     default:
       throw new Error(`Unknown test name: "${TEST_NAME}"`)
@@ -59,19 +68,27 @@ function setupSystems(world: World, opal: Opal.Context) {
   ])
 }
 
-function setupTestTileMap(world: World, opal: Opal.Context) {
+function setupTestTileMap(
+  world: World,
+  opal: Opal.Context,
+  options?: { offset?: ReadVector2 },
+) {
   const url = "data/TestLevel.aseprite"
+  const offset = new Vector2(options?.offset?.x ?? 0, options?.offset?.y ?? 0)
 
   world.create([opal, new Opal.LoadTileMapAsset(url)])
 
   world.create([
     opal,
-    new Opal.Position(0, 0),
+    new Opal.Position(-offset.x, -offset.y),
     new Opal.Renderable({ depth: 0.999 }),
     new Opal.RenderTileMap(
       url,
       "Background",
-      new Vector2(CANVAS_RESOLUTION.x / 2, CANVAS_RESOLUTION.y / 2),
+      new Vector2(
+        CANVAS_RESOLUTION.x / 2 - offset.x,
+        CANVAS_RESOLUTION.y / 2 - offset.y,
+      ),
     ),
   ])
 }

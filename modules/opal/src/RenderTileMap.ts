@@ -121,7 +121,6 @@ class _RenderTileMapLayerState {
 
     renderable.texture = this.texture
     renderable.scale.setTo(1, 1)
-    renderable.pivot.copyFrom(this.texture.frame.radii)
   }
 
   updatePosition(center: ReadVector2, renderable: Renderable) {
@@ -139,8 +138,6 @@ class _RenderTileMapLayerState {
       .multiplyEquals(new Vector2(this.tileSize[0]!, this.tileSize[1]!)) // TODO: avoid new?
       .plusEquals(this.texture.frame.radii)
 
-    renderable.position
-      .copyFrom(this.snappedPosition)
-      .plusEquals(this.texture!.frame.radii)
+    renderable.pivot.copyFrom(this.snappedPosition).scaleEquals(-1)
   }
 }
