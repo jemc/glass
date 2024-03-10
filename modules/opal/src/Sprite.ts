@@ -59,10 +59,6 @@ export class SpriteAnimation {
 export const SpriteAnimationSystem = (world: World) =>
   world.systemFor([Context, Position, Renderable, Sprite], {
     runEach(entity, context, position, renderable, sprite) {
-      // TODO: Get rid of the distinction between the Position and the Renderable transform
-      renderable.position = position.coords
-      renderable.scale.copyFrom(position.direction)
-
       if (!sprite.animation) {
         sprite.animation = context.animations?.get(sprite.animationId)
       }

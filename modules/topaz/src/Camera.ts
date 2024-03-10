@@ -65,10 +65,10 @@ export class Camera {
 }
 
 export const CameraFocusSystem = (world: World) => {
-  return world.systemFor([Context, Camera, Opal.Renderable], {
-    runEach(entity, context, camera, renderable) {
+  return world.systemFor([Context, Camera, Opal.Renderable, Opal.Position], {
+    runEach(entity, context, camera, renderable, position) {
       camera.resize(context.opal.render.width, context.opal.render.height)
-      camera.focus(context.playerPosition.coords, renderable.position)
+      camera.focus(context.playerPosition.coords, position.coords)
     },
   })
 }

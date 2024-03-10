@@ -120,7 +120,6 @@ class _RenderTileMapLayerState {
     )
 
     renderable.texture = this.texture
-    renderable.scale.setTo(1, 1)
   }
 
   updatePosition(center: ReadVector2, renderable: Renderable) {

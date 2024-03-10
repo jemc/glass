@@ -5,6 +5,7 @@ import {
   Vector2,
 } from "@glass/core"
 import { Texture } from "./Texture"
+import { Position } from "./Position"
 
 export class Renderable {
   static readonly componentId = registerComponent(this)
@@ -13,13 +14,12 @@ export class Renderable {
   texture?: Texture
   pivot = new MutableVector2(0, 0)
 
-  position = new MutableVector2(0, 0)
-  scale = new MutableVector2(1, 1)
   alpha = 1
   depth = 0
   visible = true
 
-  constructor(opts?: { visible?: boolean; depth?: number }) {
+  constructor(opts?: { visible?: boolean; depth?: number; alpha?: number }) {
+    this.alpha = opts?.alpha ?? 1
     this.depth = opts?.depth ?? 0
     this.visible = opts?.visible ?? true
   }
@@ -41,16 +41,18 @@ export class Renderable {
     this._rotationComponents.setUnitRotationDegrees(degrees)
   }
 
-  updateTransforms(frameNumber: number, parent?: Renderable) {
-    parent?.updateTransforms(frameNumber)
-
+  updateTransforms(
+    frameNumber: number,
+    position: Position,
+    parent?: Renderable,
+  ) {
     if (this.transformUpdatedAt !== frameNumber) {
       this.transformUpdatedAt = frameNumber
 
       Matrix3.setTransformRows(
         this.localTransform,
-        this.position,
-        this.scale,
+        position.coords,
+        position.direction,
         this._rotationComponents.x,
         this._rotationComponents.y,
       )
