@@ -15,6 +15,7 @@ setup(document.getElementById("view") as HTMLCanvasElement)
 function setup(canvas: HTMLCanvasElement) {
   canvas.width = CANVAS_RESOLUTION.x
   canvas.height = CANVAS_RESOLUTION.y
+  canvas.style.backgroundColor = "black"
 
   const world = new World()
   const opal = new Opal.Context(new Opal.Render(canvas))

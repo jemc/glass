@@ -14,6 +14,11 @@ export class Render {
   }
 
   constructor(canvas: HTMLCanvasElement, attrs?: WebGLContextAttributes) {
+    canvas.style.imageRendering = "pixelated"
+
+    attrs = attrs ?? {}
+    attrs.alpha = attrs?.alpha ?? false
+
     const gl = canvas.getContext("webgl2", attrs) ?? undefined
     if (!gl) throw new Error("Failed to initialize a WebGL2 context")
     this.gl = gl
