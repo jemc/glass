@@ -65,9 +65,6 @@ function setupSystems(world: World, opal: Opal.Context) {
     // Render phase
     Opal.RenderBeginSystem(world, opal),
     Opal.RenderTileMapSystem(world, opal),
-    // TODO: Move the UpdateTransformsSystem system to the pre-render phase
-    // once doing so no longer breaks tile map rendering above when walking.
-    Opal.UpdateTransformsSystem(world),
     Opal.RenderRenderablesSystem(world, opal),
   ])
 }

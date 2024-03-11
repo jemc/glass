@@ -41,35 +41,27 @@ export class Renderable {
     this._rotationComponents.setUnitRotationDegrees(degrees)
   }
 
-  updateTransforms(
-    frameNumber: number,
-    position: Position,
-    parent?: Renderable,
-  ) {
-    if (this.transformUpdatedAt !== frameNumber) {
-      this.transformUpdatedAt = frameNumber
+  updateTransforms(position: Position, parent?: Renderable) {
+    Matrix3.setTransformRows(
+      this.localTransform,
+      position.coords,
+      position.direction,
+      this._rotationComponents.x,
+      this._rotationComponents.y,
+    )
 
-      Matrix3.setTransformRows(
+    const parentTransform = parent?.worldTransform
+    if (parentTransform) {
+      Matrix3.multiply(
         this.localTransform,
-        position.coords,
-        position.direction,
-        this._rotationComponents.x,
-        this._rotationComponents.y,
+        parentTransform,
+        this.worldTransform,
       )
-
-      const parentTransform = parent?.worldTransform
-      if (parentTransform) {
-        Matrix3.multiply(
-          this.localTransform,
-          parentTransform,
-          this.worldTransform,
-        )
-      } else {
-        this.worldTransform.set(this.localTransform)
-      }
-
-      this.worldAlpha = this.alpha * (parent?.worldAlpha ?? 1)
+    } else {
+      this.worldTransform.set(this.localTransform)
     }
+
+    this.worldAlpha = this.alpha * (parent?.worldAlpha ?? 1)
   }
 
   get worldTransformedUpperLeft() {

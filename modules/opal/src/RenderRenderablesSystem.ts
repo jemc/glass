@@ -10,27 +10,32 @@ export const RenderRenderablesSystem = (world: World, context: Context) => {
 
   function renderTreeContaining(entity: Entity) {
     // Traverse upward parents first, so that we start the root of the tree.
-    const parent = world.get(entity, PositionWithin)?.collectionEntity
-    if (parent !== undefined) {
-      const parentRenderable = world.get(parent, Renderable)
-      if (parentRenderable !== undefined) {
-        renderTreeContaining(parent)
-      }
-    }
-    renderChildrenThenSelf(entity)
+    let parent
+    do {
+      entity = parent ?? entity
+      parent = world.get(entity, PositionWithin)?.collectionEntity
+    } while (parent !== undefined)
+
+    renderChildrenThenSelf(entity, world.get(entity, Renderable))
   }
 
-  function renderChildrenThenSelf(entity: Entity) {
+  function renderChildrenThenSelf(
+    entity: Entity,
+    renderable?: Renderable,
+    parentRenderable?: Renderable,
+  ) {
+    const position = world.get(entity, Position)
+    if (position && renderable)
+      renderable.updateTransforms(position, parentRenderable)
+
     // Render the children of the node first.
     for (const child of world.getCollected(entity, PositionWithin)?.values()) {
-      renderChildrenThenSelf(child)
+      renderChildrenThenSelf(child, world.get(child, Renderable), renderable)
     }
 
     // Finally, render the node itself.
     seenSet.add(entity)
-    const renderable = world.get(entity, Renderable)
-    if (renderable === undefined) return
-    rendering.addSpriteToRender(context.render, renderable)
+    if (renderable) rendering.addSpriteToRender(context.render, renderable)
   }
 
   return world.systemFor([Renderable, Position], {
