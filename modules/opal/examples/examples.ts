@@ -100,7 +100,7 @@ function setupTestSprites(world: World, opal: Opal.Context) {
   const ballFrontCool = world.create([
     opal,
     new Opal.Position(32 + 16 + 8, 16 + 8),
-    new Opal.Renderable({ depth: 0.5 }),
+    new Opal.Renderable(),
     new Opal.Sprite("ball-front-idle"),
   ])
   world.create([
@@ -128,7 +128,7 @@ function setupTestSprites(world: World, opal: Opal.Context) {
   const ballRightCool = world.create([
     opal,
     new Opal.Position(32 + 16 + 8, 32 + 16 + 8),
-    new Opal.Renderable({ depth: 0.5 }),
+    new Opal.Renderable(),
     new Opal.Sprite("ball-side-idle"),
   ])
   world.create([
@@ -152,11 +152,18 @@ function setupTestSprites(world: World, opal: Opal.Context) {
     new Opal.Renderable(),
     new Opal.Sprite("ball-side-idle"),
   ])
+  world.create([
+    opal,
+    new Opal.PositionWithin(ballLeft),
+    new Opal.Position(0, -6),
+    new Opal.Renderable({ depth: 0.5 }), // places it behind the ball
+    new Opal.Sprite("top-hat"),
+  ])
 
   const ballLeftCool = world.create([
     opal,
     new Opal.Position(32 + 16 + 8, 64 + 16 + 8, -1),
-    new Opal.Renderable({ depth: 0.5 }),
+    new Opal.Renderable(),
     new Opal.Sprite("ball-side-idle"),
   ])
   world.create([
@@ -177,14 +184,14 @@ function setupTestSprites(world: World, opal: Opal.Context) {
   const ballRightSmall = world.create([
     opal,
     new Opal.Position(5.5 * 16, 1.5 * 16, 0.75, 0.75),
-    new Opal.Renderable({ depth: 0.5 }),
+    new Opal.Renderable(),
     new Opal.Sprite("ball-side-idle"),
   ])
 
   const ballLeftSmallCool = world.create([
     opal,
     new Opal.Position(9.5 * 16, 1.5 * 16, -0.75, 0.75),
-    new Opal.Renderable({ depth: 0.5 }),
+    new Opal.Renderable(),
     new Opal.Sprite("ball-side-idle"),
   ])
   world.create([
@@ -205,7 +212,7 @@ function setupTestSprites(world: World, opal: Opal.Context) {
   const ballHuge = world.create([
     opal,
     new Opal.Position(7.5 * 16, 3.5 * 16, 5, 5),
-    new Opal.Renderable({ depth: 0.5 }),
+    new Opal.Renderable(),
     new Opal.Sprite("ball-front-idle"),
   ])
   world.create([
@@ -226,14 +233,14 @@ function setupTestSprites(world: World, opal: Opal.Context) {
   const ballBigCoolUpsideDownGhostly = world.create([
     opal,
     new Opal.Position(12.5 * 16, 2.5 * 16, -3, -3),
-    new Opal.Renderable({ depth: 0.5, alpha: 0.5 }),
+    new Opal.Renderable({ alpha: 0.5 }),
     new Opal.Sprite("ball-side-idle"),
   ])
   world.create([
     opal,
     new Opal.PositionWithin(ballBigCoolUpsideDownGhostly),
     new Opal.Position(3, -2),
-    new Opal.Renderable({ alpha: 2 }),
+    new Opal.Renderable({ alpha: 2 }), // cancels out the half-transparency of the parent
     new Opal.Sprite("sunglasses-side"),
   ])
   world.create([
