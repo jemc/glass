@@ -17,12 +17,34 @@ const CollectedEntityStorage = AutoMap
 type CollectedEntityStorage = AutoMap<Entity, Set<Entity>>
 
 export class World {
+  // The storage for direct lookup of components of entities.
+  //
+  // Used by `get` to retrieve a given component for a given entity.
   private storage: ComponentStorage[] = []
+
+  // The storage for lookup of the set of entities in a given collection
+  // (via a one-to-many relationship component).
+  //
+  // Used by `getCollected` to retrieve the set of entities that are related
+  // to a given entity via a given component.
   private collectedStorage: CollectedEntityStorage[] = []
+
+  // The bit masks that track which components are attached to each entity.
+  //
+  // Used to quickly determine which systems need to be updated when a
+  // component is added or removed from an entity.
   private entityBitMasks: BitMask[] = []
+
+  // The pool of entity numbers that are available for use.
+  //
+  // Used by `create` to allocate a new entity number, and by `destroy` to
+  // return an entity number to the pool, ready for reuse.
   private entityPool = newEntityPoolWithStaticComponentsReserved()
+
+  // The systems that are currently running in the world.
   private systems: System[] = []
 
+  // The world clock (public); used for advancing the world's state.
   clock: Clock
 
   constructor() {

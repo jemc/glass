@@ -10,7 +10,6 @@ export class Sprite {
   framesElapsed = 0
 
   animation?: SpriteAnimation
-  renderable?: Renderable
 
   constructor(animationId: string) {
     this.animationId = animationId
