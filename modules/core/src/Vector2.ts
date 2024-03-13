@@ -1,4 +1,4 @@
-import { toRadians } from "./Maths"
+import { toDegrees, toRadians } from "./Maths"
 
 abstract class BaseVector2 {
   constructor(
@@ -99,9 +99,17 @@ export class MutableVector2 extends BaseVector2 {
     return this
   }
 
+  getUnitRotationRadians() {
+    return Math.atan2(this.y, this.x)
+  }
+
   setUnitRotationDegrees(degrees: number) {
     this.setUnitRotationRadians(toRadians(degrees))
     return this
+  }
+
+  getUnitRotationDegrees() {
+    return toDegrees(this.getUnitRotationRadians())
   }
 
   toFloor() {
