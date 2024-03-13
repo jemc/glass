@@ -1,5 +1,10 @@
 import { describe, expect, test } from "@jest/globals"
-import { World, Entity, registerComponent } from "../src"
+import {
+  World,
+  Entity,
+  registerComponent,
+  prerequisiteComponents,
+} from "../src"
 
 // An example relationship component, referring to a given parent entity.
 class LocatedIn {
@@ -13,6 +18,15 @@ class Color {
   static readonly componentId = registerComponent(this)
 
   constructor(readonly name: string) {}
+}
+
+// An example component that requires the two above components as prerequisites.
+class RequiresColorAndLocatedIn {
+  static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(
+    Color,
+    LocatedIn,
+  )
 }
 
 // A system for entities with color, which only tracks its members.
@@ -121,5 +135,44 @@ describe("World", () => {
     expect(world.getCollected(newEntity, LocatedIn).size).toBe(0)
     expect(world.getCollected(parent, LocatedIn).size).toBe(0)
     expect(colorSystem.entities.size).toBe(0)
+  })
+
+  test("can scan for warnings about missing prerequisite components", () => {
+    const world = new World()
+    const entity1 = world.create([new RequiresColorAndLocatedIn()])
+    const entity2 = world.create([
+      new RequiresColorAndLocatedIn(),
+      new Color("red"),
+    ])
+    const entity3 = world.create([
+      new RequiresColorAndLocatedIn(),
+      new LocatedIn(entity1),
+    ])
+    const entity4 = world.create([
+      new RequiresColorAndLocatedIn(),
+      new Color("blue"),
+      new LocatedIn(entity3),
+    ]) // no warnings for this one
+
+    expect(world.debugScanForWarnings()).toEqual([
+      {
+        "entity is missing prerequisite components": {
+          entity: world.debugInfoFor(entity1),
+          missing: ["LocatedIn", "Color"],
+        },
+      },
+      {
+        "entity is missing prerequisite components": {
+          entity: world.debugInfoFor(entity2),
+          missing: ["LocatedIn"],
+        },
+      },
+      {
+        "entity is missing prerequisite components": {
+          entity: world.debugInfoFor(entity3),
+          missing: ["Color"],
+        },
+      },
+    ])
   })
 })

@@ -1,5 +1,9 @@
 import { describe, expect, test } from "@jest/globals"
-import { registerComponent, getComponentClassById } from "../src/Component"
+import {
+  registerComponent,
+  prerequisiteComponents,
+  getComponentClassById,
+} from "../src/Component"
 import { World } from "../src/World"
 
 class A {
@@ -10,6 +14,7 @@ class B {
 }
 class C {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(A, B)
 }
 
 describe("registerComponent", () => {
@@ -31,5 +36,19 @@ describe("registerComponent", () => {
     new World() // implicitly freezes the component pool
 
     expect(() => registerComponent(A)).toThrow()
+  })
+})
+
+describe("prerequisiteComponents", () => {
+  test("creates a bitmask with the bits set for the given components", () => {
+    const bits = prerequisiteComponents(A, B)
+
+    expect(bits.get(A.componentId)).toBe(true)
+    expect(bits.get(B.componentId)).toBe(true)
+    expect(bits.get(C.componentId)).toBe(false)
+
+    const expectedIds = [A.componentId, B.componentId]
+    expect([...bits.oneBits()]).toEqual(expectedIds)
+    expect([...C.prerequisiteComponentIds.oneBits()]).toEqual(expectedIds)
   })
 })

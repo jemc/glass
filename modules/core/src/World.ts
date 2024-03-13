@@ -68,9 +68,16 @@ export class World {
     return entity
   }
 
+  // Log some information about the given entity (if given) to the console.
+  // Also look for any warnings that may be useful for debugging.
+  debug(entity?: Entity) {
+    if (entity !== undefined) console.debug(this.debugInfoFor(entity))
+    this.debugScanForWarnings().forEach((warning) => console.warn(warning))
+  }
+
   // Returns a debug-friendly object with the components of the given entity.
   debugInfoFor(entity: Entity) {
-    const info: { [key: string]: unknown } = {}
+    const info: { [key: string]: unknown } = { id: entity }
     this.storage.forEach((componentStorage, componentId) => {
       const component = componentStorage?.[entity]
       if (!component) return
@@ -80,6 +87,56 @@ export class World {
       info[componentName] = component
     })
     return info
+  }
+
+  // Log warnings that may be useful for debugging every `seconds` seconds.
+  //
+  // This is a potentially slow operation when used in a large world,
+  // so this is only recommended to enable when debugging.
+  debugScanForWarningsEvery(options: { seconds: number }) {
+    return setInterval(() => {
+      this.debugScanForWarnings().forEach((warning) => console.warn(warning))
+    }, options.seconds * 1000)
+  }
+
+  // Scan across the whole world for warnings that may be useful for debugging.
+  debugScanForWarnings(): Array<unknown> {
+    const missingPrerequisites = new AutoMap<number, string[]>(Array)
+
+    this.storage.forEach((componentStorage, componentId) => {
+      const componentClass = getComponentClassById(componentId)
+      if (!componentClass) return
+
+      const { prerequisiteComponentIds } = componentClass
+      if (prerequisiteComponentIds) {
+        componentStorage.forEach((component, entity) => {
+          if (!component) return
+
+          const entityBitMask = this.entityBitMasks[entity]
+          if (!entityBitMask) return
+
+          if (!entityBitMask.isSuperSetOf(prerequisiteComponentIds)) {
+            for (const prerequisiteId of prerequisiteComponentIds.oneBits()) {
+              if (!entityBitMask.get(prerequisiteId)) {
+                const prerequisiteClass = getComponentClassById(prerequisiteId)
+                missingPrerequisites
+                  .getOrCreate(entity)
+                  .push(prerequisiteClass?.name ?? `${prerequisiteId}`)
+              }
+            }
+          }
+        })
+      }
+    })
+
+    return [...missingPrerequisites.entries()].map(([entity, missing]) => {
+      return {
+        "entity is missing prerequisite components": {
+          entity: this.debugInfoFor(entity),
+          missing,
+        },
+      }
+    })
   }
 
   destroy(entity: Entity): void {
