@@ -178,6 +178,34 @@ function setupTestSprites(world: World, opal: Opal.Context) {
     new Opal.Sprite("top-hat"),
   ])
 
+  const ballLeftRotated = world.create([
+    opal,
+    new Opal.Position(16 + 8, 64 + 32 + 16 + 8, -1, 1, 90),
+    new Opal.Renderable(),
+    new Opal.Sprite("ball-side-idle"),
+  ])
+
+  const ballRightRotatedCool = world.create([
+    opal,
+    new Opal.Position(32 + 16 + 8, 64 + 32 + 16 + 8, 1, 1, -90),
+    new Opal.Renderable(),
+    new Opal.Sprite("ball-side-idle"),
+  ])
+  world.create([
+    opal,
+    new Opal.PositionWithin(ballRightRotatedCool),
+    new Opal.Position(3, -2),
+    new Opal.Renderable(),
+    new Opal.Sprite("sunglasses-side"),
+  ])
+  world.create([
+    opal,
+    new Opal.PositionWithin(ballRightRotatedCool),
+    new Opal.Position(0, -6),
+    new Opal.Renderable(),
+    new Opal.Sprite("top-hat"),
+  ])
+
   const ballRightSmall = world.create([
     opal,
     new Opal.Position(5.5 * 16, 1.5 * 16, 0.75, 0.75),
@@ -250,7 +278,7 @@ function setupTestSprites(world: World, opal: Opal.Context) {
 
   let ballChain = world.create([
     opal,
-    new Opal.Position(16 + 8, 96 + 16 + 8),
+    new Opal.Position(96 - 8, 96 + 16 + 8),
     new Opal.Renderable(),
     new Opal.Sprite("ball-side-idle"),
   ])

@@ -140,6 +140,20 @@ export class SpriteRendering {
       worldTransform,
       new Vector2(-sprite.pivot.x, -sprite.pivot.y),
     )
+    const worldTransformedUpperRight = Matrix3.applyToVector2(
+      worldTransform,
+      new Vector2(
+        (sprite.texture?.width ?? 0) - sprite.pivot.x,
+        -sprite.pivot.y,
+      ),
+    )
+    const worldTransformedLowerLeft = Matrix3.applyToVector2(
+      worldTransform,
+      new Vector2(
+        -sprite.pivot.x,
+        (sprite.texture?.height ?? 0) - sprite.pivot.y,
+      ),
+    )
     const worldTransformedLowerRight = Matrix3.applyToVector2(
       worldTransform,
       new Vector2(
@@ -147,34 +161,30 @@ export class SpriteRendering {
         (sprite.texture?.height ?? 0) - sprite.pivot.y,
       ),
     )
-    const x0 = worldTransformedUpperLeft.x
-    const y0 = worldTransformedUpperLeft.y
-    const x1 = worldTransformedLowerRight.x
-    const y1 = worldTransformedLowerRight.y
 
-    this.data[startIndex + 0] = x0
-    this.data[startIndex + 1] = y0
+    this.data[startIndex + 0] = worldTransformedUpperLeft.x
+    this.data[startIndex + 1] = worldTransformedUpperLeft.y
     this.data[startIndex + 2] = sprite.depth
     this.data[startIndex + 3] = texture.uvs[0]!
     this.data[startIndex + 4] = texture.uvs[1]!
     this.data[startIndex + 5] = worldAlpha
 
-    this.data[startIndex + 6] = x1
-    this.data[startIndex + 7] = y0
+    this.data[startIndex + 6] = worldTransformedUpperRight.x
+    this.data[startIndex + 7] = worldTransformedUpperRight.y
     this.data[startIndex + 8] = sprite.depth
     this.data[startIndex + 9] = texture.uvs[2]!
     this.data[startIndex + 10] = texture.uvs[3]!
     this.data[startIndex + 11] = worldAlpha
 
-    this.data[startIndex + 12] = x1
-    this.data[startIndex + 13] = y1
+    this.data[startIndex + 12] = worldTransformedLowerRight.x
+    this.data[startIndex + 13] = worldTransformedLowerRight.y
     this.data[startIndex + 14] = sprite.depth
     this.data[startIndex + 15] = texture.uvs[4]!
     this.data[startIndex + 16] = texture.uvs[5]!
     this.data[startIndex + 17] = worldAlpha
 
-    this.data[startIndex + 18] = x0
-    this.data[startIndex + 19] = y1
+    this.data[startIndex + 18] = worldTransformedLowerLeft.x
+    this.data[startIndex + 19] = worldTransformedLowerLeft.y
     this.data[startIndex + 20] = sprite.depth
     this.data[startIndex + 21] = texture.uvs[6]!
     this.data[startIndex + 22] = texture.uvs[7]!
