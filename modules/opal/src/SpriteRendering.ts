@@ -6,6 +6,7 @@ import vertexShader from "./SpriteShader.vert.glsl"
 import fragmentShader from "./SpriteShader.frag.glsl"
 import fragmentShaderIndexedColor from "./SpriteShaderIndexedColor.frag.glsl"
 import { ColorPalette } from "./ColorPalette"
+import { Matrix3, Vector2 } from "@glass/core"
 
 type OurShader = Shader<
   // Attributes
@@ -82,7 +83,12 @@ export class SpriteRendering {
     this.currentBatchSurface = undefined
   }
 
-  addSpriteToRender(render: Render, sprite: Renderable) {
+  addSpriteToRender(
+    render: Render,
+    sprite: Renderable,
+    worldTransform: Float32Array,
+    worldAlpha: number,
+  ) {
     const { visible, texture } = sprite
     if (!visible || !texture) return
 
@@ -109,6 +115,8 @@ export class SpriteRendering {
     if (
       this.writeVerticesFor(
         sprite,
+        worldTransform,
+        worldAlpha,
         this.currentBatchSize * SpriteRendering.VERTEX_DATA_BYTES,
       )
     )
@@ -119,11 +127,26 @@ export class SpriteRendering {
     this.drawBatch(render)
   }
 
-  private writeVerticesFor(sprite: Renderable, startIndex: number): boolean {
+  private writeVerticesFor(
+    sprite: Renderable,
+    worldTransform: Float32Array,
+    worldAlpha: number,
+    startIndex: number,
+  ): boolean {
     const { texture } = sprite
     if (!texture) return false
 
-    const { worldTransformedUpperLeft, worldTransformedLowerRight } = sprite
+    const worldTransformedUpperLeft = Matrix3.applyToVector2(
+      worldTransform,
+      new Vector2(-sprite.pivot.x, -sprite.pivot.y),
+    )
+    const worldTransformedLowerRight = Matrix3.applyToVector2(
+      worldTransform,
+      new Vector2(
+        (sprite.texture?.width ?? 0) - sprite.pivot.x,
+        (sprite.texture?.height ?? 0) - sprite.pivot.y,
+      ),
+    )
     const x0 = worldTransformedUpperLeft.x
     const y0 = worldTransformedUpperLeft.y
     const x1 = worldTransformedLowerRight.x
@@ -134,28 +157,28 @@ export class SpriteRendering {
     this.data[startIndex + 2] = sprite.depth
     this.data[startIndex + 3] = texture.uvs[0]!
     this.data[startIndex + 4] = texture.uvs[1]!
-    this.data[startIndex + 5] = sprite.worldAlpha
+    this.data[startIndex + 5] = worldAlpha
 
     this.data[startIndex + 6] = x1
     this.data[startIndex + 7] = y0
     this.data[startIndex + 8] = sprite.depth
     this.data[startIndex + 9] = texture.uvs[2]!
     this.data[startIndex + 10] = texture.uvs[3]!
-    this.data[startIndex + 11] = sprite.worldAlpha
+    this.data[startIndex + 11] = worldAlpha
 
     this.data[startIndex + 12] = x1
     this.data[startIndex + 13] = y1
     this.data[startIndex + 14] = sprite.depth
     this.data[startIndex + 15] = texture.uvs[4]!
     this.data[startIndex + 16] = texture.uvs[5]!
-    this.data[startIndex + 17] = sprite.worldAlpha
+    this.data[startIndex + 17] = worldAlpha
 
     this.data[startIndex + 18] = x0
     this.data[startIndex + 19] = y1
     this.data[startIndex + 20] = sprite.depth
     this.data[startIndex + 21] = texture.uvs[6]!
     this.data[startIndex + 22] = texture.uvs[7]!
-    this.data[startIndex + 23] = sprite.worldAlpha
+    this.data[startIndex + 23] = worldAlpha
 
     return true
   }
