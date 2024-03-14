@@ -1,14 +1,12 @@
 import { Entity, Matrix3, World } from "@glass/core"
 import { Context } from "./Context"
 import { Renderable } from "./Renderable"
-import { SpriteRendering } from "./SpriteRendering"
 import { Position, PositionWithin } from "./Position"
 
-export const RenderRenderablesSystem = (world: World, context: Context) => {
-  const rendering = new SpriteRendering(context.render, 1000)
+export const RenderRenderablesSystem = (world: World) => {
   const seenSet = new Set<Entity>()
 
-  function renderTreeContaining(entity: Entity) {
+  function renderTreeContaining(entity: Entity, context: Context) {
     // Traverse upward parents first, so that we start the root of the tree.
     let parent
     do {
@@ -19,6 +17,7 @@ export const RenderRenderablesSystem = (world: World, context: Context) => {
     const worldTransform =
       world.get(entity, Position)?.localTransformMatrix ?? Matrix3.create()
     renderChildrenThenSelf(
+      context,
       entity,
       world.get(entity, Renderable),
       worldTransform,
@@ -26,6 +25,7 @@ export const RenderRenderablesSystem = (world: World, context: Context) => {
   }
 
   function renderChildrenThenSelf(
+    context: Context,
     entity: Entity,
     renderable?: Renderable,
     worldTransform?: Float32Array,
@@ -45,6 +45,7 @@ export const RenderRenderablesSystem = (world: World, context: Context) => {
         )
 
       renderChildrenThenSelf(
+        context,
         child,
         world.get(child, Renderable),
         childWorldTransform,
@@ -54,26 +55,32 @@ export const RenderRenderablesSystem = (world: World, context: Context) => {
 
     // Finally, render the node itself.
     seenSet.add(entity)
-    if (renderable && worldTransform)
-      rendering.addSpriteToRender(
+    if (renderable && worldTransform) {
+      context._spriteRendering.addSpriteToRender(
         context.render,
         renderable,
         worldTransform,
         worldAlpha,
       )
+    }
   }
 
-  return world.systemFor([Renderable, Position], {
+  return world.systemFor([Context, Renderable], {
     run(entities) {
-      rendering.beginRender(context.render)
+      Context.forEach((context: Context) => {
+        context._spriteRendering.beginRender(context.render)
+      })
+
       seenSet.clear()
 
-      for (const entity of entities.keys()) {
+      for (const [entity, [context, renderable]] of entities.entries()) {
         if (seenSet.has(entity)) continue
-        renderTreeContaining(entity)
+        renderTreeContaining(entity, context)
       }
 
-      rendering.finishRender(context.render)
+      Context.forEach((context: Context) => {
+        context._spriteRendering.finishRender(context.render)
+      })
     },
   })
 }

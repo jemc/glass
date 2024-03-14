@@ -20,7 +20,7 @@ function setup(canvas: HTMLCanvasElement) {
   const world = new World()
   const opal = new Opal.Context(new Opal.Render(canvas))
 
-  setupSystems(world, opal)
+  setupSystems(world)
   switch (TEST_NAME) {
     case "test-sprites":
       setupTestSprites(world, opal)
@@ -44,16 +44,23 @@ function setup(canvas: HTMLCanvasElement) {
     i += 1
   }
   runFrame()
+
+  // Check for warnings at the end to surface any issues during tests.
+  const warnings = world.debugScanForWarnings()
+  if (warnings.length > 0) {
+    warnings.forEach((warning) => console.warn(warning))
+    throw new Error("Warnings were found.")
+  }
 }
 
-function setupSystems(world: World, opal: Opal.Context) {
+function setupSystems(world: World) {
   world.addSystems([
     // Load phase
     Opal.LoadSpriteSheetAssetsSystem(world),
     Opal.LoadTileMapAssetsSystem(world),
     Opal.LoadTileMapSlicesSystem(world),
     // Action phase
-    ButtonSourceSystem(world, document),
+    ButtonSourceSystem(document)(world),
     // Reaction phase
     StatusSystem(world),
     Opal.PositionWrapsAtEdgesSystem(world),
@@ -61,11 +68,11 @@ function setupSystems(world: World, opal: Opal.Context) {
     Opal.SpriteSetFromStatusSystem(world),
     Opal.SpriteAnimationSystem(world),
     Opal.AnimatePositionSystem(world),
-    Opal.ColorPaletteAnimationSystem(world, opal),
+    Opal.ColorPaletteAnimationSystem(world),
     // Render phase
-    Opal.RenderBeginSystem(world, opal),
-    Opal.RenderTileMapSystem(world, opal),
-    Opal.RenderRenderablesSystem(world, opal),
+    Opal.RenderBeginSystem(world),
+    Opal.RenderTileMapSystem(world),
+    Opal.RenderRenderablesSystem(world),
   ])
 }
 

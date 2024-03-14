@@ -31,32 +31,28 @@ export class RenderTileMap {
   ) {}
 }
 
-export const RenderTileMapSystem = (world: World, context: Context) => {
-  const shader = new TileMapShader(context.render)
+export const RenderTileMapSystem = (world: World) => {
+  return world.systemFor([Context, RenderTileMap, Renderable], {
+    runEach(entity, context, component, renderable) {
+      if (!component._state) {
+        const tileMap = context.tileMaps.get(component.url)
+        if (tileMap) {
+          const layer = tileMap.layer(component.layerName)
 
-  return world.systemFor([RenderTileMap, Renderable], {
-    run(entities) {
-      for (const [entity, [component, renderable]] of entities.entries()) {
-        if (!component._state) {
-          const tileMap = context.tileMaps.get(component.url)
-          if (tileMap) {
-            const layer = tileMap.layer(component.layerName)
-
-            component._state = new _State(
-              layer.tileset.makeTextureSurface(context.render),
-              layer.makeDataTextureSurface(context.render),
-              layer.tileset.tileSize,
-            )
-          } else {
-            continue
-          }
+          component._state = new _State(
+            layer.tileset.makeTextureSurface(context.render),
+            layer.makeDataTextureSurface(context.render),
+            layer.tileset.tileSize,
+          )
+        } else {
+          return
         }
-
-        const { _state } = component
-        _state.maybeCreateOrResizeTexture(context.render, renderable)
-        _state.updatePosition(component.cameraPosition, renderable)
-        _state.draw(context.render, shader)
       }
+
+      const { _state } = component
+      _state.maybeCreateOrResizeTexture(context.render, renderable)
+      _state.updatePosition(component.cameraPosition, renderable)
+      _state.draw(context.render, context._tileMapShader)
     },
   })
 }

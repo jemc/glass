@@ -1,6 +1,4 @@
 import { registerComponent } from "./Component"
-import { World } from "./World"
-import { Entity } from "./Entity"
 import { Clock } from "./Clock"
 
 // These are the standard buttons that a retro-style game might have.
@@ -73,6 +71,19 @@ export class ButtonSource<T extends number = Button> {
     readonly state: ButtonState<T>,
     readonly config: ButtonSourceConfig<T>,
   ) {}
+
+  // Listen to events from the given event target.
+  listenTo(target: Pick<EventTarget, "addEventListener">) {
+    target.addEventListener("keydown", (e) => {
+      const event = e as KeyboardEvent
+      if (this.captureKeyboardEvent(event)) e.preventDefault()
+    })
+
+    target.addEventListener("keyup", (e) => {
+      const event = e as KeyboardEvent
+      if (this.releaseKeyboardEvent(event)) e.preventDefault()
+    })
+  }
 
   // Look at the given keyboard `event` and potentially capture a button press,
   // if the given `event` matches a configured button.
@@ -159,40 +170,4 @@ export const ButtonSourceConfig: { Default: ButtonSourceConfig } = {
       AltRight: [{ button: Button.B }],
     },
   },
-}
-
-type ButtonSourceAny = Pick<
-  ButtonSource,
-  "captureKeyboardEvent" | "releaseKeyboardEvent"
->
-
-export function ButtonSourceSystem(
-  world: World,
-  target: Pick<EventTarget, "addEventListener">,
-) {
-  const buttonSources = new Map<Entity, ButtonSourceAny>()
-
-  target.addEventListener("keydown", (e) => {
-    const event = e as KeyboardEvent
-    for (const buttonSource of buttonSources.values()) {
-      if (buttonSource.captureKeyboardEvent(event)) e.preventDefault()
-    }
-  })
-
-  target.addEventListener("keyup", (e) => {
-    const event = e as KeyboardEvent
-    for (const buttonSource of buttonSources.values()) {
-      if (buttonSource.releaseKeyboardEvent(event)) e.preventDefault()
-    }
-  })
-
-  return world.systemFor([ButtonSource], {
-    runEachSet(entity, buttonSource) {
-      buttonSources.set(entity, buttonSource)
-    },
-
-    runEachRemoved(entity) {
-      buttonSources.delete(entity)
-    },
-  })
 }

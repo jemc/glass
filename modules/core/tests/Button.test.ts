@@ -4,9 +4,9 @@ import {
   Button,
   ButtonState,
   ButtonSource,
-  ButtonSourceSystem,
   ButtonSourceConfig,
 } from "../src/Button"
+import { AutoMap } from "../src/AutoMap"
 
 describe("ButtonState", () => {
   test("tracks the current state of button presses", () => {
@@ -218,66 +218,5 @@ describe("ButtonSource", () => {
     expect(source.state.isPressed(CustomButton.Foo)).toBe(false)
     expect(source.state.isPressed(CustomButton.Bar)).toBe(false)
     expect(source.state.isPressed(CustomButton.Baz)).toBe(false)
-  })
-})
-
-describe("ButtonSourceSystem", () => {
-  test("listens for keyboard events and transmits to all ButtonSources", () => {
-    const eventListeners: { [key: string]: EventListener } = {}
-    const eventTarget = {
-      addEventListener: (type: string, listener: EventListener) => {
-        if (eventListeners[type])
-          throw new Error(`Event listener for ${type} is already set`)
-
-        eventListeners[type] = listener
-      },
-    }
-
-    const world = new World()
-    world.addSystem(ButtonSourceSystem(world, eventTarget))
-
-    const source1 = new ButtonSource(new ButtonState(world.clock), {
-      keyboard: { ArrowUp: [{ button: Button.Up }] },
-    })
-    const source2 = new ButtonSource(new ButtonState(world.clock), {
-      keyboard: { ArrowUp: [{ button: Button.Up }] },
-    })
-    world.create([source1])
-    world.create([source2])
-
-    expect(source1.state.isPressed(Button.Up)).toBe(false)
-
-    let event = {
-      code: "ArrowUp",
-      altKey: false,
-      ctrlKey: false,
-      shiftKey: false,
-      preventDefault: jest.fn(),
-    } as unknown as KeyboardEvent
-
-    // Press Up.
-    eventListeners.keydown!(event)
-    world.clock.tick(100)
-
-    expect(source1.state.isPressed(Button.Up)).toBe(true)
-    expect(source2.state.isPressed(Button.Up)).toBe(true)
-    expect(event.preventDefault).toBeCalledTimes(2)
-
-    // Release Up.
-    eventListeners.keyup!(event)
-    world.clock.tick(200)
-
-    expect(source1.state.isPressed(Button.Up)).toBe(false)
-    expect(source2.state.isPressed(Button.Up)).toBe(false)
-    expect(event.preventDefault).toBeCalledTimes(4) // 2 more times
-
-    // Press an unknown buttom (Down).
-    event = { ...event, code: "ArrowDown" }
-    eventListeners.keydown!(event)
-    world.clock.tick(300)
-
-    expect(source1.state.isPressed(Button.Up)).toBe(false)
-    expect(source2.state.isPressed(Button.Up)).toBe(false)
-    expect(event.preventDefault).toBeCalledTimes(4) // No additional times
   })
 })
