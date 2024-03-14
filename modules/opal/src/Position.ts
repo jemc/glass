@@ -52,6 +52,20 @@ export class Position {
     this._scale.copyFrom(scale)
     this._dirty = true
   }
+  get xScale(): number {
+    return this._scale.x
+  }
+  set xScale(x: number) {
+    this._scale.x = x
+    this._dirty = true
+  }
+  get yScale(): number {
+    return this._scale.y
+  }
+  set yScale(y: number) {
+    this._scale.y = y
+    this._dirty = true
+  }
 
   private _rotationComponents = new MutableVector2().setUnitRotationDegrees(0)
   get rotationDegrees(): number {
