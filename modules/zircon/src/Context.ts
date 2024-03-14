@@ -4,5 +4,5 @@ import { Opal } from "@glass/opal"
 export class Context {
   static readonly componentId = registerComponent(this)
 
-  constructor(public opal: Opal.Context) {}
+  constructor(readonly opal: Opal.Context) {}
 }

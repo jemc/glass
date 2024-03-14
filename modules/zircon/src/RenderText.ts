@@ -1,4 +1,4 @@
-import { registerComponent, World } from "@glass/core"
+import { registerComponent, prerequisiteComponents, World } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 
@@ -9,6 +9,11 @@ interface Config {
 
 export class RenderText {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(
+    Context,
+    Opal.Renderable,
+  )
+
   constructor(readonly config: Config) {}
 }
 

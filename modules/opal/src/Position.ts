@@ -1,20 +1,17 @@
 import {
   registerComponent,
+  prerequisiteComponents,
+  Entity,
+  World,
   MutableVector2,
   ReadVector2,
-  World,
-  Entity,
   Matrix3,
 } from "@glass/core"
-
-export class PositionWithin {
-  static readonly componentId = registerComponent(this)
-
-  constructor(readonly collectionEntity: Entity) {}
-}
+import { Context } from "./Context"
 
 export class Position {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(Context)
 
   private _dirty = true
   private _coords: MutableVector2
@@ -101,8 +98,22 @@ export class Position {
   }
 }
 
+export class PositionWithin {
+  static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(
+    Context,
+    Position,
+  )
+
+  constructor(readonly collectionEntity: Entity) {}
+}
+
 export class PositionWrapsAtEdges {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(
+    Context,
+    Position,
+  )
 
   constructor(
     readonly config: {

@@ -1,8 +1,14 @@
 import { Context } from "./Context"
-import { World, Box2, registerComponent } from "@glass/core"
+import {
+  registerComponent,
+  prerequisiteComponents,
+  World,
+  Box2,
+} from "@glass/core"
 
 export class LoadTileMapSlices {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(Context)
 
   constructor(
     readonly url: string,

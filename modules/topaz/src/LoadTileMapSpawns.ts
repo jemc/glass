@@ -1,9 +1,10 @@
-import { World, registerComponent } from "@glass/core"
+import { registerComponent, prerequisiteComponents, World } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 
 export class LoadTileMapSpawns {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(Context)
 
   constructor(
     readonly url: string,
@@ -43,10 +44,12 @@ export const LoadTileMapSpawnsSystem = (world: World) =>
           )
         } else if (!special.category) {
           if (special.kind === "start") {
-            context.playerPosition.coords.setTo(
-              x * tileWidth + tileWidth / 2,
-              y * tileHeight + tileHeight / 2,
-            )
+            context.playerPosition.updateCoords((coords) => {
+              coords.setTo(
+                x * tileWidth + tileWidth / 2,
+                y * tileHeight + tileHeight / 2,
+              )
+            })
           }
         }
       })

@@ -1,16 +1,22 @@
 import {
-  Box2,
-  ReadVector2,
-  MutableBox2,
-  MutableVector2,
   registerComponent,
+  prerequisiteComponents,
   World,
+  Box2,
+  MutableBox2,
+  ReadVector2,
+  MutableVector2,
 } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 
 export class Camera {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(
+    Context,
+    Opal.Position,
+    Opal.Renderable,
+  )
 
   readonly viewport = new MutableBox2()
   private position = new MutableVector2()
@@ -68,7 +74,9 @@ export const CameraFocusSystem = (world: World) => {
   return world.systemFor([Context, Camera, Opal.Renderable, Opal.Position], {
     runEach(entity, context, camera, renderable, position) {
       camera.resize(context.opal.render.width, context.opal.render.height)
-      camera.focus(context.playerPosition.coords, position.coords)
+      position.updateCoords((coords) => {
+        camera.focus(context.playerPosition.coords, coords)
+      })
     },
   })
 }

@@ -1,4 +1,10 @@
-import { ReadVector2, registerComponent, Status, World } from "@glass/core"
+import {
+  registerComponent,
+  prerequisiteComponents,
+  World,
+  Status,
+  ReadVector2,
+} from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 
@@ -10,6 +16,11 @@ interface SpawnConfig {
 
 export class SpawnOnStatus {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(
+    Context,
+    Status,
+    Opal.Position,
+  )
 
   constructor(
     readonly statusName: string,
@@ -22,7 +33,7 @@ export const SpawnOnStatusSystem = (world: World) =>
   world.systemFor([SpawnOnStatus, Context, Status, Opal.Position], {
     runEach(entity, spawn, pyrope, status, position) {
       const { statusName, fn, config } = spawn
-      const { coords, direction } = position
+      const { coords, scale: direction } = position
 
       if (status.isStarting(statusName)) {
         fn(

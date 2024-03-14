@@ -1,9 +1,21 @@
-import { registerComponent, Status, World } from "@glass/core"
+import {
+  registerComponent,
+  prerequisiteComponents,
+  World,
+  Status,
+} from "@glass/core"
 import { Opal } from "@glass/opal"
+import { Context } from "./Context"
 import { Body } from "./Body"
 
 export class Mover {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(
+    Context,
+    Opal.Position,
+    Status,
+    Body,
+  )
 
   constructor(readonly config: MoverConfig) {}
 }
@@ -28,8 +40,8 @@ export interface MoverModeConfig {
 }
 
 export const MoveSystem = (world: World) =>
-  world.systemFor([Mover, Status, Opal.Position, Body], {
-    runEach(entity, mover, status, position, body) {
+  world.systemFor([Mover, Opal.Position, Status, Body], {
+    runEach(entity, mover, position, status, body) {
       status.each((name, statusConfig, initialFrame) => {
         const { frame } = world.clock
 
@@ -56,7 +68,7 @@ export const MoveSystem = (world: World) =>
           )
         } else if (config.horizontalTargetSpeed !== undefined) {
           body.approachHorizontalVelocity(
-            config.horizontalTargetSpeed * position.direction.x,
+            config.horizontalTargetSpeed * (position.scale.x < 0 ? -1 : 1),
             config.horizontalTargetSpeedIncrement,
           )
         }
@@ -71,7 +83,7 @@ export const MoveSystem = (world: World) =>
             body.setHorizontalConstantVelocity(config.horizontalInitialVelocity)
           } else if (config.horizontalInitialSpeed !== undefined) {
             body.setHorizontalConstantVelocity(
-              config.horizontalInitialSpeed * position.direction.x,
+              config.horizontalInitialSpeed * (position.scale.x < 0 ? -1 : 1),
             )
           }
         }

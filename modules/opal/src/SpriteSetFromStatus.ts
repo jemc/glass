@@ -1,8 +1,19 @@
-import { Status, World, registerComponent } from "@glass/core"
+import {
+  Status,
+  World,
+  prerequisiteComponents,
+  registerComponent,
+} from "@glass/core"
+import { Context } from "./Context"
 import { Sprite } from "./Sprite"
 
 export class SpriteSetFromStatus {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(
+    Context,
+    Status,
+    Sprite,
+  )
 
   constructor(readonly mappings: ReadonlyArray<[string[], string]>) {}
 }

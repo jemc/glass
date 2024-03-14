@@ -1,10 +1,15 @@
-import { registerComponent, World } from "@glass/core"
+import { registerComponent, prerequisiteComponents, World } from "@glass/core"
 import { Context } from "./Context"
 import { Position } from "./Position"
 import { Renderable } from "./Renderable"
 
 export class Sprite {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(
+    Context,
+    Position,
+    Renderable,
+  )
 
   animationId: string
   framesElapsed = 0

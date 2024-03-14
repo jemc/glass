@@ -1,10 +1,11 @@
-import { World, registerComponent } from "@glass/core"
+import { World, prerequisiteComponents, registerComponent } from "@glass/core"
 import { Context } from "./Context"
 import { TileMap } from "./TileMap"
 import { LoadAsepriteAsset } from "./LoadAsepriteAsset"
 
 export class LoadTileMapAsset extends LoadAsepriteAsset {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(Context)
 }
 
 export const LoadTileMapAssetsSystem = (world: World) =>

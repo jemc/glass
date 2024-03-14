@@ -1,8 +1,18 @@
-import { MutableVector2, registerComponent } from "@glass/core"
+import {
+  prerequisiteComponents,
+  registerComponent,
+  MutableVector2,
+} from "@glass/core"
+import { Context } from "./Context"
 import { Texture } from "./Texture"
+import { Position } from "./Position"
 
 export class Renderable {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(
+    Context,
+    Position,
+  )
 
   texture?: Texture
   pivot = new MutableVector2(0, 0)

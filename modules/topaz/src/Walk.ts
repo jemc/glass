@@ -1,4 +1,9 @@
-import { World, registerComponent, Vector2 } from "@glass/core"
+import {
+  registerComponent,
+  prerequisiteComponents,
+  World,
+  Vector2,
+} from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 import { Direction } from "./Direction"
@@ -8,6 +13,10 @@ import { Direction } from "./Direction"
 
 export class Walker {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(
+    Context,
+    Opal.Position,
+  )
 
   constructor(
     public context: Context,
@@ -27,6 +36,10 @@ export interface WalkerConfig {
 // within a 2-dimensional tile map.
 export class Walking {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(
+    Context,
+    Walker,
+  )
 
   stepVector: Vector2
   constructor(
@@ -88,11 +101,14 @@ export const WalkSystem = (world: World) =>
         const progress =
           1 - framesRemaining / (walker.config.framesPerStep || 1)
 
-        position.coords
-          .copyFrom(walking.stepVector)
-          .scaleEquals(progress)
-          .plusEquals(walking.initialPosition)
-          .toFloor()
+        const { stepVector, initialPosition } = walking
+        position.updateCoords((coords) => {
+          coords
+            .copyFrom(stepVector)
+            .scaleEquals(progress)
+            .plusEquals(initialPosition)
+            .toFloor()
+        })
       }
     },
   })

@@ -1,9 +1,20 @@
-import { registerComponent, Clock, World } from "@glass/core"
+import {
+  registerComponent,
+  prerequisiteComponents,
+  World,
+  Clock,
+} from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Body } from "./Body"
+import { Context } from "./Context"
 
 export class Jumper {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(
+    Context,
+    Opal.Position,
+    Body,
+  )
 
   constructor(readonly config: JumperConfig) {}
 

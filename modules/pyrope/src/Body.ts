@@ -1,15 +1,20 @@
 import type { Writable } from "type-fest"
 import {
-  MutableVector2,
-  ReadVector2,
-  World,
   registerComponent,
+  prerequisiteComponents,
+  World,
+  ReadVector2,
+  MutableVector2,
 } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 
 export class Body {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(
+    Context,
+    Opal.Position,
+  )
 
   passThroughSolids: boolean = false
 
@@ -127,33 +132,35 @@ export class Body {
   ) {
     this.previousCoords.copyFrom(position.coords)
 
-    position.coords
-      .plusEquals(this.residuals)
-      .plusEquals(this.velocity)
-      .toRoundedCapturingResiduals(this.residuals)
+    position.updateCoords((coords) => {
+      coords
+        .plusEquals(this.residuals)
+        .plusEquals(this.velocity)
+        .toRoundedCapturingResiduals(this.residuals)
 
-    if (!this.passThroughSolids && collisionsTruth) {
-      this.latestSolidCollisionBits = collisionsTruth.stopAtSolids(
-        position.coords,
-        this.previousCoords,
-        this,
-      )
+      if (!this.passThroughSolids && collisionsTruth) {
+        this.latestSolidCollisionBits = collisionsTruth.stopAtSolids(
+          coords,
+          this.previousCoords,
+          this,
+        )
 
-      if (
-        (this.isTouchingLeftSolid && this.velocity.x < 0) ||
-        (this.isTouchingRightSolid && this.velocity.x > 0)
-      ) {
-        this.velocity.x = 0
-        this.residuals.x = 0
+        if (
+          (this.isTouchingLeftSolid && this.velocity.x < 0) ||
+          (this.isTouchingRightSolid && this.velocity.x > 0)
+        ) {
+          this.velocity.x = 0
+          this.residuals.x = 0
+        }
+        if (
+          (this.isTouchingTopSolid && this.velocity.y < 0) ||
+          (this.isTouchingBottomSolid && this.velocity.y > 0)
+        ) {
+          this.velocity.y = 0
+          this.residuals.y = 0
+        }
       }
-      if (
-        (this.isTouchingTopSolid && this.velocity.y < 0) ||
-        (this.isTouchingBottomSolid && this.velocity.y > 0)
-      ) {
-        this.velocity.y = 0
-        this.residuals.y = 0
-      }
-    }
+    })
   }
 }
 

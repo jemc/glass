@@ -1,10 +1,11 @@
 import {
-  Box2,
-  MutableVector2,
-  ReadVector2,
   registerComponent,
-  Vector2,
+  prerequisiteComponents,
   World,
+  Box2,
+  Vector2,
+  ReadVector2,
+  MutableVector2,
 } from "@glass/core"
 import { Context } from "./Context"
 import { Render } from "./Render"
@@ -16,8 +17,12 @@ import { TileMapShader } from "./TileMapShader"
 
 export class RenderTileMap {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(
+    Context,
+    Renderable,
+  )
 
-  _state?: _RenderTileMapLayerState // TODO: private?
+  _state?: _State // TODO: private?
 
   constructor(
     readonly url: string,
@@ -37,7 +42,7 @@ export const RenderTileMapSystem = (world: World, context: Context) => {
           if (tileMap) {
             const layer = tileMap.layer(component.layerName)
 
-            component._state = new _RenderTileMapLayerState(
+            component._state = new _State(
               layer.tileset.makeTextureSurface(context.render),
               layer.makeDataTextureSurface(context.render),
               layer.tileset.tileSize,
@@ -56,7 +61,7 @@ export const RenderTileMapSystem = (world: World, context: Context) => {
   })
 }
 
-class _RenderTileMapLayerState {
+class _State {
   texture?: Texture<TextureSurfaceDrawable>
 
   private tileSize = new Float32Array(2)

@@ -1,5 +1,12 @@
-import { MutableVector2, registerComponent, Vector2, World } from "@glass/core"
+import {
+  registerComponent,
+  prerequisiteComponents,
+  World,
+  Vector2,
+  MutableVector2,
+} from "@glass/core"
 import { Position } from "./Position"
+import { Context } from "./Context"
 
 interface Config {
   delta: Vector2
@@ -14,6 +21,10 @@ class _State {
 
 export class AnimatePosition {
   static readonly componentId = registerComponent(this)
+  static readonly prerequisiteComponentIds = prerequisiteComponents(
+    Context,
+    Position,
+  )
 
   readonly _state: _State
 

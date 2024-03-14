@@ -1,11 +1,9 @@
 import Aseprite from "ase-parser"
-import { registerComponent, Box2 } from "@glass/core"
+import { Box2 } from "@glass/core"
 import { TileMapLayer } from "./TileMapLayer"
 import { TileMapTileSet } from "./TileMapTileSet"
 
 export class TileMap {
-  static readonly componentId = registerComponent(this)
-
   private layers = new Map<string, TileMapLayer>()
   private tilesets: TileMapTileSet[] = []
 
