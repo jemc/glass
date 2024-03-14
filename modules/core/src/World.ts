@@ -264,7 +264,8 @@ export class World {
     return this.collectedStorage[entity]?.get(componentId) ?? new Set()
   }
 
-  addSystem(system: System) {
+  addSystem(systemFn: (world: World) => System) {
+    const system = systemFn(this)
     this.systems.push(system)
     system.componentTypes.forEach(({ componentId }) => {
       system._requiredBits.set(componentId, true)
@@ -274,8 +275,8 @@ export class World {
     })
   }
 
-  addSystems(systems: System[] = []) {
-    for (const system of systems) this.addSystem(system)
+  addSystems(...systemFns: ((world: World) => System)[]) {
+    for (const systemFn of systemFns) this.addSystem(systemFn)
   }
 
   run() {

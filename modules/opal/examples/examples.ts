@@ -1,10 +1,4 @@
-import {
-  World,
-  Vector2,
-  ButtonSourceSystem,
-  StatusSystem,
-  ReadVector2,
-} from "@glass/core"
+import { World, Vector2, StatusSystem, ReadVector2 } from "@glass/core"
 import { Opal } from "../src"
 
 const TEST_NAME = window.location.hash.slice(1)
@@ -54,26 +48,24 @@ function setup(canvas: HTMLCanvasElement) {
 }
 
 function setupSystems(world: World) {
-  world.addSystems([
+  world.addSystems(
     // Load phase
-    Opal.LoadSpriteSheetAssetsSystem(world),
-    Opal.LoadTileMapAssetsSystem(world),
-    Opal.LoadTileMapSlicesSystem(world),
-    // Action phase
-    ButtonSourceSystem(document)(world),
+    Opal.LoadSpriteSheetAssetsSystem,
+    Opal.LoadTileMapAssetsSystem,
+    Opal.LoadTileMapSlicesSystem,
     // Reaction phase
-    StatusSystem(world),
-    Opal.PositionWrapsAtEdgesSystem(world),
+    StatusSystem,
+    Opal.PositionWrapsAtEdgesSystem,
     // Pre-render phase
-    Opal.SpriteSetFromStatusSystem(world),
-    Opal.SpriteAnimationSystem(world),
-    Opal.AnimatePositionSystem(world),
-    Opal.ColorPaletteAnimationSystem(world),
+    Opal.SpriteSetFromStatusSystem,
+    Opal.SpriteAnimationSystem,
+    Opal.AnimatePositionSystem,
+    Opal.ColorPaletteAnimationSystem,
     // Render phase
-    Opal.RenderBeginSystem(world),
-    Opal.RenderTileMapSystem(world),
-    Opal.RenderRenderablesSystem(world),
-  ])
+    Opal.RenderBeginSystem,
+    Opal.RenderTileMapSystem,
+    Opal.RenderRenderablesSystem,
+  )
 }
 
 function setupTestSprites(world: World, opal: Opal.Context) {

@@ -30,18 +30,16 @@ class RequiresColorAndLocatedIn {
 }
 
 // A system for entities with color, which only tracks its members.
-const ColorSystem = (world: World) => {
-  const entities = new Set<Entity>()
-  return world.systemFor([Color], {
-    entities,
+const colorSystemEntities = new Set<Entity>()
+const ColorSystem = (world: World) =>
+  world.systemFor([Color], {
     runEachSet(entity, color) {
-      entities.add(entity)
+      colorSystemEntities.add(entity)
     },
     runEachRemoved(entity) {
-      entities.delete(entity)
+      colorSystemEntities.delete(entity)
     },
   })
-}
 
 describe("World", () => {
   test("can relate entities via one-to-many collection relationships", () => {
@@ -95,8 +93,7 @@ describe("World", () => {
     const example = world.create()
     const parent = world.create()
     const child = world.create()
-    const colorSystem = ColorSystem(world)
-    world.addSystem(colorSystem)
+    world.addSystem(ColorSystem)
 
     // Create an example entity with a color and in the middle of a hierarchy.
     world.set(example, [new Color("red"), new LocatedIn(parent)])
@@ -113,7 +110,7 @@ describe("World", () => {
     expect([...world.getCollected(parent, LocatedIn).values()]).toEqual([
       example,
     ])
-    expect([...colorSystem.entities.values()]).toEqual([example])
+    expect([...colorSystemEntities.values()]).toEqual([example])
 
     // The example entity is destroyed, destroying the above relationships
     // and freeing its entity ID to be reused in the next created entity.
@@ -123,7 +120,7 @@ describe("World", () => {
     // has any children. It's also no longer tracked by the system.
     expect(world.get(child, LocatedIn)).toBeUndefined()
     expect(world.getCollected(parent, LocatedIn).size).toBe(0)
-    expect(colorSystem.entities.size).toBe(0)
+    expect(colorSystemEntities.size).toBe(0)
 
     // A new entity is created, which reuses the ID of the destroyed entity.
     const newEntity = world.create()
@@ -134,7 +131,7 @@ describe("World", () => {
     expect(world.get(child, LocatedIn)).toBeUndefined()
     expect(world.getCollected(newEntity, LocatedIn).size).toBe(0)
     expect(world.getCollected(parent, LocatedIn).size).toBe(0)
-    expect(colorSystem.entities.size).toBe(0)
+    expect(colorSystemEntities.size).toBe(0)
   })
 
   test("can scan for warnings about missing prerequisite components", () => {
