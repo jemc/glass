@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals"
+import { describe, expect, test } from "vitest"
 import { Vector2, ReadVector2, MutableVector2 } from "../src/Vector2"
 
 expect.addEqualityTesters([

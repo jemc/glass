@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals"
+import { describe, expect, test } from "vitest"
 import { Uint32Array2D } from "../src/Uint32Array2D"
 import { Vector2 } from "../src/Vector2"
 

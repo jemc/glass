@@ -6,7 +6,7 @@
     "sync-base-files": "sh ../../base-files/sync.sh",
     "format": "prettier --write '{src,tests}/**/*.ts'",
     "format:check": "prettier --check '{src,tests}/**/*.ts'",
-    "test": "jest",
+    "test": "vitest --run",
     "prepare": "tsc && sh -c 'cp src/*.glsl dist/src/ 2>/dev/null || true'",
     "release": "semantic-release"
   },
@@ -17,24 +17,5 @@
   "prettier": {
     "semi": false,
     "trailingComma": "all"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "transform": {
-      "^.+\\.tsx?$": [
-        "ts-jest",
-        {
-          "diagnostics": {
-            "ignoreCodes": [
-              151001
-            ]
-          }
-        }
-      ]
-    },
-    "testMatch": [
-      "**/tests/**/*.test.ts"
-    ]
   }
 }

@@ -1,4 +1,4 @@
-import { jest, describe, expect, test } from "@jest/globals"
+import { describe, expect, test } from "vitest"
 import { World } from "../src/World"
 import {
   Button,
@@ -6,7 +6,6 @@ import {
   ButtonSource,
   ButtonSourceConfig,
 } from "../src/Button"
-import { AutoMap } from "../src/AutoMap"
 
 describe("ButtonState", () => {
   test("tracks the current state of button presses", () => {

@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals"
+import { describe, expect, test } from "vitest"
 import { Matrix3 } from "../src/Matrix3"
 import { MutableVector2, Vector2 } from "../src/Vector2"
 

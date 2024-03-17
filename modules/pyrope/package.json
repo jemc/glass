@@ -19,13 +19,14 @@
     "semantic-release-monorepo": "^8.0.1",
     "ts-jest": "^29.1.2",
     "type-fest": "^4.10.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^1.4.0"
   },
   "scripts": {
     "sync-base-files": "sh ../../base-files/sync.sh",
     "format": "prettier --write '{src,tests}/**/*.ts'",
     "format:check": "prettier --check '{src,tests}/**/*.ts'",
-    "test": "jest",
+    "test": "vitest --run",
     "prepare": "tsc && sh -c 'cp src/*.glsl dist/src/ 2>/dev/null || true'",
     "release": "semantic-release"
   },

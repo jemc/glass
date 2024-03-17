@@ -1,10 +1,9 @@
-import { jest, describe, expect, test } from "@jest/globals"
+import { vi, describe, expect, test } from "vitest"
 import { Clock } from "../src/Clock"
 
 describe("Clock", () => {
   test("it runs the given function on each tick", () => {
-    const nextFrameFn =
-      jest.fn<(callback: (timestamp: number) => void) => number>()
+    const nextFrameFn = vi.fn<[(timestamp: number) => void], number>()
     let runningClock: Clock | undefined
 
     const runSaw: {

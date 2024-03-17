@@ -9,21 +9,18 @@
     "@glass/core": "workspace:*"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "@types/jest": "^29.5.11",
     "@types/node": "^20.11.16",
-    "jest": "^29.7.0",
     "prettier": "^3.2.4",
     "semantic-release": "^23.0.0",
     "semantic-release-monorepo": "^8.0.1",
-    "ts-jest": "^29.1.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^1.4.0"
   },
   "scripts": {
     "sync-base-files": "sh ../../base-files/sync.sh",
     "format": "prettier --write '{src,tests}/**/*.ts'",
     "format:check": "prettier --check '{src,tests}/**/*.ts'",
-    "test": "jest",
+    "test": "vitest --run",
     "prepare": "tsc && sh -c 'cp src/*.glsl dist/src/ 2>/dev/null || true'",
     "release": "semantic-release"
   },
@@ -36,27 +33,5 @@
   "prettier": {
     "semi": false,
     "trailingComma": "all"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "transform": {
-      "^.+\\.tsx?$": [
-        "ts-jest",
-        {
-          "diagnostics": {
-            "ignoreCodes": [
-              151001
-            ]
-          }
-        }
-      ]
-    },
-    "transformIgnorePatterns": [
-      "node_modules/.*\\.js"
-    ],
-    "testMatch": [
-      "**/tests/**/*.test.ts"
-    ]
   }
 }

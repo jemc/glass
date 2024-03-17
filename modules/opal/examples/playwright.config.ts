@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test"
 
 export default defineConfig({
   testDir: ".",
-  testMatch: "*.spec.ts",
+  testMatch: "*.webspec.ts",
   outputDir: "playwright-test-results",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
