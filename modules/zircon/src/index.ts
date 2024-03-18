@@ -1,2 +1,3 @@
-export * as Zircon from "./Zircon"
 export * from "./Zircon"
+import * as Zircon from "./Zircon"
+export { Zircon }

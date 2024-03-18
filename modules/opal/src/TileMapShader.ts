@@ -2,8 +2,8 @@ import { ReadVector2 } from "@glass/core"
 import { Render } from "./Render"
 import { Shader } from "./Shader"
 
-import vertexShader from "./TileMapShader.vert.glsl"
-import fragmentShader from "./TileMapShader.frag.glsl"
+import vertexShader from "./TileMapShader.vert.glsl?raw"
+import fragmentShader from "./TileMapShader.frag.glsl?raw"
 import { TextureSurface } from "./TextureSurface"
 
 export class TileMapShader extends Shader<

@@ -4,7 +4,8 @@
   "description": "General-purpose audio & chiptune framework for Glass Engine",
   "repository": "github:jemc/glass",
   "license": "MIT",
-  "main": "dist/src/index.js",
+  "type": "module",
+  "main": "dist/index.js",
   "dependencies": {
     "@glass/core": "workspace:*"
   },
@@ -14,6 +15,8 @@
     "semantic-release": "^23.0.0",
     "semantic-release-monorepo": "^8.0.1",
     "typescript": "^5.3.3",
+    "vite": "^5.1.6",
+    "vite-plugin-dts": "^3.7.3",
     "vitest": "^1.4.0"
   },
   "scripts": {
@@ -21,7 +24,7 @@
     "format": "prettier --write '{src,tests}/**/*.ts'",
     "format:check": "prettier --check '{src,tests}/**/*.ts'",
     "test": "vitest --run",
-    "prepare": "tsc && sh -c 'cp src/*.glsl dist/src/ 2>/dev/null || true'",
+    "prepare": "vite build",
     "release": "semantic-release"
   },
   "release": {

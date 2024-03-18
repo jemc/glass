@@ -4,7 +4,8 @@
   "description": "General-purpose 2D graphical framework for Glass Engine",
   "repository": "github:jemc/glass",
   "license": "MIT",
-  "main": "dist/src/index.js",
+  "type": "module",
+  "main": "dist/index.js",
   "dependencies": {
     "@glass/core": "workspace:*",
     "ase-parser": "git+https://github.com/jemc/ase-parser.git#294a69e66d6ea6fc6a6622a60ae40f7ee27166a4",
@@ -24,6 +25,8 @@
     "semantic-release-monorepo": "^8.0.1",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
+    "vite": "^5.1.6",
+    "vite-plugin-dts": "^3.7.3",
     "vitest": "^1.4.0",
     "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4",
@@ -36,8 +39,8 @@
     "test": "vitest --run",
     "test:playwright": "playwright test -c examples",
     "test:playwright:install": "playwright install --with-deps chromium",
-    "start:examples": "webpack serve --config examples/webpack.config.js",
-    "prepare": "tsc && sh -c 'cp src/*.glsl dist/src/ 2>/dev/null || true'",
+    "start:examples": "vite serve --config examples/vite.config.ts",
+    "prepare": "vite build",
     "release": "semantic-release"
   },
   "release": {

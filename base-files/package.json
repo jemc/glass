@@ -1,13 +1,14 @@
 {
   "repository": "github:jemc/glass",
   "license": "MIT",
-  "main": "dist/src/index.js",
+  "type": "module",
+  "main": "dist/index.js",
   "scripts": {
     "sync-base-files": "sh ../../base-files/sync.sh",
     "format": "prettier --write '{src,tests}/**/*.ts'",
     "format:check": "prettier --check '{src,tests}/**/*.ts'",
     "test": "vitest --run",
-    "prepare": "tsc && sh -c 'cp src/*.glsl dist/src/ 2>/dev/null || true'",
+    "prepare": "vite build",
     "release": "semantic-release"
   },
   "release": {
