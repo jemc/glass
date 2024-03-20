@@ -10,6 +10,7 @@
     "@glass/core": "workspace:*"
   },
   "devDependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@types/node": "^20.11.16",
     "prettier": "^3.2.4",
     "semantic-release": "^23.0.0",

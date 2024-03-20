@@ -1,6 +1,6 @@
 import type { Writable } from "type-fest"
 
-const requestAnimationFrame = global.window?.requestAnimationFrame
+const requestAnimationFrame = globalThis.window?.requestAnimationFrame
 
 export class Clock {
   // The number of frames that have been triggered so far.

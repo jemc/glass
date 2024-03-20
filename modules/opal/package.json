@@ -7,30 +7,26 @@
   "type": "module",
   "main": "dist/index.js",
   "dependencies": {
-    "@glass/core": "workspace:*",
+    "@glass/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@playwright/test": "^1.42.1",
+    "@types/node": "^20.11.16",
     "ase-parser": "git+https://github.com/jemc/ase-parser.git#294a69e66d6ea6fc6a6622a60ae40f7ee27166a4",
     "assert-browserify": "^2.0.0",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
-    "process": "^0.11.10",
-    "stream-browserify": "^3.0.0"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.42.1",
-    "@types/node": "^20.11.16",
-    "fork-ts-checker-webpack-plugin": "^9.0.2",
     "prettier": "^3.2.4",
     "raw-loader": "^4.0.2",
     "semantic-release": "^23.0.0",
     "semantic-release-monorepo": "^8.0.1",
+    "stream-browserify": "^3.0.0",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
     "vite": "^5.1.6",
     "vite-plugin-dts": "^3.7.3",
-    "vitest": "^1.4.0",
-    "webpack": "^5.90.3",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.0.2"
+    "vitest": "^1.4.0"
   },
   "scripts": {
     "sync-base-files": "sh ../../base-files/sync.sh",
@@ -39,7 +35,7 @@
     "test": "vitest --run",
     "test:playwright": "playwright test -c examples",
     "test:playwright:install": "playwright install --with-deps chromium",
-    "start:examples": "vite serve --config examples/vite.config.ts",
+    "start:examples": "vite serve examples --config vite.config.ts",
     "prepare": "vite build",
     "release": "semantic-release"
   },

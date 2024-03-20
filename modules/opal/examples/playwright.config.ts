@@ -12,13 +12,13 @@ export default defineConfig({
   snapshotPathTemplate: "{testDir}/{testFilePath}-snapshots/{arg}{ext}", // removes {projectName} and {platform} segments
 
   use: {
-    baseURL: "http://127.0.0.1:8000",
+    baseURL: "http://localhost:8000",
     trace: "on-first-retry",
   },
 
   webServer: {
     command: "pnpm run start:examples",
-    url: "http://127.0.0.1:8000",
+    url: "http://localhost:8000",
     reuseExistingServer: !process.env.CI,
     stdout: "ignore",
     stderr: "pipe",

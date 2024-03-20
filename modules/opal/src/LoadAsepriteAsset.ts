@@ -1,3 +1,4 @@
+import { Buffer } from "buffer"
 import { LoadAsset } from "@glass/core"
 import Aseprite from "ase-parser"
 
