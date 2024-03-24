@@ -5,7 +5,7 @@ import dts from "vite-plugin-dts"
 import path from "path"
 
 export default defineConfig({
-  plugins: [tsconfigPaths(), nodePolyfills(), dts()],
+  plugins: [tsconfigPaths(), nodePolyfills(), dts({ rollupTypes: true })],
 
   server: { port: 8000 },
 
