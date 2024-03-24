@@ -6,6 +6,10 @@ abstract class BaseVector2 {
     readonly y = 0,
   ) {}
 
+  toArray(): [number, number] {
+    return [this.x, this.y]
+  }
+
   isEqualTo(other: ReadVector2) {
     return this.x === other.x && this.y === other.y
   }
@@ -115,6 +119,13 @@ export class MutableVector2 extends BaseVector2 {
   toFloor() {
     this.x = Math.floor(this.x)
     this.y = Math.floor(this.y)
+    return this
+  }
+
+  toRounded() {
+    const { x, y } = this
+    this.x = Math.round(x)
+    this.y = Math.round(y)
     return this
   }
 

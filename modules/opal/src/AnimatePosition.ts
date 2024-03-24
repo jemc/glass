@@ -39,6 +39,7 @@ export const AnimatePositionSystem = (world: World) =>
       if (animate._state.progressFrames === 0)
         animate._state.initialPosition.copyFrom(position.coords)
 
+      animate._state.progressFrames += 1
       const progress = animate._state.progressFrames / animate.config.frames
 
       position.updateCoords((coords) => {
@@ -46,9 +47,9 @@ export const AnimatePositionSystem = (world: World) =>
           .copyFrom(animate.config.delta)
           .scaleEquals(progress)
           .plusEquals(animate._state.initialPosition)
+          .toRounded()
       })
 
       if (progress >= 1) world.remove(entity, [AnimatePosition])
-      else animate._state.progressFrames += 1
     },
   })
