@@ -10,7 +10,6 @@
     "@glass/core": "workspace:*"
   },
   "devDependencies": {
-    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@playwright/test": "^1.42.1",
     "@types/node": "^20.11.16",
     "ase-parser": "git+https://github.com/jemc/ase-parser.git#294a69e66d6ea6fc6a6622a60ae40f7ee27166a4",
@@ -26,6 +25,7 @@
     "typescript": "^5.3.3",
     "vite": "^5.1.6",
     "vite-plugin-dts": "^3.7.3",
+    "vite-plugin-node-polyfills": "^0.21.0",
     "vitest": "^1.4.0"
   },
   "scripts": {
@@ -36,7 +36,7 @@
     "test:playwright": "playwright test -c examples",
     "test:playwright:install": "playwright install --with-deps chromium",
     "start:examples": "vite serve examples --config vite.config.ts",
-    "prepare": "vite build",
+    "prepare": "echo vite build",
     "release": "semantic-release"
   },
   "release": {

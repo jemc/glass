@@ -10,7 +10,6 @@
     "@glass/core": "workspace:*"
   },
   "devDependencies": {
-    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@types/node": "^20.11.16",
     "prettier": "^3.2.4",
     "semantic-release": "^23.0.0",
@@ -18,6 +17,7 @@
     "typescript": "^5.3.3",
     "vite": "^5.1.6",
     "vite-plugin-dts": "^3.7.3",
+    "vite-plugin-node-polyfills": "^0.21.0",
     "vitest": "^1.4.0"
   },
   "scripts": {
@@ -25,7 +25,7 @@
     "format": "prettier --write '{src,tests}/**/*.ts'",
     "format:check": "prettier --check '{src,tests}/**/*.ts'",
     "test": "vitest --run",
-    "prepare": "vite build",
+    "prepare": "echo vite build",
     "release": "semantic-release"
   },
   "release": {
