@@ -8,7 +8,7 @@
     "format": "prettier --write '{src,tests}/**/*.ts'",
     "format:check": "prettier --check '{src,tests}/**/*.ts'",
     "test": "vitest --run",
-    "prepare": "vite build",
+    "build": "vite build",
     "release": "semantic-release"
   },
   "release": {

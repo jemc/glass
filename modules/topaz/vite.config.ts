@@ -1,9 +1,12 @@
 import { defineConfig } from "vite"
 import { nodePolyfills } from "vite-plugin-node-polyfills"
+import tsconfigPaths from "vite-tsconfig-paths"
 import dts from "vite-plugin-dts"
 import path from "path"
 
 export default defineConfig({
+  plugins: [tsconfigPaths(), nodePolyfills(), dts()],
+
   server: { port: 8000 },
 
   build: {
@@ -21,6 +24,4 @@ export default defineConfig({
       external: [/^@glass\//], // don't bundle glass modules; keep them as peers
     },
   },
-
-  plugins: [dts(), nodePolyfills()],
 })

@@ -26,6 +26,7 @@
     "vite": "^5.1.6",
     "vite-plugin-dts": "^3.7.3",
     "vite-plugin-node-polyfills": "^0.21.0",
+    "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^1.4.0"
   },
   "scripts": {
@@ -36,7 +37,7 @@
     "test:playwright": "playwright test -c examples",
     "test:playwright:install": "playwright install --with-deps chromium",
     "start:examples": "vite serve examples --config vite.config.ts",
-    "prepare": "echo vite build",
+    "build": "vite build",
     "release": "semantic-release"
   },
   "release": {

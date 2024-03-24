@@ -19,6 +19,7 @@
     "vite": "^5.1.6",
     "vite-plugin-dts": "^3.7.3",
     "vite-plugin-node-polyfills": "^0.21.0",
+    "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^1.4.0"
   },
   "scripts": {
@@ -26,7 +27,7 @@
     "format": "prettier --write '{src,tests}/**/*.ts'",
     "format:check": "prettier --check '{src,tests}/**/*.ts'",
     "test": "vitest --run",
-    "prepare": "echo vite build",
+    "build": "vite build",
     "release": "semantic-release"
   },
   "release": {
