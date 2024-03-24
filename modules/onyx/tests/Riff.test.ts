@@ -143,8 +143,8 @@ describe("riffSeqToVoiceNotes", () => {
       [1.0, { duration: 0.5, freqBase: E4 }],
       [1.5, { duration: 0.25, freqBase: F4 }],
       [2.25, { duration: 0.125, freqBase: G4 }],
-      [2.75, { duration: 0.25, freqBase: A4 }],
-      [3.0, { duration: 0.25, freqBase: B4 }],
+      [2.75, { duration: 0.25, freqBase: A4 - 0.00000000000006 }],
+      [3.0, { duration: 0.25, freqBase: B4 - 0.00000000000003 }],
       [3.5, { duration: 0.375, freqBase: C5 }],
     ])
   })

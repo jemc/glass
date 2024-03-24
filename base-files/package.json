@@ -7,7 +7,7 @@
     "sync-base-files": "sh ../../base-files/sync.sh",
     "format": "prettier --write '{src,tests}/**/*.ts'",
     "format:check": "prettier --check '{src,tests}/**/*.ts'",
-    "test": "vitest --run",
+    "test": "vitest --run --browser.name=firefox --browser.headless",
     "build": "vite build",
     "release": "semantic-release"
   },

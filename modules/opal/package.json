@@ -12,6 +12,7 @@
   "devDependencies": {
     "@playwright/test": "^1.42.1",
     "@types/node": "^20.11.16",
+    "@vitest/browser": "^1.4.0",
     "ase-parser": "git+https://github.com/jemc/ase-parser.git#294a69e66d6ea6fc6a6622a60ae40f7ee27166a4",
     "assert-browserify": "^2.0.0",
     "browserify-zlib": "^0.2.0",
@@ -27,13 +28,14 @@
     "vite-plugin-dts": "^3.7.3",
     "vite-plugin-node-polyfills": "^0.21.0",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^1.4.0"
+    "vitest": "^1.4.0",
+    "webdriverio": "^8.35.1"
   },
   "scripts": {
     "sync-base-files": "sh ../../base-files/sync.sh",
     "format": "prettier --write '{src,tests}/**/*.ts'",
     "format:check": "prettier --check '{src,tests}/**/*.ts'",
-    "test": "vitest --run",
+    "test": "vitest --run --browser.name=firefox --browser.headless",
     "test:playwright": "playwright test -c examples",
     "test:playwright:install": "playwright install --with-deps chromium",
     "start:examples": "vite serve examples --config vite.config.ts",
