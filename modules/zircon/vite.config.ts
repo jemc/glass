@@ -5,7 +5,14 @@ import dts from "vite-plugin-dts"
 import path from "path"
 
 export default defineConfig({
-  plugins: [tsconfigPaths(), nodePolyfills(), dts({ rollupTypes: true })],
+  plugins: [
+    tsconfigPaths(),
+    nodePolyfills(),
+    dts({
+      entryRoot: "src",
+      aliasesExclude: [/^@glass\//], // type declarations don't use local aliases
+    }),
+  ],
 
   server: { port: 8000 },
 
