@@ -5,7 +5,10 @@
   "repository": "github:jemc/glass",
   "license": "MIT",
   "type": "module",
-  "main": "dist/index.js",
+  "files": [
+    "dist/src"
+  ],
+  "main": "dist/src/index.js",
   "devDependencies": {
     "@types/node": "^20.11.16",
     "@vitest/browser": "^1.4.0",
@@ -13,7 +16,7 @@
     "semantic-release": "^23.0.0",
     "semantic-release-monorepo": "^8.0.1",
     "type-fest": "^4.10.2",
-    "typescript": "^5.3.3",
+    "typescript": "^5.4.3",
     "vite": "^5.1.6",
     "vite-plugin-dts": "^3.7.3",
     "vite-plugin-node-polyfills": "^0.21.0",
@@ -26,7 +29,7 @@
     "format": "prettier --write '{src,tests}/**/*.ts'",
     "format:check": "prettier --check '{src,tests}/**/*.ts'",
     "test": "vitest --run --browser.name=firefox --browser.headless",
-    "build": "vite build",
+    "build": "tsc && ls -lhS dist/src",
     "release": "semantic-release"
   },
   "release": {

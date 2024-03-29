@@ -5,9 +5,12 @@
   "repository": "github:jemc/glass",
   "license": "MIT",
   "type": "module",
-  "main": "dist/index.js",
+  "files": [
+    "dist/src"
+  ],
+  "main": "dist/src/index.js",
   "dependencies": {
-    "@glass/core": "workspace:*"
+    "@glass/core": "^1.0.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.42.1",
@@ -23,7 +26,7 @@
     "semantic-release-monorepo": "^8.0.1",
     "stream-browserify": "^3.0.0",
     "ts-loader": "^9.5.1",
-    "typescript": "^5.3.3",
+    "typescript": "^5.4.3",
     "vite": "^5.1.6",
     "vite-plugin-dts": "^3.7.3",
     "vite-plugin-node-polyfills": "^0.21.0",
@@ -39,7 +42,7 @@
     "test:playwright": "playwright test -c examples",
     "test:playwright:install": "playwright install --with-deps chromium",
     "start:examples": "vite serve examples --config vite.config.ts",
-    "build": "vite build",
+    "build": "tsc && ls -lhS dist/src",
     "release": "semantic-release"
   },
   "release": {
