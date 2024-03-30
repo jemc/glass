@@ -1,18 +1,25 @@
 import { defineConfig } from "vite"
 import { nodePolyfills } from "vite-plugin-node-polyfills"
-import tsconfigPaths from "vite-tsconfig-paths"
 import dts from "vite-plugin-dts"
 import path from "path"
 
 export default defineConfig({
   plugins: [
-    tsconfigPaths({ root: path.resolve(__dirname, "..") }),
     nodePolyfills(),
     dts({
       entryRoot: "src",
       aliasesExclude: [/^@glass\//], // type declarations don't use local aliases
     }),
   ],
+
+  resolve: {
+    alias: [
+      {
+        find: /^@glass\/(.+)$/,
+        replacement: path.resolve(__dirname, "../$1/src"),
+      },
+    ],
+  },
 
   server: { port: 8000 },
 
