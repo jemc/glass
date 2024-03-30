@@ -18,6 +18,7 @@ export class Context {
     this.buttons = new ButtonState(world.clock)
     this.scene = world.create([
       this,
+      opal,
       this.camera,
       new Opal.Position(0, 0),
       new Opal.Renderable(),
