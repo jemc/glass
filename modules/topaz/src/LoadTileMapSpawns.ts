@@ -1,4 +1,4 @@
-import { registerComponent, World } from "@glass/core"
+import { registerComponent, System, World } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 
@@ -17,7 +17,7 @@ export class LoadTileMapSpawns {
 }
 
 export const LoadTileMapSpawnsSystem = (world: World) =>
-  world.systemFor([Context, LoadTileMapSpawns], {
+  System.for([Context, LoadTileMapSpawns], {
     shouldMatchAll: [LoadTileMapSpawns],
 
     runEach(entity, context, load) {

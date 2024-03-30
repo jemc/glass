@@ -1,5 +1,5 @@
 import Aseprite from "ase-parser"
-import { World, Vector2, Box2, registerComponent } from "@glass/core"
+import { World, Vector2, Box2, registerComponent, System } from "@glass/core"
 import { Context } from "./Context"
 import { LoadAsepriteAsset } from "./LoadAsepriteAsset"
 import { Render } from "./Render"
@@ -29,7 +29,7 @@ type Config = {
 }
 
 export const LoadSpriteSheetAssetsSystem = (world: World) =>
-  world.systemFor([Context, LoadSpriteSheetAsset], {
+  System.for([Context, LoadSpriteSheetAsset], {
     shouldMatchAll: [LoadSpriteSheetAsset],
 
     runEach(entity, context, asset) {

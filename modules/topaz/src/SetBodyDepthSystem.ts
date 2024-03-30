@@ -1,4 +1,4 @@
-import { World } from "@glass/core"
+import { System, World } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Body } from "./Body"
 import { Context } from "./Context"
@@ -18,7 +18,7 @@ export const SetBodyDepthSystem = (world: World) => {
   const maxTileMapHeight = 2 ** 23 // ~8 million tiles should be plenty
   const depthFactor = -0.5 / maxTileMapHeight
 
-  return world.systemFor([Context, Body, Opal.Position, Opal.Renderable], {
+  return System.for([Context, Body, Opal.Position, Opal.Renderable], {
     shouldMatchAll: [Body],
 
     runEach(entity, context, body, position, renderable) {

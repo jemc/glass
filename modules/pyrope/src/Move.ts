@@ -1,4 +1,4 @@
-import { registerComponent, World, Status } from "@glass/core"
+import { registerComponent, World, Status, System } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 import { Body } from "./Body"
@@ -29,7 +29,7 @@ export interface MoverModeConfig {
 }
 
 export const MoveSystem = (world: World) =>
-  world.systemFor([Mover, Opal.Position, Status, Body], {
+  System.for([Mover, Opal.Position, Status, Body], {
     shouldMatchAll: [Mover],
 
     runEach(entity, mover, position, status, body) {

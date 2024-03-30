@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest"
-import { World, Entity, registerComponent } from "../src"
+import { World, Entity, registerComponent, System, Phase } from "../src"
 
 // An example relationship component, referring to a given parent entity.
 class LocatedIn {
@@ -21,7 +21,7 @@ class RequiresColorAndLocatedIn {
 }
 
 const RequiresColorAndLocatedInSystem = (world: World) =>
-  world.systemFor([Color, LocatedIn, RequiresColorAndLocatedIn], {
+  System.for([Color, LocatedIn, RequiresColorAndLocatedIn], {
     shouldMatchAll: [RequiresColorAndLocatedIn],
     runEach() {},
   })
@@ -29,7 +29,7 @@ const RequiresColorAndLocatedInSystem = (world: World) =>
 // A system for entities with color, which only tracks its members.
 const colorSystemEntities = new Set<Entity>()
 const ColorSystem = (world: World) =>
-  world.systemFor([Color], {
+  System.for([Color], {
     shouldMatchAll: [Color],
     runEachSet(entity, color) {
       colorSystemEntities.add(entity)
@@ -91,7 +91,7 @@ describe("World", () => {
     const example = world.create()
     const parent = world.create()
     const child = world.create()
-    world.addSystem(ColorSystem)
+    world.addSystem(Phase.PreRender, ColorSystem)
 
     // Create an example entity with a color and in the middle of a hierarchy.
     world.set(example, [new Color("red"), new LocatedIn(parent)])
@@ -134,7 +134,7 @@ describe("World", () => {
 
   test("can scan for warnings about missing prerequisite components", () => {
     const world = new World()
-    world.addSystem(RequiresColorAndLocatedInSystem)
+    world.addSystem(Phase.PreRender, RequiresColorAndLocatedInSystem)
     const entity1 = world.create([new RequiresColorAndLocatedIn()])
     const entity2 = world.create([
       new RequiresColorAndLocatedIn(),

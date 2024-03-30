@@ -8,10 +8,13 @@ import {
   setComponentPrerequisite,
 } from "./Component"
 import { Entity } from "./Entity"
-import { System } from "./System"
+import { System, SystemFactory } from "./System"
 import { Clock } from "./Clock"
 import { BitMask } from "./BitMask"
 import { AutoMap } from "./AutoMap"
+import { Phase, PhaseGraph } from "./Phase"
+import { OrderedListAddOpts } from "./OrderedList"
+import { StatusSystem } from "./Status"
 
 const ComponentStorage = Array
 type ComponentStorage = Component[]
@@ -44,37 +47,30 @@ export class World {
   private entityPool = newEntityPoolWithStaticComponentsReserved()
 
   // The systems that are currently running in the world.
-  private systems: System[] = []
+  private phases: PhaseGraph
 
   // The world clock (public); used for advancing the world's state.
-  clock: Clock
+  readonly clock: Clock
 
   constructor() {
+    this.phases = new PhaseGraph()
     this.clock = new Clock(() => this.run())
+
+    // Set up the core phases and systems.
+
+    this.phases.addPhase(Phase.Load)
+    this.phases.addPhase(Phase.Impetus)
+    this.phases.addPhase(Phase.Action)
+    this.phases.addPhase(Phase.Reaction)
+    this.phases.addPhase(Phase.Correction)
+    this.phases.addPhase(Phase.PreRender)
+    this.phases.addPhase(Phase.Render)
+
+    this.addSystem(Phase.Action, StatusSystem)
   }
 
   startRunning() {
     this.clock.startRunning()
-  }
-
-  systemFor<T extends ComponentClasses, S extends Partial<System<T>>>(
-    componentTypes: T,
-    overrides: S & { shouldMatchAll?: ComponentClass[] },
-  ): System<T> & S {
-    // If the `shouldMatchAll` property is set, then for every component type
-    // in that list, set a prerequisite relationship with every other component
-    // type in the list.
-    if (overrides.shouldMatchAll) {
-      overrides.shouldMatchAll.forEach((componentType) => {
-        componentTypes.forEach((prerequisiteType) => {
-          if (componentType !== prerequisiteType)
-            setComponentPrerequisite(componentType, prerequisiteType)
-        })
-      })
-    }
-
-    // Return the System object.
-    return Object.assign(new System<T>(componentTypes), overrides)
   }
 
   create(components?: ComponentClass["prototype"][]): Entity {
@@ -157,7 +153,7 @@ export class World {
 
   destroy(entity: Entity): void {
     // Any system that was tracking this entity must drop it.
-    this.systems.forEach((system) => system.removeEntityIfPresent(entity))
+    this.phases.forEachSystem((system) => system.removeEntityIfPresent(entity))
     // Any component that was attached to this entity must be dropped.
     const bitMask = this.entityBitMasks[entity]
     if (bitMask) {
@@ -280,9 +276,13 @@ export class World {
     return this.collectedStorage[entity]?.get(componentId) ?? new Set()
   }
 
-  addSystem(systemFn: (world: World) => System) {
-    const system = systemFn(this)
-    this.systems.push(system)
+  addSystem(
+    phase: Phase,
+    systemFactory: SystemFactory,
+    opts: OrderedListAddOpts<SystemFactory> = {},
+  ) {
+    const system = systemFactory(this)
+    this.phases.addSystem(phase, systemFactory, system, opts)
     system.componentTypes.forEach(({ componentId }) => {
       system._requiredBits.set(componentId, true)
     })
@@ -291,18 +291,30 @@ export class World {
     })
   }
 
-  addSystems(...systemFns: ((world: World) => System)[]) {
-    for (const systemFn of systemFns) this.addSystem(systemFn)
+  forEachPhase(fn: (phase: Phase) => void) {
+    this.phases.forEachPhase(fn)
+  }
+
+  forEachSystem(fn: (system: System) => void) {
+    this.phases.forEachSystem(fn)
+  }
+
+  forEachPhaseAndSystem(
+    fn: (phase: Phase, systemFactory: SystemFactory, system: System) => void,
+  ) {
+    this.phases.forEachPhaseAndSystem(fn)
   }
 
   run() {
-    for (const system of this.systems) system.run(system._entities)
+    this.phases.forEachSystem((system) => {
+      system.run(system._entities)
+    })
   }
 
   private updateSystemsForEntity(entity: Entity, bits: BitMask) {
-    for (const system of this.systems) {
+    this.phases.forEachSystem((system) => {
       this.updateSystemForEntity(system, entity, bits)
-    }
+    })
   }
 
   private updateSystemForEntity(system: System, entity: Entity, bits: BitMask) {

@@ -1,4 +1,10 @@
-import { registerComponent, World, Vector2, MutableVector2 } from "@glass/core"
+import {
+  registerComponent,
+  World,
+  Vector2,
+  MutableVector2,
+  System,
+} from "@glass/core"
 import { Position } from "./Position"
 import { Context } from "./Context"
 
@@ -24,7 +30,7 @@ export class AnimatePosition {
 }
 
 export const AnimatePositionSystem = (world: World) =>
-  world.systemFor([AnimatePosition, Position], {
+  System.for([AnimatePosition, Position], {
     shouldMatchAll: [AnimatePosition],
 
     runEach(entity, animate, position) {

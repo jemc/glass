@@ -1,4 +1,4 @@
-import { registerComponent, World, Vector2 } from "@glass/core"
+import { registerComponent, World, Vector2, System } from "@glass/core"
 import { Context } from "./Context"
 import { Walking } from "./Walk"
 
@@ -15,7 +15,7 @@ export class WarpPlayerTo {
 }
 
 export const WarpPlayerSystem = (world: World) => {
-  return world.systemFor([Context, WarpPlayerTo], {
+  return System.for([Context, WarpPlayerTo], {
     shouldMatchAll: [WarpPlayerTo],
 
     runEach(entity, context, warp) {

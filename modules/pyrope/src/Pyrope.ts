@@ -4,3 +4,24 @@ export * from "./Context"
 export * from "./Jump"
 export * from "./Move"
 export * from "./Spawn"
+
+import { World, Phase } from "@glass/core"
+import { Opal } from "@glass/opal"
+import {
+  SpawnOnStatusSystem,
+  MoveSystem,
+  JumpSystem,
+  BodyUpdateSystem,
+  CameraFocusSystem,
+} from "."
+
+export function setup(world: World) {
+  Opal.setup(world)
+
+  world.addSystem(Phase.Action, SpawnOnStatusSystem)
+  world.addSystem(Phase.Action, MoveSystem)
+  world.addSystem(Phase.Action, JumpSystem)
+  world.addSystem(Phase.Action, BodyUpdateSystem)
+
+  world.addSystem(Phase.Reaction, CameraFocusSystem)
+}

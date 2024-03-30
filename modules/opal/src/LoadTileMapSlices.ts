@@ -1,5 +1,5 @@
 import { Context } from "./Context"
-import { registerComponent, World, Box2 } from "@glass/core"
+import { registerComponent, World, Box2, System } from "@glass/core"
 
 export class LoadTileMapSlices {
   static readonly componentId = registerComponent(this)
@@ -11,7 +11,7 @@ export class LoadTileMapSlices {
 }
 
 export const LoadTileMapSlicesSystem = (world: World) =>
-  world.systemFor([Context, LoadTileMapSlices], {
+  System.for([Context, LoadTileMapSlices], {
     shouldMatchAll: [LoadTileMapSlices],
 
     runEach(entity, context, load) {

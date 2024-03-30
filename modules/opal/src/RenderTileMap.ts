@@ -5,6 +5,7 @@ import {
   Vector2,
   ReadVector2,
   MutableVector2,
+  System,
 } from "@glass/core"
 import { Context } from "./Context"
 import { Render } from "./Render"
@@ -27,7 +28,7 @@ export class RenderTileMap {
 }
 
 export const RenderTileMapSystem = (world: World) => {
-  return world.systemFor([Context, RenderTileMap, Renderable], {
+  return System.for([Context, RenderTileMap, Renderable], {
     shouldMatchAll: [RenderTileMap],
 
     runEach(entity, context, component, renderable) {

@@ -5,6 +5,7 @@ import {
   MutableBox2,
   ReadVector2,
   MutableVector2,
+  System,
 } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
@@ -65,7 +66,7 @@ export class Camera {
 }
 
 export const CameraFocusSystem = (world: World) => {
-  return world.systemFor([Context, Camera, Opal.Renderable, Opal.Position], {
+  return System.for([Context, Camera, Opal.Renderable, Opal.Position], {
     shouldMatchAll: [Camera],
 
     runEach(entity, context, camera, renderable, position) {

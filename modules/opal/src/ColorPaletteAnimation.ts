@@ -1,4 +1,4 @@
-import { World, registerComponent } from "@glass/core"
+import { System, World, registerComponent } from "@glass/core"
 import { Context } from "./Context"
 
 interface ColorPaletteAnimationConfig {
@@ -14,7 +14,7 @@ export class ColorPaletteAnimation {
 }
 
 export const ColorPaletteAnimationSystem = (world: World) =>
-  world.systemFor([Context, ColorPaletteAnimation], {
+  System.for([Context, ColorPaletteAnimation], {
     shouldMatchAll: [ColorPaletteAnimation],
 
     runEach(entity, opal, animation) {

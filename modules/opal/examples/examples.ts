@@ -12,9 +12,9 @@ function setup(canvas: HTMLCanvasElement) {
   canvas.style.backgroundColor = "black"
 
   const world = new World()
-  const opal = new Opal.Context(new Opal.Render(canvas))
+  Opal.setup(world)
 
-  setupSystems(world)
+  const opal = new Opal.Context(new Opal.Render(canvas))
   switch (TEST_NAME) {
     case "test-sprites":
       setupTestSprites(world, opal)
@@ -45,27 +45,6 @@ function setup(canvas: HTMLCanvasElement) {
     warnings.forEach((warning) => console.warn(warning))
     throw new Error("Warnings were found.")
   }
-}
-
-function setupSystems(world: World) {
-  world.addSystems(
-    // Load phase
-    Opal.LoadSpriteSheetAssetsSystem,
-    Opal.LoadTileMapAssetsSystem,
-    Opal.LoadTileMapSlicesSystem,
-    // Reaction phase
-    StatusSystem,
-    Opal.PositionWrapsAtEdgesSystem,
-    // Pre-render phase
-    Opal.SpriteSetFromStatusSystem,
-    Opal.SpriteAnimationSystem,
-    Opal.AnimatePositionSystem,
-    Opal.ColorPaletteAnimationSystem,
-    // Render phase
-    Opal.RenderBeginSystem,
-    Opal.RenderTileMapSystem,
-    Opal.RenderRenderablesSystem,
-  )
 }
 
 function setupTestSprites(world: World, opal: Opal.Context) {

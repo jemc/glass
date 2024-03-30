@@ -5,6 +5,7 @@ import {
   MutableVector2,
   ReadVector2,
   Matrix3,
+  System,
 } from "@glass/core"
 import { Context } from "./Context"
 
@@ -128,7 +129,7 @@ export class PositionWrapsAtEdges {
 }
 
 export const PositionWrapsAtEdgesSystem = (world: World) =>
-  world.systemFor([Position, PositionWrapsAtEdges], {
+  System.for([Position, PositionWrapsAtEdges], {
     shouldMatchAll: [PositionWrapsAtEdges],
 
     runEach(entity, position, positionWrapsAtEdges) {

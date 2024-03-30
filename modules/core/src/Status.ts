@@ -1,6 +1,7 @@
 import { registerComponent } from "./Component"
 import { Clock } from "./Clock"
 import { World } from "./World"
+import { System } from "./System"
 
 export interface StatusConfig {
   readonly setAtStart?: boolean
@@ -144,7 +145,7 @@ export class Status {
 }
 
 export const StatusSystem = (world: World) =>
-  world.systemFor([Status], {
+  System.for([Status], {
     shouldMatchAll: [Status],
 
     runEach(entity, status) {

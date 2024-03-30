@@ -1,4 +1,4 @@
-import { Entity, Matrix3, World } from "@glass/core"
+import { Entity, Matrix3, System, World } from "@glass/core"
 import { Context } from "./Context"
 import { Renderable } from "./Renderable"
 import { Position, PositionWithin } from "./Position"
@@ -65,7 +65,7 @@ export const RenderRenderablesSystem = (world: World) => {
     }
   }
 
-  return world.systemFor([Context, Renderable], {
+  return System.for([Context, Renderable], {
     shouldMatchAll: [Renderable],
 
     run(entities) {

@@ -1,4 +1,4 @@
-import { registerComponent, World } from "@glass/core"
+import { registerComponent, System, World } from "@glass/core"
 import { Context } from "./Context"
 import { Position } from "./Position"
 import { Renderable } from "./Renderable"
@@ -56,7 +56,7 @@ export class SpriteAnimation {
 }
 
 export const SpriteAnimationSystem = (world: World) =>
-  world.systemFor([Context, Position, Renderable, Sprite], {
+  System.for([Context, Position, Renderable, Sprite], {
     shouldMatchAll: [Sprite],
 
     runEach(entity, context, position, renderable, sprite) {

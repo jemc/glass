@@ -1,4 +1,4 @@
-import { registerComponent, World } from "@glass/core"
+import { registerComponent, System, World } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 
@@ -14,7 +14,7 @@ export class RenderText {
 }
 
 export const RenderTextSystem = (world: World) =>
-  world.systemFor([Context, RenderText, Opal.Renderable], {
+  System.for([Context, RenderText, Opal.Renderable], {
     shouldMatchAll: [RenderText],
 
     runEach(entity, context, renderText, renderable) {

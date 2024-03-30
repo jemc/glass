@@ -1,4 +1,10 @@
-import { registerComponent, World, Status, ReadVector2 } from "@glass/core"
+import {
+  registerComponent,
+  World,
+  Status,
+  ReadVector2,
+  System,
+} from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 
@@ -19,7 +25,7 @@ export class SpawnOnStatus {
 }
 
 export const SpawnOnStatusSystem = (world: World) =>
-  world.systemFor([SpawnOnStatus, Context, Status, Opal.Position], {
+  System.for([SpawnOnStatus, Context, Status, Opal.Position], {
     shouldMatchAll: [SpawnOnStatus],
 
     runEach(entity, spawn, pyrope, status, position) {

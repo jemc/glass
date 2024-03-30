@@ -1,8 +1,8 @@
-import { World } from "@glass/core"
+import { System, World } from "@glass/core"
 import { Context } from "./Context"
 
 export const RenderBeginSystem = (world: World) => {
-  return world.systemFor([Context], {
+  return System.for([Context], {
     shouldMatchAll: [Context],
 
     run() {

@@ -1,4 +1,4 @@
-import { registerComponent, World, Vector2 } from "@glass/core"
+import { registerComponent, World, Vector2, System } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 import { Direction } from "./Direction"
@@ -55,7 +55,7 @@ export class Walking {
 }
 
 export const WalkSystem = (world: World) =>
-  world.systemFor([Walker, Opal.Position], {
+  System.for([Walker, Opal.Position], {
     shouldMatchAll: [Walker],
 
     runEach: (entity, walker, position) => {

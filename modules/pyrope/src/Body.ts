@@ -4,6 +4,7 @@ import {
   World,
   ReadVector2,
   MutableVector2,
+  System,
 } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
@@ -160,7 +161,7 @@ export class Body {
 }
 
 export const BodyUpdateSystem = (world: World) =>
-  world.systemFor([Context, Body, Opal.Position], {
+  System.for([Context, Body, Opal.Position], {
     shouldMatchAll: [Body],
 
     runEach(entity, context, body, position) {

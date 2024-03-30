@@ -1,18 +1,19 @@
 import { describe, expect, test } from "vitest"
 import { World, Vector2 } from "@glass/core"
-import { AnimatePosition, AnimatePositionSystem, Position } from "../src"
+import { Opal } from "../src"
 
 describe("AnimatePosition", () => {
   test("it animates the position of an entity", () => {
     const world = new World()
-    world.addSystem(AnimatePositionSystem)
+    Opal.setup(world)
+
     const entity = world.create([
-      new Position(5, -3),
-      new AnimatePosition({ delta: new Vector2(-8, 10), frames: 10 }),
+      new Opal.Position(5, -3),
+      new Opal.AnimatePosition({ delta: new Vector2(-8, 10), frames: 10 }),
     ])
 
     function pos() {
-      return world.get(entity, Position)?.coords?.toArray()
+      return world.get(entity, Opal.Position)?.coords?.toArray()
     }
 
     expect(pos()).toEqual([5, -3])

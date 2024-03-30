@@ -1,5 +1,5 @@
 import { Voice, VoiceConfig, VoiceNote } from "./Voice"
-import { Clock, World, registerComponent } from "@glass/core"
+import { Clock, System, World, registerComponent } from "@glass/core"
 import { Context } from "./Context"
 import { Riff, riffDuration, riffSeqToVoiceNotes } from "./Riff"
 
@@ -114,7 +114,7 @@ export class ArrangementPlay {
 }
 
 export const ArrangementPlaySystem = (world: World) =>
-  world.systemFor([Context, ArrangementPlay], {
+  System.for([Context, ArrangementPlay], {
     shouldMatchAll: [ArrangementPlay],
 
     runEach(entity, context, play) {
