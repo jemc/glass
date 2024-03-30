@@ -1,11 +1,5 @@
 import Aseprite from "ase-parser"
-import {
-  World,
-  Vector2,
-  Box2,
-  registerComponent,
-  prerequisiteComponents,
-} from "@glass/core"
+import { World, Vector2, Box2, registerComponent } from "@glass/core"
 import { Context } from "./Context"
 import { LoadAsepriteAsset } from "./LoadAsepriteAsset"
 import { Render } from "./Render"
@@ -16,7 +10,6 @@ import { ColorPalette } from "./ColorPalette"
 
 export class LoadSpriteSheetAsset extends LoadAsepriteAsset {
   static readonly componentId = registerComponent(this)
-  static readonly prerequisiteComponentIds = prerequisiteComponents(Context)
 
   constructor(
     url: string,
@@ -37,6 +30,8 @@ type Config = {
 
 export const LoadSpriteSheetAssetsSystem = (world: World) =>
   world.systemFor([Context, LoadSpriteSheetAsset], {
+    shouldMatchAll: [LoadSpriteSheetAsset],
+
     runEach(entity, context, asset) {
       const ase = asset.result
       if (!ase) return

@@ -1,10 +1,5 @@
 import { describe, expect, test } from "vitest"
-import {
-  World,
-  Entity,
-  registerComponent,
-  prerequisiteComponents,
-} from "../src"
+import { World, Entity, registerComponent } from "../src"
 
 // An example relationship component, referring to a given parent entity.
 class LocatedIn {
@@ -23,16 +18,19 @@ class Color {
 // An example component that requires the two above components as prerequisites.
 class RequiresColorAndLocatedIn {
   static readonly componentId = registerComponent(this)
-  static readonly prerequisiteComponentIds = prerequisiteComponents(
-    Color,
-    LocatedIn,
-  )
 }
+
+const RequiresColorAndLocatedInSystem = (world: World) =>
+  world.systemFor([Color, LocatedIn, RequiresColorAndLocatedIn], {
+    shouldMatchAll: [RequiresColorAndLocatedIn],
+    runEach() {},
+  })
 
 // A system for entities with color, which only tracks its members.
 const colorSystemEntities = new Set<Entity>()
 const ColorSystem = (world: World) =>
   world.systemFor([Color], {
+    shouldMatchAll: [Color],
     runEachSet(entity, color) {
       colorSystemEntities.add(entity)
     },
@@ -136,6 +134,7 @@ describe("World", () => {
 
   test("can scan for warnings about missing prerequisite components", () => {
     const world = new World()
+    world.addSystem(RequiresColorAndLocatedInSystem)
     const entity1 = world.create([new RequiresColorAndLocatedIn()])
     const entity2 = world.create([
       new RequiresColorAndLocatedIn(),

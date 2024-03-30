@@ -145,6 +145,8 @@ export class Status {
 
 export const StatusSystem = (world: World) =>
   world.systemFor([Status], {
+    shouldMatchAll: [Status],
+
     runEach(entity, status) {
       status.noticeTime()
     },

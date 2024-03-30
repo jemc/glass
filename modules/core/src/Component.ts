@@ -11,7 +11,6 @@ export type ComponentClass<T extends {} = {}> = {
   readonly name: string
   readonly prototype: T & Component
   readonly componentId: Entity
-  readonly prerequisiteComponentIds?: BitMask
 }
 
 // This hack forces TypeScript to treat the list of classes as a tuple
@@ -51,14 +50,6 @@ export function registerComponent(constructor: ComponentClass): number {
   return componentId
 }
 
-// Mark components that are prerequisites for a component class like this:
-//   static readonly prerequisiteComponentIds = prerequisiteComponents(X, Y, Z)
-export function prerequisiteComponents(...others: ComponentClass[]): BitMask {
-  const bits = new BitMask()
-  others.forEach((componentClass) => bits.set(componentClass.componentId, true))
-  return bits
-}
-
 // Get the component class for a given component ID.
 // This is intended for use by the World class.
 export function getComponentClassById(id: number): ComponentClass | undefined {
@@ -72,4 +63,20 @@ export function getComponentClassById(id: number): ComponentClass | undefined {
 export function newEntityPoolWithStaticComponentsReserved(): EntityPool {
   Object.freeze(pool)
   return new EntityPool(pool)
+}
+
+const componentPrerequisites: BitMask[] = []
+
+export function setComponentPrerequisite(
+  component: ComponentClass,
+  prerequisite: ComponentClass,
+) {
+  const prereqs = (componentPrerequisites[component.componentId] ??=
+    new BitMask())
+
+  prereqs.set(prerequisite.componentId, true)
+}
+
+export function getComponentPrerequisiteIds(component: ComponentClass) {
+  return componentPrerequisites[component.componentId]
 }

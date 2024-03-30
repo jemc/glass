@@ -1,6 +1,5 @@
 import {
   registerComponent,
-  prerequisiteComponents,
   Entity,
   World,
   MutableVector2,
@@ -11,7 +10,6 @@ import { Context } from "./Context"
 
 export class Position {
   static readonly componentId = registerComponent(this)
-  static readonly prerequisiteComponentIds = prerequisiteComponents(Context)
 
   private _dirty = true
   private _coords: MutableVector2
@@ -114,20 +112,12 @@ export class Position {
 
 export class PositionWithin {
   static readonly componentId = registerComponent(this)
-  static readonly prerequisiteComponentIds = prerequisiteComponents(
-    Context,
-    Position,
-  )
 
   constructor(readonly collectionEntity: Entity) {}
 }
 
 export class PositionWrapsAtEdges {
   static readonly componentId = registerComponent(this)
-  static readonly prerequisiteComponentIds = prerequisiteComponents(
-    Context,
-    Position,
-  )
 
   constructor(
     readonly config: {
@@ -139,6 +129,8 @@ export class PositionWrapsAtEdges {
 
 export const PositionWrapsAtEdgesSystem = (world: World) =>
   world.systemFor([Position, PositionWrapsAtEdges], {
+    shouldMatchAll: [PositionWrapsAtEdges],
+
     runEach(entity, position, positionWrapsAtEdges) {
       const { center, size } = positionWrapsAtEdges.config
       const halfWidth = size.x / 2

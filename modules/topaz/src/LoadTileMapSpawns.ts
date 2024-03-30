@@ -1,10 +1,9 @@
-import { registerComponent, prerequisiteComponents, World } from "@glass/core"
+import { registerComponent, World } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 
 export class LoadTileMapSpawns {
   static readonly componentId = registerComponent(this)
-  static readonly prerequisiteComponentIds = prerequisiteComponents(Context)
 
   constructor(
     readonly url: string,
@@ -19,6 +18,8 @@ export class LoadTileMapSpawns {
 
 export const LoadTileMapSpawnsSystem = (world: World) =>
   world.systemFor([Context, LoadTileMapSpawns], {
+    shouldMatchAll: [LoadTileMapSpawns],
+
     runEach(entity, context, load) {
       const tileMap = context.opal.tileMaps.get(load.url)
       if (!tileMap) return

@@ -1,15 +1,9 @@
-import {
-  registerComponent,
-  prerequisiteComponents,
-  World,
-  Vector2,
-} from "@glass/core"
+import { registerComponent, World, Vector2 } from "@glass/core"
 import { Context } from "./Context"
 import { Walking } from "./Walk"
 
 export class WarpPlayerTo {
   static readonly componentId = registerComponent(this)
-  static readonly prerequisiteComponentIds = prerequisiteComponents(Context)
 
   constructor(
     readonly tileMapName: string,
@@ -22,6 +16,8 @@ export class WarpPlayerTo {
 
 export const WarpPlayerSystem = (world: World) => {
   return world.systemFor([Context, WarpPlayerTo], {
+    shouldMatchAll: [WarpPlayerTo],
+
     runEach(entity, context, warp) {
       const tileMap = context.opal.tileMaps.get(warp.tileMapName)
       if (!tileMap) return

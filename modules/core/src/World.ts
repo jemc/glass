@@ -3,7 +3,9 @@ import {
   ComponentClass,
   ComponentClasses,
   getComponentClassById,
+  getComponentPrerequisiteIds,
   newEntityPoolWithStaticComponentsReserved,
+  setComponentPrerequisite,
 } from "./Component"
 import { Entity } from "./Entity"
 import { System } from "./System"
@@ -57,8 +59,21 @@ export class World {
 
   systemFor<T extends ComponentClasses, S extends Partial<System<T>>>(
     componentTypes: T,
-    overrides: S,
+    overrides: S & { shouldMatchAll?: ComponentClass[] },
   ): System<T> & S {
+    // If the `shouldMatchAll` property is set, then for every component type
+    // in that list, set a prerequisite relationship with every other component
+    // type in the list.
+    if (overrides.shouldMatchAll) {
+      overrides.shouldMatchAll.forEach((componentType) => {
+        componentTypes.forEach((prerequisiteType) => {
+          if (componentType !== prerequisiteType)
+            setComponentPrerequisite(componentType, prerequisiteType)
+        })
+      })
+    }
+
+    // Return the System object.
     return Object.assign(new System<T>(componentTypes), overrides)
   }
 
@@ -107,7 +122,8 @@ export class World {
       const componentClass = getComponentClassById(componentId)
       if (!componentClass) return
 
-      const { prerequisiteComponentIds } = componentClass
+      const prerequisiteComponentIds =
+        getComponentPrerequisiteIds(componentClass)
       if (prerequisiteComponentIds) {
         componentStorage.forEach((component, entity) => {
           if (!component) return

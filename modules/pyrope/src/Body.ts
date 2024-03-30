@@ -1,7 +1,6 @@
 import type { Writable } from "type-fest"
 import {
   registerComponent,
-  prerequisiteComponents,
   World,
   ReadVector2,
   MutableVector2,
@@ -11,10 +10,6 @@ import { Context } from "./Context"
 
 export class Body {
   static readonly componentId = registerComponent(this)
-  static readonly prerequisiteComponentIds = prerequisiteComponents(
-    Context,
-    Opal.Position,
-  )
 
   passThroughSolids: boolean = false
 
@@ -166,6 +161,8 @@ export class Body {
 
 export const BodyUpdateSystem = (world: World) =>
   world.systemFor([Context, Body, Opal.Position], {
+    shouldMatchAll: [Body],
+
     runEach(entity, context, body, position) {
       // TODO: less hard-coded here
       const tileMap = context.opal.tileMaps.get(

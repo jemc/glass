@@ -19,6 +19,8 @@ export const SetBodyDepthSystem = (world: World) => {
   const depthFactor = -0.5 / maxTileMapHeight
 
   return world.systemFor([Context, Body, Opal.Position, Opal.Renderable], {
+    shouldMatchAll: [Body],
+
     runEach(entity, context, body, position, renderable) {
       renderable.depth =
         (position.coords.y * depthFactor) / context.config.tileSize

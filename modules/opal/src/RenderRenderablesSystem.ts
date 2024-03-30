@@ -66,6 +66,8 @@ export const RenderRenderablesSystem = (world: World) => {
   }
 
   return world.systemFor([Context, Renderable], {
+    shouldMatchAll: [Renderable],
+
     run(entities) {
       Context.forEach((context: Context) => {
         context._spriteRendering.beginRender(context.render)

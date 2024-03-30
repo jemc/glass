@@ -1,6 +1,5 @@
 import {
   registerComponent,
-  prerequisiteComponents,
   World,
   Box2,
   MutableBox2,
@@ -12,11 +11,6 @@ import { Context } from "./Context"
 
 export class Camera {
   static readonly componentId = registerComponent(this)
-  static readonly prerequisiteComponentIds = prerequisiteComponents(
-    Context,
-    Opal.Position,
-    Opal.Renderable,
-  )
 
   readonly viewport = new MutableBox2()
   private position = new MutableVector2()
@@ -72,6 +66,8 @@ export class Camera {
 
 export const CameraFocusSystem = (world: World) => {
   return world.systemFor([Context, Camera, Opal.Renderable, Opal.Position], {
+    shouldMatchAll: [Camera],
+
     runEach(entity, context, camera, renderable, position) {
       camera.resize(context.opal.render.width, context.opal.render.height)
       position.updateCoords((coords) => {

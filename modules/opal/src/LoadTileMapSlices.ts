@@ -1,14 +1,8 @@
 import { Context } from "./Context"
-import {
-  registerComponent,
-  prerequisiteComponents,
-  World,
-  Box2,
-} from "@glass/core"
+import { registerComponent, World, Box2 } from "@glass/core"
 
 export class LoadTileMapSlices {
   static readonly componentId = registerComponent(this)
-  static readonly prerequisiteComponentIds = prerequisiteComponents(Context)
 
   constructor(
     readonly url: string,
@@ -18,6 +12,8 @@ export class LoadTileMapSlices {
 
 export const LoadTileMapSlicesSystem = (world: World) =>
   world.systemFor([Context, LoadTileMapSlices], {
+    shouldMatchAll: [LoadTileMapSlices],
+
     runEach(entity, context, load) {
       const tileMap = context.tileMaps.get(load.url)
       if (!tileMap) return

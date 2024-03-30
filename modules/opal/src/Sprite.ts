@@ -1,15 +1,10 @@
-import { registerComponent, prerequisiteComponents, World } from "@glass/core"
+import { registerComponent, World } from "@glass/core"
 import { Context } from "./Context"
 import { Position } from "./Position"
 import { Renderable } from "./Renderable"
 
 export class Sprite {
   static readonly componentId = registerComponent(this)
-  static readonly prerequisiteComponentIds = prerequisiteComponents(
-    Context,
-    Position,
-    Renderable,
-  )
 
   animationId: string
   framesElapsed = 0
@@ -62,6 +57,8 @@ export class SpriteAnimation {
 
 export const SpriteAnimationSystem = (world: World) =>
   world.systemFor([Context, Position, Renderable, Sprite], {
+    shouldMatchAll: [Sprite],
+
     runEach(entity, context, position, renderable, sprite) {
       if (!sprite.animation) {
         sprite.animation = context.animations?.get(sprite.animationId)

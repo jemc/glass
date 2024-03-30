@@ -1,21 +1,10 @@
-import {
-  registerComponent,
-  prerequisiteComponents,
-  World,
-  Status,
-} from "@glass/core"
+import { registerComponent, World, Status } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 import { Body } from "./Body"
 
 export class Mover {
   static readonly componentId = registerComponent(this)
-  static readonly prerequisiteComponentIds = prerequisiteComponents(
-    Context,
-    Opal.Position,
-    Status,
-    Body,
-  )
 
   constructor(readonly config: MoverConfig) {}
 }
@@ -41,6 +30,8 @@ export interface MoverModeConfig {
 
 export const MoveSystem = (world: World) =>
   world.systemFor([Mover, Opal.Position, Status, Body], {
+    shouldMatchAll: [Mover],
+
     runEach(entity, mover, position, status, body) {
       status.each((name, statusConfig, initialFrame) => {
         const { frame } = world.clock

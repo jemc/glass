@@ -1,20 +1,10 @@
-import {
-  registerComponent,
-  prerequisiteComponents,
-  World,
-  Clock,
-} from "@glass/core"
+import { registerComponent, World, Clock } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Body } from "./Body"
 import { Context } from "./Context"
 
 export class Jumper {
   static readonly componentId = registerComponent(this)
-  static readonly prerequisiteComponentIds = prerequisiteComponents(
-    Context,
-    Opal.Position,
-    Body,
-  )
 
   constructor(readonly config: JumperConfig) {}
 
@@ -52,6 +42,8 @@ export interface JumperConfig {
 
 export const JumpSystem = (world: World) =>
   world.systemFor([Jumper, Opal.Position, Body], {
+    shouldMatchAll: [Jumper],
+
     runEach(entity, jumper, position, body) {
       jumper.maybeExpire(world.clock)
 

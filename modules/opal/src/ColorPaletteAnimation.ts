@@ -1,4 +1,4 @@
-import { World, prerequisiteComponents, registerComponent } from "@glass/core"
+import { World, registerComponent } from "@glass/core"
 import { Context } from "./Context"
 
 interface ColorPaletteAnimationConfig {
@@ -9,13 +9,14 @@ interface ColorPaletteAnimationConfig {
 
 export class ColorPaletteAnimation {
   static readonly componentId = registerComponent(this)
-  static readonly prerequisiteComponentIds = prerequisiteComponents(Context)
 
   constructor(readonly config: ColorPaletteAnimationConfig) {}
 }
 
 export const ColorPaletteAnimationSystem = (world: World) =>
   world.systemFor([Context, ColorPaletteAnimation], {
+    shouldMatchAll: [ColorPaletteAnimation],
+
     runEach(entity, opal, animation) {
       const { config } = animation
 

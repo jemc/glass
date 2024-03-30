@@ -1,10 +1,4 @@
-import {
-  registerComponent,
-  prerequisiteComponents,
-  World,
-  Vector2,
-  MutableVector2,
-} from "@glass/core"
+import { registerComponent, World, Vector2, MutableVector2 } from "@glass/core"
 import { Position } from "./Position"
 import { Context } from "./Context"
 
@@ -21,10 +15,6 @@ class _State {
 
 export class AnimatePosition {
   static readonly componentId = registerComponent(this)
-  static readonly prerequisiteComponentIds = prerequisiteComponents(
-    Context,
-    Position,
-  )
 
   readonly _state: _State
 
@@ -35,6 +25,8 @@ export class AnimatePosition {
 
 export const AnimatePositionSystem = (world: World) =>
   world.systemFor([AnimatePosition, Position], {
+    shouldMatchAll: [AnimatePosition],
+
     runEach(entity, animate, position) {
       if (animate._state.progressFrames === 0)
         animate._state.initialPosition.copyFrom(position.coords)

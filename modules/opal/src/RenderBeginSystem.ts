@@ -3,6 +3,8 @@ import { Context } from "./Context"
 
 export const RenderBeginSystem = (world: World) => {
   return world.systemFor([Context], {
+    shouldMatchAll: [Context],
+
     run() {
       Context.forEach((context) => {
         context.render.gl.clearColor(0, 0, 0, 1)

@@ -115,6 +115,8 @@ export class ArrangementPlay {
 
 export const ArrangementPlaySystem = (world: World) =>
   world.systemFor([Context, ArrangementPlay], {
+    shouldMatchAll: [ArrangementPlay],
+
     runEach(entity, context, play) {
       context.audio.resume() // TODO: move to another system, and add suspend when tab loses focus
 

@@ -1,6 +1,5 @@
 import {
   registerComponent,
-  prerequisiteComponents,
   World,
   Box2,
   Vector2,
@@ -17,10 +16,6 @@ import { TileMapShader } from "./TileMapShader"
 
 export class RenderTileMap {
   static readonly componentId = registerComponent(this)
-  static readonly prerequisiteComponentIds = prerequisiteComponents(
-    Context,
-    Renderable,
-  )
 
   _state?: _State // TODO: private?
 
@@ -33,6 +28,8 @@ export class RenderTileMap {
 
 export const RenderTileMapSystem = (world: World) => {
   return world.systemFor([Context, RenderTileMap, Renderable], {
+    shouldMatchAll: [RenderTileMap],
+
     runEach(entity, context, component, renderable) {
       if (!component._state) {
         const tileMap = context.tileMaps.get(component.url)
