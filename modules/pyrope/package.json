@@ -22,6 +22,7 @@
     "type-fest": "^4.10.2",
     "typescript": "^5.4.3",
     "vite": "^5.1.6",
+    "vite-plugin-checker": "^0.6.4",
     "vite-plugin-dts": "^3.7.3",
     "vite-plugin-node-polyfills": "^0.21.0",
     "vitest": "^1.4.0",
@@ -31,8 +32,8 @@
     "sync-base-files": "sh ../../base-files/sync.sh",
     "format": "prettier --write '{src,tests}/**/*.ts'",
     "format:check": "prettier --check '{src,tests}/**/*.ts'",
-    "test": "vitest --run --browser.name=firefox --browser.headless",
-    "build": "tsc && ls -lhS dist/src",
+    "test": "vitest --run --typecheck --browser.name=firefox --browser.headless",
+    "build": "tsc --build && ls -lhS dist/src",
     "release": "semantic-release"
   },
   "release": {

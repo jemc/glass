@@ -1,11 +1,13 @@
 import { defineConfig } from "vite"
 import { nodePolyfills } from "vite-plugin-node-polyfills"
+import { checker } from "vite-plugin-checker"
 import dts from "vite-plugin-dts"
 import path from "path"
 
 export default defineConfig({
   plugins: [
     nodePolyfills(),
+    checker({ typescript: true }),
     dts({
       entryRoot: "src",
       aliasesExclude: [/^@glass\//], // type declarations don't use local aliases
