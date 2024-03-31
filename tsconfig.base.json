@@ -9,12 +9,12 @@
     "module": "ES2020",
     "moduleResolution": "Bundler",
 
-    // Resolve peer glass modules as TypeScript source code,
+    // Resolve peer glass packages as TypeScript source code,
     // rather than using the compiled JavaScript from their dist packages.
     "composite": true,
     "paths": {
       "@glass/*": [
-        "./modules/*/src"
+        "./packages/*/src"
       ]
     }
   },

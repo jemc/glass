@@ -11,7 +11,7 @@ importers:
 
   .: {}
 
-  modules/core:
+  packages/core:
     devDependencies:
       '@types/node':
         specifier: ^20.11.16
@@ -53,7 +53,7 @@ importers:
         specifier: ^8.35.1
         version: 8.35.1(typescript@5.4.3)
 
-  modules/onyx:
+  packages/onyx:
     dependencies:
       '@glass/core':
         specifier: workspace:*
@@ -96,7 +96,7 @@ importers:
         specifier: ^8.35.1
         version: 8.35.1(typescript@5.4.3)
 
-  modules/opal:
+  packages/opal:
     dependencies:
       '@glass/core':
         specifier: ^1.0.0
@@ -163,7 +163,7 @@ importers:
         specifier: ^8.35.1
         version: 8.35.1(typescript@5.4.3)
 
-  modules/pyrope:
+  packages/pyrope:
     dependencies:
       '@glass/core':
         specifier: workspace:*
@@ -209,7 +209,7 @@ importers:
         specifier: ^8.35.1
         version: 8.35.1(typescript@5.4.3)
 
-  modules/topaz:
+  packages/topaz:
     dependencies:
       '@glass/core':
         specifier: workspace:*
@@ -252,7 +252,7 @@ importers:
         specifier: ^8.35.1
         version: 8.35.1(typescript@5.4.3)
 
-  modules/zircon:
+  packages/zircon:
     dependencies:
       '@glass/core':
         specifier: workspace:*

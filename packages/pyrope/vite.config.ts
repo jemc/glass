@@ -37,7 +37,7 @@ export default defineConfig({
     minify: false, // Leave minification up to applications.
 
     rollupOptions: {
-      external: [/^@glass\//], // don't bundle glass modules; keep them as peers
+      external: [/^@glass\//], // don't bundle glass packages; keep them as peers
     },
   },
 })
