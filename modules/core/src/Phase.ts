@@ -46,28 +46,30 @@ export class PhaseGraph {
       this.phaseSystems[phaseIndex]![systemIndex] = system
   }
 
-  forEachPhase(fn: (phase: Phase) => void) {
-    this.phases.forEach(fn)
+  public *systems() {
+    for (const [phaseIndex, _phase] of this.phases.entries()) {
+      if (phaseIndex === undefined) continue
+      for (const s of this.phaseSystems[phaseIndex]!) {
+        yield s
+      }
+    }
   }
 
-  forEachSystem(fn: (system: System) => void) {
-    this.phaseSystems.forEach((systems) => systems.forEach(fn))
+  public *phasesAndSystems() {
+    for (const [phaseIndex, phase] of this.phases.entries()) {
+      if (phaseIndex === undefined) continue
+      for (const s of this.phaseSystems[phaseIndex]!) {
+        yield [phase, s]
+      }
+    }
   }
 
-  forEachPhaseAndSystem(
-    fn: (phase: Phase, systemFactory: SystemFactory, system: System) => void,
-  ) {
-    this.phases.all.forEach((phase, phaseIndex) => {
-      if (phaseIndex !== undefined)
-        this.phaseSystems
-          .at(phaseIndex)!
-          .forEach((system, systemIndex) =>
-            fn(
-              phase,
-              this.phaseSystemFactories[phaseIndex]!.all[systemIndex]!,
-              system,
-            ),
-          )
-    })
+  public *phasesAndSystemFactories() {
+    for (const [phaseIndex, phase] of this.phases.entries()) {
+      if (phaseIndex === undefined) continue
+      for (const f of this.phaseSystemFactories[phaseIndex]!.values()) {
+        yield [phase, f]
+      }
+    }
   }
 }

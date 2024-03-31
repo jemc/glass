@@ -153,7 +153,9 @@ export class World {
 
   destroy(entity: Entity): void {
     // Any system that was tracking this entity must drop it.
-    this.phases.forEachSystem((system) => system.removeEntityIfPresent(entity))
+    for (const system of this.phases.systems()) {
+      system.removeEntityIfPresent(entity)
+    }
     // Any component that was attached to this entity must be dropped.
     const bitMask = this.entityBitMasks[entity]
     if (bitMask) {
@@ -291,30 +293,22 @@ export class World {
     })
   }
 
-  forEachPhase(fn: (phase: Phase) => void) {
-    this.phases.forEachPhase(fn)
-  }
-
-  forEachSystem(fn: (system: System) => void) {
-    this.phases.forEachSystem(fn)
-  }
-
-  forEachPhaseAndSystem(
-    fn: (phase: Phase, systemFactory: SystemFactory, system: System) => void,
-  ) {
-    this.phases.forEachPhaseAndSystem(fn)
+  public *phasesAndSystemFactories() {
+    for (const info of this.phases.phasesAndSystemFactories()) {
+      yield info
+    }
   }
 
   run() {
-    this.phases.forEachSystem((system) => {
+    for (const system of this.phases.systems()) {
       system.run(system._entities)
-    })
+    }
   }
 
   private updateSystemsForEntity(entity: Entity, bits: BitMask) {
-    this.phases.forEachSystem((system) => {
+    for (const system of this.phases.systems()) {
       this.updateSystemForEntity(system, entity, bits)
-    })
+    }
   }
 
   private updateSystemForEntity(system: System, entity: Entity, bits: BitMask) {

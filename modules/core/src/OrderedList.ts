@@ -6,13 +6,21 @@ export interface OrderedListAddOpts<T> {
 export class OrderedList<T extends { name: string }> {
   readonly all: T[] = []
 
-  forEach(fn: (item: T) => void) {
-    this.all.forEach(fn)
-  }
-
   indexOf(item: T) {
     const index = this.all.indexOf(item)
     return index === -1 ? undefined : index
+  }
+
+  public *entries() {
+    for (const [index, item] of this.all.entries()) {
+      yield [index, item] as const
+    }
+  }
+
+  public *values() {
+    for (const item of this.all) {
+      yield item
+    }
   }
 
   add(item: T, opts: OrderedListAddOpts<T> = {}) {
