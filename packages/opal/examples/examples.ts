@@ -1,4 +1,4 @@
-import { World, Vector2, StatusSystem, ReadVector2 } from "@glass/core"
+import { World, Vector2, ReadVector2 } from "@glass/core"
 import { Opal } from "../src"
 
 const TEST_NAME = window.location.hash.slice(1)
@@ -7,14 +7,15 @@ const CANVAS_RESOLUTION = new Vector2(240, 160) // GBA resolution
 setup(document.getElementById("view") as HTMLCanvasElement)
 
 function setup(canvas: HTMLCanvasElement) {
-  canvas.width = CANVAS_RESOLUTION.x
-  canvas.height = CANVAS_RESOLUTION.y
-  canvas.style.backgroundColor = "black"
-
   const world = new World()
   Opal.setup(world)
 
-  const opal = new Opal.Context(new Opal.Render(canvas))
+  const opal = new Opal.Context(
+    new Opal.Render(canvas, {
+      width: CANVAS_RESOLUTION.x,
+      height: CANVAS_RESOLUTION.y,
+    }),
+  )
   switch (TEST_NAME) {
     case "test-sprites":
       setupTestSprites(world, opal)

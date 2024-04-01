@@ -13,11 +13,24 @@ export class Render {
     return this.size.y
   }
 
-  constructor(canvas: HTMLCanvasElement, attrs?: WebGLContextAttributes) {
-    canvas.style.imageRendering = "pixelated"
+  constructor(
+    canvas: HTMLCanvasElement,
+    attrs: WebGLContextAttributes & {
+      width?: number
+      height?: number
+      magnify?: number
+    } = {},
+  ) {
+    attrs.alpha ??= false
+    attrs.width ??= 256 // NES Resolution
+    attrs.height ??= 240 // NES Resolution
+    attrs.magnify ??= 1
 
-    attrs = attrs ?? {}
-    attrs.alpha = attrs?.alpha ?? false
+    canvas.width = attrs.width
+    canvas.height = attrs.height
+    canvas.style.width = `${attrs.width * attrs.magnify}px`
+    canvas.style.height = `${attrs.height * attrs.magnify}px`
+    canvas.style.imageRendering = "pixelated"
 
     const gl = canvas.getContext("webgl2", attrs) ?? undefined
     if (!gl) throw new Error("Failed to initialize a WebGL2 context")
