@@ -202,6 +202,23 @@ export class World {
       | undefined
   }
 
+  getForMany<T extends ComponentClass>(
+    entities: { values: () => Iterable<Entity> },
+    componentType: T,
+  ): Map<Entity, T["prototype"]> {
+    const map = new Map<Entity, T["prototype"]>()
+
+    const storage = this.storage[componentType.componentId]
+    if (!storage) return map
+
+    for (const entity of entities.values()) {
+      const component = storage[entity]
+      if (component) map.set(entity, component)
+    }
+
+    return map
+  }
+
   set(entity: Entity, components: ComponentClass["prototype"][]) {
     const bitMask = (this.entityBitMasks[entity] ??= new BitMask(62))
 
@@ -272,7 +289,10 @@ export class World {
     this.updateSystemsForEntity(entity, bitMask)
   }
 
-  getCollected(entity: Entity, componentType: ComponentClass): Set<Entity> {
+  getCollected(
+    entity: Entity,
+    componentType: ComponentClass,
+  ): ReadonlySet<Entity> {
     const { componentId } = componentType
     return this.collectedStorage[entity]?.get(componentId) ?? new Set()
   }

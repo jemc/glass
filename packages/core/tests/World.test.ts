@@ -132,6 +132,19 @@ describe("World", () => {
     expect(colorSystemEntities.size).toBe(0)
   })
 
+  test("can get a component for a batch of entities", () => {
+    const world = new World()
+
+    const red = world.create([new Color("red")])
+    const green = world.create([new Color("green")])
+    const blue = world.create([new Color("blue")])
+
+    const colors = world.getForMany([red, green, blue], Color)
+    expect(colors.get(red)?.name).toBe("red")
+    expect(colors.get(green)?.name).toBe("green")
+    expect(colors.get(blue)?.name).toBe("blue")
+  })
+
   test("can scan for warnings about missing prerequisite components", () => {
     const world = new World()
     world.addSystem(Phase.PreRender, RequiresColorAndLocatedInSystem)
