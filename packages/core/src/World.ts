@@ -5,7 +5,6 @@ import {
   getComponentClassById,
   getComponentPrerequisiteIds,
   newEntityPoolWithStaticComponentsReserved,
-  setComponentPrerequisite,
 } from "./Component"
 import { Entity } from "./Entity"
 import { System, SystemFactory } from "./System"
