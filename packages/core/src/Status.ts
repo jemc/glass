@@ -26,7 +26,7 @@ export class Status {
 
   constructor(
     private clock: Clock,
-    configs: { [name: string]: StatusConfig },
+    configs: { [name: string]: StatusConfig } = {},
   ) {
     this.configs = configs
 

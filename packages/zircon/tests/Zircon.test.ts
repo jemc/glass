@@ -12,6 +12,8 @@ describe("Zircon", () => {
       [Phase.Load, Opal.LoadSpriteSheetAssetsSystem],
       [Phase.Load, Opal.LoadTileMapAssetsSystem],
       [Phase.Load, Opal.LoadTileMapSlicesSystem],
+      [Phase.Impetus, Zircon.MenuNavigateSystem],
+      [Phase.Impetus, Zircon.MenuSetsStatusSystem],
       [Phase.Action, StatusSystem],
       [Phase.Correction, Opal.PositionWrapsAtEdgesSystem],
       [Phase.PreRender, Opal.SpriteSetFromStatusSystem],
