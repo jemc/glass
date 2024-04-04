@@ -6,6 +6,7 @@ export * from "./Move"
 export * from "./Spawn"
 
 import { World, Phase } from "@glass/core"
+import { Agate } from "@glass/agate"
 import { Opal } from "@glass/opal"
 import {
   SpawnOnStatusSystem,
@@ -16,6 +17,7 @@ import {
 } from "."
 
 export function setup(world: World) {
+  Agate.setup(world)
   Opal.setup(world)
 
   world.addSystem(Phase.Action, SpawnOnStatusSystem)

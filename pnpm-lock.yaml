@@ -11,6 +11,49 @@ importers:
 
   .: {}
 
+  packages/agate:
+    dependencies:
+      '@glass/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.16
+        version: 20.11.16
+      '@vitest/browser':
+        specifier: ^1.4.0
+        version: 1.4.0(vitest@1.4.0)(webdriverio@8.35.1)
+      prettier:
+        specifier: ^3.2.4
+        version: 3.2.4
+      semantic-release:
+        specifier: ^23.0.0
+        version: 23.0.0(typescript@5.4.3)
+      semantic-release-monorepo:
+        specifier: ^8.0.1
+        version: 8.0.1(semantic-release@23.0.0)
+      typescript:
+        specifier: ^5.4.3
+        version: 5.4.3
+      vite:
+        specifier: ^5.1.6
+        version: 5.1.6(@types/node@20.11.16)
+      vite-plugin-checker:
+        specifier: ^0.6.4
+        version: 0.6.4(typescript@5.4.3)(vite@5.1.6)
+      vite-plugin-dts:
+        specifier: ^3.7.3
+        version: 3.7.3(@types/node@20.11.16)(typescript@5.4.3)(vite@5.1.6)
+      vite-plugin-node-polyfills:
+        specifier: ^0.21.0
+        version: 0.21.0(vite@5.1.6)
+      vitest:
+        specifier: ^1.4.0
+        version: 1.4.0(@types/node@20.11.16)(@vitest/browser@1.4.0)
+      webdriverio:
+        specifier: ^8.35.1
+        version: 8.35.1(typescript@5.4.3)
+
   packages/core:
     devDependencies:
       '@types/node':
@@ -55,6 +98,9 @@ importers:
 
   packages/onyx:
     dependencies:
+      '@glass/agate':
+        specifier: workspace:*
+        version: link:../agate
       '@glass/core':
         specifier: workspace:*
         version: link:../core
@@ -98,8 +144,11 @@ importers:
 
   packages/opal:
     dependencies:
+      '@glass/agate':
+        specifier: workspace:*
+        version: link:../agate
       '@glass/core':
-        specifier: ^1.0.0
+        specifier: workspace:*
         version: link:../core
     devDependencies:
       '@playwright/test':
@@ -165,6 +214,9 @@ importers:
 
   packages/pyrope:
     dependencies:
+      '@glass/agate':
+        specifier: workspace:*
+        version: link:../agate
       '@glass/core':
         specifier: workspace:*
         version: link:../core
@@ -214,6 +266,9 @@ importers:
 
   packages/topaz:
     dependencies:
+      '@glass/agate':
+        specifier: workspace:*
+        version: link:../agate
       '@glass/core':
         specifier: workspace:*
         version: link:../core
@@ -260,6 +315,9 @@ importers:
 
   packages/zircon:
     dependencies:
+      '@glass/agate':
+        specifier: workspace:*
+        version: link:../agate
       '@glass/core':
         specifier: workspace:*
         version: link:../core
@@ -1063,8 +1121,8 @@ packages:
       debug: 4.3.4
       dir-glob: 3.0.1
       globby: 14.0.0
-      http-proxy-agent: 7.0.0
-      https-proxy-agent: 7.0.2
+      http-proxy-agent: 7.0.2
+      https-proxy-agent: 7.0.4
       issue-parser: 6.0.0
       lodash-es: 4.17.21
       mime: 4.0.1
@@ -3319,16 +3377,6 @@ packages:
     resolution: {integrity: sha512-er295DKPVsV82j5kw1Gjt+ADA/XYHsajl82cGNQG2eyoPkvgUhX+nDIyelzhIWbbsXP39EHcI6l5tYs2FYqYXQ==}
     dev: true
 
-  /http-proxy-agent@7.0.0:
-    resolution: {integrity: sha512-+ZT+iBxVUQ1asugqnD6oWoRiS25AkjNfG085dKJGtGxkdwLQrMKU5wJr2bOOFAXzKcTuqq+7fZlTMgG3SRfIYQ==}
-    engines: {node: '>= 14'}
-    dependencies:
-      agent-base: 7.1.0
-      debug: 4.3.4
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
-
   /http-proxy-agent@7.0.2:
     resolution: {integrity: sha512-T1gkAiYYDWYx3V5Bmyu7HcfcvL7mUrTWiM6yOfa3PIphViJ/gFPbvidQ+veqSOHci/PxBcDabeUNCzpOODJZig==}
     engines: {node: '>= 14'}
@@ -3349,16 +3397,6 @@ packages:
 
   /https-browserify@1.0.0:
     resolution: {integrity: sha512-J+FkSdyD+0mA0N+81tMotaRMfSL9SGi+xpD3T6YApKsc3bGSXJlfXri3VyFOeYkfLRQisDk1W+jIFFKBeUBbBg==}
-    dev: true
-
-  /https-proxy-agent@7.0.2:
-    resolution: {integrity: sha512-NmLNjm6ucYwtcUmL7JQC1ZQ57LmHP4lT15FQ8D61nak1rO6DH+fz5qNK2Ap5UN4ZapYICE3/0KodcLYSPsPbaA==}
-    engines: {node: '>= 14'}
-    dependencies:
-      agent-base: 7.1.0
-      debug: 4.3.4
-    transitivePeerDependencies:
-      - supports-color
     dev: true
 
   /https-proxy-agent@7.0.4:
@@ -4143,7 +4181,7 @@ packages:
       readable-stream: 3.6.2
       stream-browserify: 3.0.0
       stream-http: 3.2.0
-      string_decoder: 1.1.1
+      string_decoder: 1.3.0
       timers-browserify: 2.0.12
       tty-browserify: 0.0.1
       url: 0.11.3
@@ -4686,8 +4724,8 @@ packages:
     dependencies:
       agent-base: 7.1.0
       debug: 4.3.4
-      http-proxy-agent: 7.0.0
-      https-proxy-agent: 7.0.2
+      http-proxy-agent: 7.0.2
+      https-proxy-agent: 7.0.4
       lru-cache: 7.18.3
       pac-proxy-agent: 7.0.1
       proxy-from-env: 1.1.0

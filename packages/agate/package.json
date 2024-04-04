@@ -1,7 +1,7 @@
 {
-  "name": "@glass/zircon",
-  "version": "0.0.1",
-  "description": "Menu/selection/icon interaction modes for Glass Engine",
+  "name": "@glass/agate",
+  "version": "1.0.0",
+  "description": "General-purpose state management utilities for Glass Engine",
   "repository": "github:jemc/glass",
   "license": "MIT",
   "type": "module",
@@ -10,9 +10,7 @@
   ],
   "main": "dist/src/index.js",
   "dependencies": {
-    "@glass/core": "workspace:*",
-    "@glass/agate": "workspace:*",
-    "@glass/opal": "workspace:*"
+    "@glass/core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.11.16",

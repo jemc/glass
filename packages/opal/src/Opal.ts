@@ -24,6 +24,7 @@ export * from "./TileMapShader"
 export * from "./TileMapTileSet"
 
 import { World, Phase } from "@glass/core"
+import { Agate } from "@glass/agate"
 import {
   LoadSpriteSheetAssetsSystem,
   LoadTileMapAssetsSystem,
@@ -39,6 +40,8 @@ import {
 } from "."
 
 export function setup(world: World) {
+  Agate.setup(world)
+
   world.addSystem(Phase.Load, LoadSpriteSheetAssetsSystem)
   world.addSystem(Phase.Load, LoadTileMapAssetsSystem)
   world.addSystem(Phase.Load, LoadTileMapSlicesSystem)

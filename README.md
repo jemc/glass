@@ -10,8 +10,9 @@ Glass is a work in progress, and not yet intended for general use.
 
 Glass is broken up into the following sub-libraries:
 - `@glass/core` - General-purpose, core framework
-- `@glass/opal` - General-purpose 2D graphical framework
-- `@glass/onyx` - General-purpose audio & chiptune framework
+- `@glass/agate` - General-purpose state management utilities
+- `@glass/opal` - General-purpose 2D graphical utilities
+- `@glass/onyx` - General-purpose audio & chiptune utilities
 - `@glass/zircon` - Menu/selection/icon interaction modes
 - `@glass/topaz` - Tile-based top-down interaction modes
 - `@glass/lapis` - Tile-based isometric interaction modes

@@ -1,7 +1,5 @@
 import { System, SystemFactory } from "./System"
 import { OrderedList, OrderedListAddOpts } from "./OrderedList"
-import { World } from "./World"
-import { StatusSystem } from "."
 
 export class Phase {
   constructor(readonly name: string) {}

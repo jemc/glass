@@ -1,10 +1,5 @@
-import {
-  registerComponent,
-  World,
-  Status,
-  ReadVector2,
-  System,
-} from "@glass/core"
+import { registerComponent, World, ReadVector2, System } from "@glass/core"
+import { Status } from "@glass/agate"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 

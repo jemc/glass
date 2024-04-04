@@ -11,6 +11,7 @@
   "main": "dist/src/index.js",
   "dependencies": {
     "@glass/core": "workspace:*",
+    "@glass/agate": "workspace:*",
     "@glass/opal": "workspace:*"
   },
   "devDependencies": {

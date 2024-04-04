@@ -8,6 +8,7 @@ export * from "./Walk"
 export * from "./WarpPlayer"
 
 import { World, Phase } from "@glass/core"
+import { Agate } from "@glass/agate"
 import { Opal } from "@glass/opal"
 import {
   LoadTileMapSpawnsSystem,
@@ -18,6 +19,7 @@ import {
 } from "."
 
 export function setup(world: World) {
+  Agate.setup(world)
   Opal.setup(world)
 
   world.addSystem(Phase.Load, LoadTileMapSpawnsSystem)

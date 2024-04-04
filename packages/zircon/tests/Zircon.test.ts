@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest"
-import { World, Phase, StatusSystem } from "@glass/core"
+import { World, Phase } from "@glass/core"
+import { Agate } from "@glass/agate"
 import { Opal } from "@glass/opal"
 import { Zircon } from "@glass/zircon"
 
@@ -14,7 +15,7 @@ describe("Zircon", () => {
       [Phase.Load, Opal.LoadTileMapSlicesSystem],
       [Phase.Impetus, Zircon.MenuNavigateSystem],
       [Phase.Impetus, Zircon.MenuSetsStatusSystem],
-      [Phase.Action, StatusSystem],
+      [Phase.Action, Agate.StatusSystem],
       [Phase.Correction, Opal.PositionWrapsAtEdgesSystem],
       [Phase.PreRender, Opal.SpriteSetFromStatusSystem],
       [Phase.PreRender, Opal.SpriteAnimationSystem],

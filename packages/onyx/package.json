@@ -1,7 +1,7 @@
 {
   "name": "@glass/onyx",
   "version": "1.0.0",
-  "description": "General-purpose audio & chiptune framework for Glass Engine",
+  "description": "General-purpose audio & chiptune utilities for Glass Engine",
   "repository": "github:jemc/glass",
   "license": "MIT",
   "type": "module",
@@ -10,7 +10,8 @@
   ],
   "main": "dist/src/index.js",
   "dependencies": {
-    "@glass/core": "workspace:*"
+    "@glass/core": "workspace:*",
+    "@glass/agate": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.11.16",

@@ -10,12 +10,6 @@
   "references": [
     {
       "path": "../core"
-    },
-    {
-      "path": "../agate"
-    },
-    {
-      "path": "../opal"
     }
   ]
 }

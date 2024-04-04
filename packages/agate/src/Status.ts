@@ -1,7 +1,4 @@
-import { registerComponent } from "./Component"
-import { Clock } from "./Clock"
-import { World } from "./World"
-import { System } from "./System"
+import { registerComponent, World, Clock, System } from "@glass/core"
 
 export interface StatusConfig {
   readonly setAtStart?: boolean

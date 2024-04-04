@@ -1,4 +1,5 @@
-import { Status, System, World, registerComponent } from "@glass/core"
+import { System, World, registerComponent } from "@glass/core"
+import { Agate } from "@glass/agate"
 import { Sprite } from "./Sprite"
 
 export class SpriteSetFromStatus {
@@ -8,7 +9,7 @@ export class SpriteSetFromStatus {
 }
 
 export const SpriteSetFromStatusSystem = (world: World) =>
-  System.for([SpriteSetFromStatus, Status, Sprite], {
+  System.for([SpriteSetFromStatus, Agate.Status, Sprite], {
     shouldMatchAll: [SpriteSetFromStatus],
 
     runEach(entity, spriteSetFromStatus, status, sprite) {

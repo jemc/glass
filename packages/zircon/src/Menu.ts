@@ -5,9 +5,9 @@ import {
   System,
   Vector2,
   Button,
-  Status,
 } from "@glass/core"
 import { Opal } from "@glass/opal"
+import { Agate } from "@glass/agate"
 import { Context } from "./Context"
 import {
   ACTIVE_MENU_ENTITY,
@@ -93,7 +93,7 @@ export const MenuNavigateSystem = (world: World) => {
 }
 
 export const MenuSetsStatusSystem = (world: World) =>
-  System.for([Context, Menu, Status], {
+  System.for([Context, Menu, Agate.Status], {
     runEach(entity, context, menu, status) {
       status.set("active", entity === context.activeMenuEntity)
       status.set("focused", entity === context.focusedMenuEntity)

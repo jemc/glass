@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest"
-import { Button, Entity, Status, World } from "@glass/core"
+import { Button, Entity, World } from "@glass/core"
+import { Agate } from "@glass/agate"
 import { Opal } from "@glass/opal"
 import { Zircon } from "@glass/zircon"
 
@@ -19,7 +20,7 @@ describe("Menu", () => {
         zircon,
         pos,
         new Zircon.Menu(opts),
-        new Status(world.clock),
+        new Agate.Status(world.clock),
       ])
       return menu
     }
@@ -30,7 +31,7 @@ describe("Menu", () => {
         zircon,
         pos,
         new Zircon.Menu(opts),
-        new Status(world.clock),
+        new Agate.Status(world.clock),
       ])
     }
 
@@ -96,7 +97,7 @@ describe("Menu", () => {
       world.clock.tick(++timestamp)
       // Confirm statuses of menu items.
       for (const item of allItems) {
-        const s = world.get(item, Status)!
+        const s = world.get(item, Agate.Status)!
         expect(s.is("focused")).toBe(item === zircon.focusedMenuEntity)
         expect(s.is("active")).toBe(item === zircon.activeMenuEntity)
       }

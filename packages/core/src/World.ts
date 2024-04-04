@@ -13,7 +13,6 @@ import { BitMask } from "./BitMask"
 import { AutoMap } from "./AutoMap"
 import { Phase, PhaseGraph } from "./Phase"
 import { OrderedListAddOpts } from "./OrderedList"
-import { StatusSystem } from "./Status"
 
 const ComponentStorage = Array
 type ComponentStorage = Component[]
@@ -55,7 +54,7 @@ export class World {
     this.phases = new PhaseGraph()
     this.clock = new Clock(() => this.run())
 
-    // Set up the core phases and systems.
+    // Set up the core phases.
 
     this.phases.addPhase(Phase.Load)
     this.phases.addPhase(Phase.Impetus)
@@ -64,8 +63,6 @@ export class World {
     this.phases.addPhase(Phase.Correction)
     this.phases.addPhase(Phase.PreRender)
     this.phases.addPhase(Phase.Render)
-
-    this.addSystem(Phase.Action, StatusSystem)
   }
 
   startRunning() {
