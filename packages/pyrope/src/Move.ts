@@ -1,7 +1,8 @@
-import { registerComponent, World, System } from "@glass/core"
+import { registerComponent, System } from "@glass/core"
 import { Agate } from "@glass/agate"
 import { Opal } from "@glass/opal"
 import { Body } from "./Body"
+import { Context } from "./Context"
 
 export class Mover {
   static readonly componentId = registerComponent(this)
@@ -28,13 +29,13 @@ export interface MoverModeConfig {
   readonly horizontalTargetSpeedIncrement?: number
 }
 
-export const MoveSystem = (world: World) =>
-  System.for([Mover, Opal.Position, Agate.Status, Body], {
+export const MoveSystem = (pyrope: Context) =>
+  System.for(pyrope, [Mover, Opal.Position, Agate.Status, Body], {
     shouldMatchAll: [Mover],
 
     runEach(entity, mover, position, status, body) {
       status.each((name, statusConfig, initialFrame) => {
-        const { frame } = world.clock
+        const { frame } = pyrope.world.clock
 
         const config = mover.config[name]
         if (!config) return

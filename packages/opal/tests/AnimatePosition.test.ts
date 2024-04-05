@@ -1,13 +1,18 @@
 import { describe, expect, test } from "vitest"
 import { World, Vector2 } from "@glass/core"
+import { Agate } from "@glass/agate"
 import { Opal } from "../src"
 
 describe("AnimatePosition", () => {
   test("it animates the position of an entity", () => {
     const world = new World()
-    Opal.setup(world)
+    const agate = new Agate.Context(world)
+    const opal = new Opal.Context(agate, {
+      canvas: document.createElement("canvas"),
+    })
 
     const entity = world.create([
+      opal,
       new Opal.Position(5, -3),
       new Opal.AnimatePosition({ delta: new Vector2(-8, 10), frames: 10 }),
     ])

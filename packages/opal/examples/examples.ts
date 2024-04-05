@@ -1,4 +1,5 @@
 import { World, Vector2, ReadVector2 } from "@glass/core"
+import { Agate } from "@glass/agate"
 import { Opal } from "../src"
 
 const TEST_NAME = window.location.hash.slice(1)
@@ -8,14 +9,12 @@ setup(document.getElementById("view") as HTMLCanvasElement)
 
 function setup(canvas: HTMLCanvasElement) {
   const world = new World()
-  Opal.setup(world)
-
-  const opal = new Opal.Context(
-    new Opal.Render(canvas, {
-      width: CANVAS_RESOLUTION.x,
-      height: CANVAS_RESOLUTION.y,
-    }),
-  )
+  const agate = new Agate.Context(world)
+  const opal = new Opal.Context(agate, {
+    canvas,
+    width: CANVAS_RESOLUTION.x,
+    height: CANVAS_RESOLUTION.y,
+  })
   switch (TEST_NAME) {
     case "test-sprites":
       setupTestSprites(world, opal)

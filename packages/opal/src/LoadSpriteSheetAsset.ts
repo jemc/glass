@@ -28,25 +28,25 @@ type Config = {
   }
 }
 
-export const LoadSpriteSheetAssetsSystem = (world: World) =>
-  System.for([Context, LoadSpriteSheetAsset], {
+export const LoadSpriteSheetAssetsSystem = (opal: Context) =>
+  System.for(opal, [LoadSpriteSheetAsset], {
     shouldMatchAll: [LoadSpriteSheetAsset],
 
-    runEach(entity, context, asset) {
+    runEach(entity, asset) {
       const ase = asset.result
       if (!ase) return
-      world.destroy(entity)
+      opal.world.destroy(entity)
 
       assertExactlyOneCel(ase)
-      const texture = loadTextureSurfaceFromCel(context.render, ase, 0, 0)
-      const palette = maybeLoadColorPalette(context.render, ase)
-      loadSlices(context, ase, texture, palette)
+      const texture = loadTextureSurfaceFromCel(opal.render, ase, 0, 0)
+      const palette = maybeLoadColorPalette(opal.render, ase)
+      loadSlices(opal, ase, texture, palette)
 
-      if (palette) context.colorPalettes.set(ase.name, palette)
+      if (palette) opal.colorPalettes.set(ase.name, palette)
 
       Object.entries(asset.config.animations ?? {}).forEach(
         ([name, animation]) => {
-          context.animations.set(
+          opal.animations.set(
             name,
             new SpriteAnimation(name, animation.frames, animation.frameCounts),
           )

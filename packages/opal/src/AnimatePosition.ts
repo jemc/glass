@@ -1,10 +1,4 @@
-import {
-  registerComponent,
-  World,
-  Vector2,
-  MutableVector2,
-  System,
-} from "@glass/core"
+import { registerComponent, Vector2, MutableVector2, System } from "@glass/core"
 import { Position } from "./Position"
 import { Context } from "./Context"
 
@@ -29,8 +23,8 @@ export class AnimatePosition {
   }
 }
 
-export const AnimatePositionSystem = (world: World) =>
-  System.for([AnimatePosition, Position], {
+export const AnimatePositionSystem = (opal: Context) =>
+  System.for(opal, [AnimatePosition, Position], {
     shouldMatchAll: [AnimatePosition],
 
     runEach(entity, animate, position) {
@@ -48,6 +42,6 @@ export const AnimatePositionSystem = (world: World) =>
           .toRounded()
       })
 
-      if (progress >= 1) world.remove(entity, [AnimatePosition])
+      if (progress >= 1) opal.world.remove(entity, [AnimatePosition])
     },
   })

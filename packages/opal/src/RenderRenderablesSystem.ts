@@ -3,10 +3,11 @@ import { Context } from "./Context"
 import { Renderable } from "./Renderable"
 import { Position, PositionWithin } from "./Position"
 
-export const RenderRenderablesSystem = (world: World) => {
+export const RenderRenderablesSystem = (opal: Context) => {
+  const { world } = opal
   const seenSet = new Set<Entity>()
 
-  function renderTreeContaining(entity: Entity, context: Context) {
+  function renderTreeContaining(entity: Entity) {
     // Traverse upward parents first, so that we start the root of the tree.
     let parent
     do {
@@ -17,7 +18,6 @@ export const RenderRenderablesSystem = (world: World) => {
     const worldTransform =
       world.get(entity, Position)?.localTransformMatrix ?? Matrix3.create()
     renderChildrenThenSelf(
-      context,
       entity,
       world.get(entity, Renderable),
       worldTransform,
@@ -25,7 +25,6 @@ export const RenderRenderablesSystem = (world: World) => {
   }
 
   function renderChildrenThenSelf(
-    context: Context,
     entity: Entity,
     renderable?: Renderable,
     worldTransform?: Float32Array,
@@ -45,7 +44,6 @@ export const RenderRenderablesSystem = (world: World) => {
         )
 
       renderChildrenThenSelf(
-        context,
         child,
         world.get(child, Renderable),
         childWorldTransform,
@@ -56,8 +54,8 @@ export const RenderRenderablesSystem = (world: World) => {
     // Finally, render the node itself.
     seenSet.add(entity)
     if (renderable && worldTransform) {
-      context._spriteRendering.addSpriteToRender(
-        context.render,
+      opal._spriteRendering.addSpriteToRender(
+        opal.render,
         renderable,
         worldTransform,
         worldAlpha,
@@ -65,24 +63,20 @@ export const RenderRenderablesSystem = (world: World) => {
     }
   }
 
-  return System.for([Context, Renderable], {
+  return System.for(opal, [Renderable], {
     shouldMatchAll: [Renderable],
 
     run(entities) {
-      Context.forEach((context: Context) => {
-        context._spriteRendering.beginRender(context.render)
-      })
+      opal._spriteRendering.beginRender(opal.render)
 
       seenSet.clear()
 
-      for (const [entity, [context, renderable]] of entities.entries()) {
+      for (const [entity, [renderable]] of entities.entries()) {
         if (seenSet.has(entity)) continue
-        renderTreeContaining(entity, context)
+        renderTreeContaining(entity)
       }
 
-      Context.forEach((context: Context) => {
-        context._spriteRendering.finishRender(context.render)
-      })
+      opal._spriteRendering.finishRender(opal.render)
     },
   })
 }

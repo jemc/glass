@@ -128,8 +128,8 @@ export class PositionWrapsAtEdges {
   ) {}
 }
 
-export const PositionWrapsAtEdgesSystem = (world: World) =>
-  System.for([Position, PositionWrapsAtEdges], {
+export const PositionWrapsAtEdgesSystem = (opal: Context) =>
+  System.for(opal, [Position, PositionWrapsAtEdges], {
     shouldMatchAll: [PositionWrapsAtEdges],
 
     runEach(entity, position, positionWrapsAtEdges) {

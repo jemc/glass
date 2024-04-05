@@ -16,8 +16,8 @@ export class LoadTileMapSpawns {
   ) {}
 }
 
-export const LoadTileMapSpawnsSystem = (world: World) =>
-  System.for([Context, LoadTileMapSpawns], {
+export const LoadTileMapSpawnsSystem = (topaz: Context) =>
+  System.for(topaz, [Context, LoadTileMapSpawns], {
     shouldMatchAll: [LoadTileMapSpawns],
 
     runEach(entity, context, load) {
@@ -25,7 +25,7 @@ export const LoadTileMapSpawnsSystem = (world: World) =>
       if (!tileMap) return
       const tileMapLayer = tileMap.layer(load.layerName)
 
-      world.remove(entity, [LoadTileMapSpawns])
+      topaz.world.remove(entity, [LoadTileMapSpawns])
 
       const { specialTiles } = tileMapLayer.userData
       tileMapLayer.tileIds.forEach((tileId, x, y) => {
@@ -36,7 +36,7 @@ export const LoadTileMapSpawnsSystem = (world: World) =>
 
         if (special.category === "spawn") {
           load.spawnFactory(
-            world,
+            topaz.world,
             special.kind,
             new Opal.Position(
               x * tileWidth + tileWidth / 2,

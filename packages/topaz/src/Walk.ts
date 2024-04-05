@@ -54,19 +54,19 @@ export class Walking {
   }
 }
 
-export const WalkSystem = (world: World) =>
-  System.for([Walker, Opal.Position], {
+export const WalkSystem = (topaz: Context) =>
+  System.for(topaz, [Walker, Opal.Position], {
     shouldMatchAll: [Walker],
 
     runEach: (entity, walker, position) => {
       const { tileSize } = walker.context.config
 
       // The entity may or may not currently be walking.
-      let walking = world.get(entity, Walking)
+      let walking = topaz.world.get(entity, Walking)
 
       // If the entity is already walking but ready to finish, stop walking.
       if (walking && walking.framesRemaining <= 0) {
-        world.remove(entity, [Walking])
+        topaz.world.remove(entity, [Walking])
         walking = undefined
       }
 
@@ -74,7 +74,7 @@ export const WalkSystem = (world: World) =>
       if (!walking && walker.wantsToGo) {
         const direction = walker.wantsToGo
         walker.lastDirection = direction
-        world.set(entity, [
+        topaz.world.set(entity, [
           new Walking(
             direction,
             tileSize,

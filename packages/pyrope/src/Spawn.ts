@@ -19,17 +19,17 @@ export class SpawnOnStatus {
   ) {}
 }
 
-export const SpawnOnStatusSystem = (world: World) =>
-  System.for([SpawnOnStatus, Context, Status, Opal.Position], {
+export const SpawnOnStatusSystem = (pyrope: Context) =>
+  System.for(pyrope, [SpawnOnStatus, Status, Opal.Position], {
     shouldMatchAll: [SpawnOnStatus],
 
-    runEach(entity, spawn, pyrope, status, position) {
+    runEach(entity, spawn, status, position) {
       const { statusName, fn, config } = spawn
       const { coords, scale: direction } = position
 
       if (status.isStarting(statusName)) {
         fn(
-          world,
+          pyrope.world,
           pyrope,
           new Opal.Position(
             coords.x + (config.positionOffset?.x ?? 0) * direction.x,

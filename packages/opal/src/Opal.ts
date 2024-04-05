@@ -22,38 +22,3 @@ export * from "./TileMap"
 export * from "./TileMapLayer"
 export * from "./TileMapShader"
 export * from "./TileMapTileSet"
-
-import { World, Phase } from "@glass/core"
-import { Agate } from "@glass/agate"
-import {
-  LoadSpriteSheetAssetsSystem,
-  LoadTileMapAssetsSystem,
-  LoadTileMapSlicesSystem,
-  PositionWrapsAtEdgesSystem,
-  SpriteSetFromStatusSystem,
-  SpriteAnimationSystem,
-  AnimatePositionSystem,
-  ColorPaletteAnimationSystem,
-  RenderBeginSystem,
-  RenderRenderablesSystem,
-  RenderTileMapSystem,
-} from "."
-
-export function setup(world: World) {
-  Agate.setup(world)
-
-  world.addSystem(Phase.Load, LoadSpriteSheetAssetsSystem)
-  world.addSystem(Phase.Load, LoadTileMapAssetsSystem)
-  world.addSystem(Phase.Load, LoadTileMapSlicesSystem)
-
-  world.addSystem(Phase.Correction, PositionWrapsAtEdgesSystem)
-
-  world.addSystem(Phase.PreRender, SpriteSetFromStatusSystem)
-  world.addSystem(Phase.PreRender, SpriteAnimationSystem)
-  world.addSystem(Phase.PreRender, AnimatePositionSystem)
-  world.addSystem(Phase.PreRender, ColorPaletteAnimationSystem)
-
-  world.addSystem(Phase.Render, RenderBeginSystem)
-  world.addSystem(Phase.Render, RenderRenderablesSystem)
-  world.addSystem(Phase.Render, RenderTileMapSystem)
-}

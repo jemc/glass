@@ -1,12 +1,16 @@
-import { registerComponent } from "@glass/core"
+import { Phase, SystemContext, World, registerComponent } from "@glass/core"
+import { Agate } from "@glass/agate"
+import { ArrangementPlaySystem } from "./Arrangement"
 
-export class Context {
+// TODO: Get rid of this or make it private.
+export const setupFns: ((ctx: Context) => Promise<void>)[] = []
+
+export class Context extends SystemContext {
   static readonly componentId = registerComponent(this)
 
-  static readonly setupFns: ((ctx: Context) => Promise<void>)[] = []
-  static async setup() {
-    const ctx = new Context()
-    await Promise.all(Context.setupFns.map((fn) => fn(ctx)))
+  static async setup(agate: Agate.Context) {
+    const ctx = new Context(agate)
+    await Promise.all(setupFns.map((fn) => fn(ctx)))
     return ctx
   }
 
@@ -15,6 +19,12 @@ export class Context {
     latencyHint: "interactive",
   })
 
+  readonly world: World = this.agate.world
+
   // Constructor is private to ensure that the async `setup` function is used.
-  private constructor() {}
+  private constructor(readonly agate: Agate.Context) {
+    super()
+
+    this.world.addSystem(Phase.PreRender, ArrangementPlaySystem, this)
+  }
 }

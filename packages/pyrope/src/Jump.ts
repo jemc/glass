@@ -1,6 +1,7 @@
 import { registerComponent, World, Clock, System } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Body } from "./Body"
+import { Context } from "./Context"
 
 export class Jumper {
   static readonly componentId = registerComponent(this)
@@ -39,12 +40,12 @@ export interface JumperConfig {
   terminalSpeed: number
 }
 
-export const JumpSystem = (world: World) =>
-  System.for([Jumper, Opal.Position, Body], {
+export const JumpSystem = (pyrope: Context) =>
+  System.for(pyrope, [Jumper, Opal.Position, Body], {
     shouldMatchAll: [Jumper],
 
     runEach(entity, jumper, position, body) {
-      jumper.maybeExpire(world.clock)
+      jumper.maybeExpire(pyrope.world.clock)
 
       if (jumper.isJumping) {
         body.setVerticalConstantVelocity(-jumper.config.jumpSpeed)

@@ -10,14 +10,14 @@ export class LoadTileMapSlices {
   ) {}
 }
 
-export const LoadTileMapSlicesSystem = (world: World) =>
-  System.for([Context, LoadTileMapSlices], {
+export const LoadTileMapSlicesSystem = (opal: Context) =>
+  System.for(opal, [LoadTileMapSlices], {
     shouldMatchAll: [LoadTileMapSlices],
 
-    runEach(entity, context, load) {
-      const tileMap = context.tileMaps.get(load.url)
+    runEach(entity, load) {
+      const tileMap = opal.tileMaps.get(load.url)
       if (!tileMap) return
-      world.remove(entity, [LoadTileMapSlices])
+      opal.world.remove(entity, [LoadTileMapSlices])
 
       tileMap.forEachSlice(load.callback)
     },

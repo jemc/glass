@@ -1,4 +1,4 @@
-import { Context } from "./Context"
+import { Context, setupFns } from "./Context"
 
 export type AudioWorkletInputs = ReadonlyArray<ReadonlyArray<Float32Array>>
 export type AudioWorkletOutputs = ReadonlyArray<Array<Float32Array>>
@@ -45,7 +45,7 @@ export function makeAudioWorkletNodeFactory(p: AudioWorkletProcessorClass) {
     await promise
   }
 
-  Context.setupFns.push(setup)
+  setupFns.push(setup)
 
   return (context: AudioContext) =>
     new AudioWorkletNode(

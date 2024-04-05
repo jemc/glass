@@ -1,5 +1,24 @@
 import { describe, expect, test } from "vitest"
-import { World, Entity, registerComponent, System, Phase } from "../src"
+import {
+  World,
+  Entity,
+  registerComponent,
+  System,
+  Phase,
+  SystemContext,
+} from "../src"
+
+// An example context component, which all the test systems are associated to.
+class TestContext extends SystemContext {
+  static readonly componentId = registerComponent(this)
+
+  constructor(readonly world: World) {
+    super()
+
+    world.addSystem(Phase.PreRender, ColorSystem, this)
+    world.addSystem(Phase.PreRender, RequiresColorAndLocatedInSystem, this)
+  }
+}
 
 // An example relationship component, referring to a given parent entity.
 class LocatedIn {
@@ -20,16 +39,16 @@ class RequiresColorAndLocatedIn {
   static readonly componentId = registerComponent(this)
 }
 
-const RequiresColorAndLocatedInSystem = (world: World) =>
-  System.for([Color, LocatedIn, RequiresColorAndLocatedIn], {
+const RequiresColorAndLocatedInSystem = (context: TestContext) =>
+  System.for(context, [Color, LocatedIn, RequiresColorAndLocatedIn], {
     shouldMatchAll: [RequiresColorAndLocatedIn],
     runEach() {},
   })
 
 // A system for entities with color, which only tracks its members.
 const colorSystemEntities = new Set<Entity>()
-const ColorSystem = (world: World) =>
-  System.for([Color], {
+const ColorSystem = (context: SystemContext) =>
+  System.for(context, [Color], {
     shouldMatchAll: [Color],
     runEachSet(entity, color) {
       colorSystemEntities.add(entity)
@@ -88,10 +107,10 @@ describe("World", () => {
 
   test("can cleanly reuse an old entity ID after it has been destroyed", () => {
     const world = new World()
-    const example = world.create()
-    const parent = world.create()
-    const child = world.create()
-    world.addSystem(Phase.PreRender, ColorSystem)
+    const context = new TestContext(world)
+    const example = world.create([context])
+    const parent = world.create([context])
+    const child = world.create([context])
 
     // Create an example entity with a color and in the middle of a hierarchy.
     world.set(example, [new Color("red"), new LocatedIn(parent)])
@@ -121,7 +140,7 @@ describe("World", () => {
     expect(colorSystemEntities.size).toBe(0)
 
     // A new entity is created, which reuses the ID of the destroyed entity.
-    const newEntity = world.create()
+    const newEntity = world.create([context])
     expect(newEntity).toBe(example)
 
     // The reuse is clean - the new entity has no associations.
@@ -147,17 +166,20 @@ describe("World", () => {
 
   test("can scan for warnings about missing prerequisite components", () => {
     const world = new World()
-    world.addSystem(Phase.PreRender, RequiresColorAndLocatedInSystem)
-    const entity1 = world.create([new RequiresColorAndLocatedIn()])
+    const context = new TestContext(world)
+    const entity1 = world.create([context, new RequiresColorAndLocatedIn()])
     const entity2 = world.create([
+      context,
       new RequiresColorAndLocatedIn(),
       new Color("red"),
     ])
     const entity3 = world.create([
+      context,
       new RequiresColorAndLocatedIn(),
       new LocatedIn(entity1),
     ])
     const entity4 = world.create([
+      context,
       new RequiresColorAndLocatedIn(),
       new Color("blue"),
       new LocatedIn(entity3),

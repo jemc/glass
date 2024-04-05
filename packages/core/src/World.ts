@@ -7,7 +7,7 @@ import {
   newEntityPoolWithStaticComponentsReserved,
 } from "./Component"
 import { Entity } from "./Entity"
-import { System, SystemFactory } from "./System"
+import { System, SystemContext, SystemFactory } from "./System"
 import { Clock } from "./Clock"
 import { BitMask } from "./BitMask"
 import { AutoMap } from "./AutoMap"
@@ -56,13 +56,13 @@ export class World {
 
     // Set up the core phases.
 
-    this.phases.addPhase(Phase.Load)
-    this.phases.addPhase(Phase.Impetus)
-    this.phases.addPhase(Phase.Action)
-    this.phases.addPhase(Phase.Reaction)
-    this.phases.addPhase(Phase.Correction)
-    this.phases.addPhase(Phase.PreRender)
-    this.phases.addPhase(Phase.Render)
+    this.phases.declarePhase(Phase.Load)
+    this.phases.declarePhase(Phase.Impetus)
+    this.phases.declarePhase(Phase.Action)
+    this.phases.declarePhase(Phase.Reaction)
+    this.phases.declarePhase(Phase.Correction)
+    this.phases.declarePhase(Phase.PreRender)
+    this.phases.declarePhase(Phase.Render)
   }
 
   startRunning() {
@@ -294,13 +294,20 @@ export class World {
     return this.collectedStorage[entity]?.get(componentId) ?? new Set()
   }
 
-  addSystem(
+  addSystem<
+    C extends SystemContext = SystemContext,
+    T extends ComponentClasses = ComponentClass[],
+  >(
     phase: Phase,
-    systemFactory: SystemFactory,
-    opts: OrderedListAddOpts<SystemFactory> = {},
+    systemFactory: SystemFactory<C, T>,
+    context: C,
+    opts: OrderedListAddOpts<SystemFactory<C, T>> = {},
   ) {
-    const system = systemFactory(this)
-    this.phases.addSystem(phase, systemFactory, system, opts)
+    if (context.world !== this)
+      throw new Error("System context is not associated to this world")
+    const system = systemFactory(context)
+    this.phases.addSystem<C, T>(phase, systemFactory, context, system, opts)
+    system._requiredBits.set(system._contextComponentType.componentId, true)
     system.componentTypes.forEach(({ componentId }) => {
       system._requiredBits.set(componentId, true)
     })
@@ -317,6 +324,7 @@ export class World {
 
   run() {
     for (const system of this.phases.systems()) {
+      if (system.context.isPaused) continue
       system.run(system._entities)
     }
   }
@@ -328,7 +336,10 @@ export class World {
   }
 
   private updateSystemForEntity(system: System, entity: Entity, bits: BitMask) {
-    if (bits.isSuperSetOf(system._requiredBits)) {
+    if (
+      bits.isSuperSetOf(system._requiredBits) &&
+      this.get(entity, system._contextComponentType) === system.context
+    ) {
       system.setEntityComponents(
         entity,
         system.componentTypes.map((component) => this.get(entity, component)!),

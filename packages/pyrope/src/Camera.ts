@@ -65,14 +65,14 @@ export class Camera {
   }
 }
 
-export const CameraFocusSystem = (world: World) => {
-  return System.for([Context, Camera, Opal.Renderable, Opal.Position], {
+export const CameraFocusSystem = (pyrope: Context) => {
+  return System.for(pyrope, [Camera, Opal.Renderable, Opal.Position], {
     shouldMatchAll: [Camera],
 
-    runEach(entity, context, camera, renderable, position) {
-      camera.resize(context.opal.render.width, context.opal.render.height)
+    runEach(entity, camera, renderable, position) {
+      camera.resize(pyrope.opal.render.width, pyrope.opal.render.height)
       position.updateCoords((coords) => {
-        camera.focus(context.playerPosition.coords, coords)
+        camera.focus(pyrope.playerPosition.coords, coords)
       })
     },
   })

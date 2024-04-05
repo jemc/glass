@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest"
-import { NESNoiseProcessor } from "../src/NESNoise"
+import { NESNoiseProcessor } from "../src"
 
 describe("NESNoiseProcessor", () => {
   const SAMPLE_RATE = 44100

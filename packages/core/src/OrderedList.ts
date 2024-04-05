@@ -23,9 +23,13 @@ export class OrderedList<T extends { name: string }> {
     }
   }
 
-  add(item: T, opts: OrderedListAddOpts<T> = {}) {
+  addIfNotExists(item: T, opts: OrderedListAddOpts<T> = {}) {
     if (this.all.includes(item)) return undefined
 
+    return this.add(item, opts)
+  }
+
+  add(item: T, opts: OrderedListAddOpts<T> = {}) {
     let maxIndex = this.all.length
     if (opts.before) {
       opts.before.forEach((before) => {

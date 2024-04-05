@@ -160,13 +160,13 @@ export class Body {
   }
 }
 
-export const BodyUpdateSystem = (world: World) =>
-  System.for([Context, Body, Opal.Position], {
+export const BodyUpdateSystem = (pyrope: Context) =>
+  System.for(pyrope, [Body, Opal.Position], {
     shouldMatchAll: [Body],
 
-    runEach(entity, context, body, position) {
+    runEach(entity, body, position) {
       // TODO: less hard-coded here
-      const tileMap = context.opal.tileMaps.get(
+      const tileMap = pyrope.opal.tileMaps.get(
         "data/mega/levels/TestLevel.aseprite",
       )
       const collisions = tileMap && new CollisionsTruth(tileMap.layer("Solids"))

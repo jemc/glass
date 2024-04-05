@@ -4,10 +4,14 @@ import { Agate } from "@glass/agate"
 import { Opal } from "@glass/opal"
 import { Topaz } from "@glass/topaz"
 
-describe("Topaz", () => {
+describe("Context", () => {
   test("it sets up Topaz systems in the correct order", () => {
     const world = new World()
-    Topaz.setup(world)
+    const agate = new Agate.Context(world)
+    const opal = new Opal.Context(agate, {
+      canvas: document.createElement("canvas"),
+    })
+    const topaz = new Topaz.Context(opal, { tileSize: 16 })
 
     expect([...world.phasesAndSystemFactories()]).toEqual([
       [Phase.Load, Opal.LoadSpriteSheetAssetsSystem],

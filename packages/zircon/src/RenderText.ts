@@ -13,16 +13,14 @@ export class RenderText {
   constructor(readonly config: Config) {}
 }
 
-export const RenderTextSystem = (world: World) =>
-  System.for([Context, RenderText, Opal.Renderable], {
+export const RenderTextSystem = (zircon: Context) =>
+  System.for(zircon, [RenderText, Opal.Renderable], {
     shouldMatchAll: [RenderText],
 
-    runEach(entity, context, renderText, renderable) {
+    runEach(entity, renderText, renderable) {
       const { text, font } = renderText.config
       const firstChar = text[0]
-      const firstTexture = context.opal.textures.get(
-        `font-${font}-${firstChar}`,
-      )
+      const firstTexture = zircon.opal.textures.get(`font-${font}-${firstChar}`)
 
       if (!firstTexture) return
 
@@ -31,11 +29,11 @@ export const RenderTextSystem = (world: World) =>
 
       var offset = 0
       text.split("").forEach((glyph) => {
-        const texture = context.opal.textures.get(`font-${font}-${glyph}`)
+        const texture = zircon.opal.textures.get(`font-${font}-${glyph}`)
         if (!texture) return
 
-        world.create([
-          context.opal,
+        zircon.world.create([
+          zircon.opal,
           new Opal.PositionWithin(entity),
           new Opal.Position(offset, 0),
           new Opal.Renderable({ depth: renderable.depth }),
@@ -45,6 +43,6 @@ export const RenderTextSystem = (world: World) =>
         offset += texture.width
       })
 
-      world.remove(entity, [RenderText])
+      zircon.world.remove(entity, [RenderText])
     },
   })

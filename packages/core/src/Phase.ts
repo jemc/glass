@@ -1,5 +1,6 @@
-import { System, SystemFactory } from "./System"
+import { System, SystemFactory, SystemContext } from "./System"
 import { OrderedList, OrderedListAddOpts } from "./OrderedList"
+import { ComponentClass, ComponentClasses } from "./Component"
 
 export class Phase {
   constructor(readonly name: string) {}
@@ -16,32 +17,39 @@ export class Phase {
 export class PhaseGraph {
   private phases: OrderedList<Phase> = new OrderedList()
   private phaseSystemFactories: OrderedList<SystemFactory>[] = []
+  private phaseSystemContexts: SystemContext[][] = []
   private phaseSystems: System[][] = []
 
-  addPhase(phase: Phase, opts: OrderedListAddOpts<Phase> = {}) {
-    const index = this.phases.add(phase, opts)
+  declarePhase(phase: Phase, opts: OrderedListAddOpts<Phase> = {}) {
+    const index = this.phases.addIfNotExists(phase, opts)
     if (index !== undefined) {
       this.phaseSystemFactories.splice(index, 0, new OrderedList())
       this.phaseSystems.splice(index, 0, new Array())
     }
   }
 
-  addSystem(
+  addSystem<
+    C extends SystemContext = SystemContext,
+    T extends ComponentClasses = ComponentClass[],
+  >(
     phase: Phase,
-    systemFactory: SystemFactory,
+    systemFactory: SystemFactory<C, T>,
+    systemContext: C,
     system: System,
-    opts: OrderedListAddOpts<SystemFactory> = {},
+    opts: OrderedListAddOpts<SystemFactory<C, T>> = {},
   ) {
     const phaseIndex = this.phases.indexOf(phase)
     if (phaseIndex === undefined)
       throw new Error(`Phase ${phase.name} not found in phase graph`)
 
     const systemIndex = this.phaseSystemFactories[phaseIndex]!.add(
-      systemFactory,
-      opts,
+      systemFactory as unknown as SystemFactory, // TODO: is this possible without the unknown cast?
+      opts as unknown as OrderedListAddOpts<SystemFactory>, // TODO: is this possible without the unknown cast?
     )
-    if (systemIndex !== undefined)
-      this.phaseSystems[phaseIndex]![systemIndex] = system
+    const phaseContexts = (this.phaseSystemContexts[phaseIndex] ??= [])
+    const phaseSystems = (this.phaseSystems[phaseIndex] ??= [])
+    phaseContexts.splice(systemIndex, 0, systemContext)
+    phaseSystems.splice(systemIndex, 0, system)
   }
 
   public *systems() {

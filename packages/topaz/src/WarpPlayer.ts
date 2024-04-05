@@ -14,12 +14,12 @@ export class WarpPlayerTo {
   ) {}
 }
 
-export const WarpPlayerSystem = (world: World) => {
-  return System.for([Context, WarpPlayerTo], {
+export const WarpPlayerSystem = (topaz: Context) => {
+  return System.for(topaz, [WarpPlayerTo], {
     shouldMatchAll: [WarpPlayerTo],
 
-    runEach(entity, context, warp) {
-      const tileMap = context.opal.tileMaps.get(warp.tileMapName)
+    runEach(entity, warp) {
+      const tileMap = topaz.opal.tileMaps.get(warp.tileMapName)
       if (!tileMap) return
 
       // TODO: context.currentTileMap = tileMap
@@ -27,17 +27,17 @@ export const WarpPlayerSystem = (world: World) => {
       const room = tileMap.slice(warp.roomName)
       if (!room) return
 
-      context.playerPosition.updateCoords((coords) => {
+      topaz.playerPosition.updateCoords((coords) => {
         coords
           .setTo(warp.roomTileX, warp.roomTileY)
           .plusScalarEquals(0.5)
-          .scaleEquals(context.config.tileSize)
+          .scaleEquals(topaz.config.tileSize)
           .plusEquals(new Vector2(room.x0, room.y0))
       })
 
-      context.camera.disableSmoothingNextFrame = true
+      topaz.camera.disableSmoothingNextFrame = true
 
-      world.remove(entity, [WarpPlayerTo, Walking])
+      topaz.world.remove(entity, [WarpPlayerTo, Walking])
 
       if (warp.callback) warp.callback()
     },

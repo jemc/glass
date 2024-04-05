@@ -55,13 +55,13 @@ export class SpriteAnimation {
   }
 }
 
-export const SpriteAnimationSystem = (world: World) =>
-  System.for([Context, Position, Renderable, Sprite], {
+export const SpriteAnimationSystem = (opal: Context) =>
+  System.for(opal, [Position, Renderable, Sprite], {
     shouldMatchAll: [Sprite],
 
-    runEach(entity, context, position, renderable, sprite) {
+    runEach(entity, position, renderable, sprite) {
       if (!sprite.animation) {
-        sprite.animation = context.animations?.get(sprite.animationId)
+        sprite.animation = opal.animations?.get(sprite.animationId)
       }
 
       const { animation } = sprite
@@ -74,7 +74,7 @@ export const SpriteAnimationSystem = (world: World) =>
           const frame = animation.frames[frameIndex]
 
           if (frame) {
-            const texture = context.textures.get(frame)
+            const texture = opal.textures.get(frame)
 
             if (texture) {
               renderable.texture = texture

@@ -2,16 +2,27 @@ import { BitMask } from "./BitMask"
 import { Entity } from "./Entity"
 import { World } from "./World"
 import {
+  Component,
   ComponentClass,
   ComponentClasses,
   ComponentInstances,
   setComponentPrerequisite,
 } from "./Component"
 
-function SystemFor<T extends ComponentClasses, S extends Partial<System<T>>>(
+export abstract class SystemContext implements Component {
+  isPaused: boolean = false
+  abstract world: World
+}
+
+function SystemFor<
+  C extends SystemContext,
+  T extends ComponentClasses,
+  S extends Partial<System<C, T>>,
+>(
+  context: C,
   componentTypes: T,
   overrides: S & { shouldMatchAll?: ComponentClass[] },
-): System<T> & S {
+): System<C, T> & S {
   // If the `shouldMatchAll` property is set, then for every component type
   // in that list, set a prerequisite relationship with every other component
   // type in the list.
@@ -25,20 +36,38 @@ function SystemFor<T extends ComponentClasses, S extends Partial<System<T>>>(
   }
 
   // Return the System object.
-  return Object.assign(new System<T>(componentTypes), overrides)
+  return Object.assign(new System<C, T>(context, componentTypes), overrides)
 }
 
-export type SystemFactory<T extends ComponentClasses = ComponentClass[]> = (
-  world: World,
-) => System<T>
+export type SystemFactory<
+  C extends SystemContext = SystemContext,
+  T extends ComponentClasses = ComponentClass[],
+> = (context: C) => System<C, T>
 
-export class System<T extends ComponentClasses = ComponentClass[]> {
+export class System<
+  C extends SystemContext = SystemContext,
+  T extends ComponentClasses = ComponentClass[],
+> {
   static readonly for = SystemFor
 
-  constructor(readonly componentTypes: T) {}
+  readonly _contextComponentType: ComponentClass
+  readonly _requiredBits = new BitMask()
+  readonly _entities = new Map<Entity, ComponentInstances<T>>()
 
-  _requiredBits = new BitMask()
-  _entities = new Map<Entity, ComponentInstances<T>>()
+  constructor(
+    readonly context: C,
+    readonly componentTypes: T,
+  ) {
+    this._contextComponentType = this.context
+      .constructor as unknown as ComponentClass
+    // TODO: How to enforce this properly with the type system?
+    if (this._contextComponentType.componentId === undefined)
+      throw new Error("System context must be a component")
+  }
+
+  get world() {
+    return this.context.world
+  }
 
   setEntityComponents(entity: Entity, components: ComponentInstances<T>) {
     const priorSize = this._entities.size

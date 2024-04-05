@@ -1,6 +1,5 @@
 import {
   registerComponent,
-  World,
   Box2,
   Vector2,
   ReadVector2,
@@ -27,19 +26,19 @@ export class RenderTileMap {
   ) {}
 }
 
-export const RenderTileMapSystem = (world: World) => {
-  return System.for([Context, RenderTileMap, Renderable], {
+export const RenderTileMapSystem = (opal: Context) => {
+  return System.for(opal, [RenderTileMap, Renderable], {
     shouldMatchAll: [RenderTileMap],
 
-    runEach(entity, context, component, renderable) {
+    runEach(entity, component, renderable) {
       if (!component._state) {
-        const tileMap = context.tileMaps.get(component.url)
+        const tileMap = opal.tileMaps.get(component.url)
         if (tileMap) {
           const layer = tileMap.layer(component.layerName)
 
           component._state = new _State(
-            layer.tileset.makeTextureSurface(context.render),
-            layer.makeDataTextureSurface(context.render),
+            layer.tileset.makeTextureSurface(opal.render),
+            layer.makeDataTextureSurface(opal.render),
             layer.tileset.tileSize,
           )
         } else {
@@ -48,9 +47,9 @@ export const RenderTileMapSystem = (world: World) => {
       }
 
       const { _state } = component
-      _state.maybeCreateOrResizeTexture(context.render, renderable)
+      _state.maybeCreateOrResizeTexture(opal.render, renderable)
       _state.updatePosition(component.cameraPosition, renderable)
-      _state.draw(context.render, context._tileMapShader)
+      _state.draw(opal.render, opal._tileMapShader)
     },
   })
 }

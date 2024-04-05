@@ -7,11 +7,11 @@ import { Zircon } from "@glass/zircon"
 describe("Menu", () => {
   test("it allows navigation through nested menu items", () => {
     const world = new World()
-    Zircon.setup(world)
-
-    const canvas = document.createElement("canvas")
-    const opal = new Opal.Context(new Opal.Render(canvas))
-    const zircon = new Zircon.Context(world, opal)
+    const agate = new Agate.Context(world)
+    const opal = new Opal.Context(agate, {
+      canvas: document.createElement("canvas"),
+    })
+    const zircon = new Zircon.Context(opal)
 
     function makeMenu(x: number, y: number, opts: { inside?: Entity } = {}) {
       const pos = new Opal.Position(x, y)

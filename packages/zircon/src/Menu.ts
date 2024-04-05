@@ -41,7 +41,7 @@ export class Menu {
   }
 }
 
-export const MenuNavigateSystem = (world: World) => {
+export const MenuNavigateSystem = (zircon: Context) => {
   // For any action which changes the active entity for a context
   // (i.e. activations and deactivations), we need to save them in a batch
   // to run at the end. Otherwise, we risk double-dipping on our `runEach`
@@ -52,7 +52,7 @@ export const MenuNavigateSystem = (world: World) => {
   // and we'll run them in a big batch at the end.
   const effects: (() => void)[] = []
 
-  return System.for([Context, Menu], {
+  return System.for(zircon, [Menu], {
     shouldMatchAll: [Menu],
 
     run(entities) {
@@ -63,40 +63,42 @@ export const MenuNavigateSystem = (world: World) => {
       effects.forEach((effect) => effect())
     },
 
-    runEach(entity, context, menu) {
+    runEach(entity, menu) {
+      const { world } = zircon
+
       // Navigation is only possible in the active menu.
-      if (context.activeMenuEntity !== entity) return
+      if (zircon.activeMenuEntity !== entity) return
 
       // Get the menu items inside this menu.
       const childEntities = world.getCollected(entity, Menu)
 
       // If no menu item is focused, focus the first child of this menu.
-      if (context.focusedMenuEntity === undefined) {
-        context[FOCUSED_MENU_ENTITY] = childEntities.values().next().value
+      if (zircon.focusedMenuEntity === undefined) {
+        zircon[FOCUSED_MENU_ENTITY] = childEntities.values().next().value
       }
 
       // Respond to input to navigate the menu.
-      if (context.buttons.isPressedJustNow(Button.A))
-        effects.push(() => activateFocusedEntity(world, context))
-      else if (context.buttons.isPressedJustNow(Button.B))
-        effects.push(() => deactivateActiveEntity(world, context))
-      else if (context.buttons.isPressedJustNow(Button.Up))
-        moveFocusInDirection(world, context, menu, childEntities, DIR_UP)
-      else if (context.buttons.isPressedJustNow(Button.Down))
-        moveFocusInDirection(world, context, menu, childEntities, DIR_DOWN)
-      else if (context.buttons.isPressedJustNow(Button.Left))
-        moveFocusInDirection(world, context, menu, childEntities, DIR_LEFT)
-      else if (context.buttons.isPressedJustNow(Button.Right))
-        moveFocusInDirection(world, context, menu, childEntities, DIR_RIGHT)
+      if (zircon.buttons.isPressedJustNow(Button.A))
+        effects.push(() => activateFocusedEntity(world, zircon))
+      else if (zircon.buttons.isPressedJustNow(Button.B))
+        effects.push(() => deactivateActiveEntity(world, zircon))
+      else if (zircon.buttons.isPressedJustNow(Button.Up))
+        moveFocusInDirection(world, zircon, menu, childEntities, DIR_UP)
+      else if (zircon.buttons.isPressedJustNow(Button.Down))
+        moveFocusInDirection(world, zircon, menu, childEntities, DIR_DOWN)
+      else if (zircon.buttons.isPressedJustNow(Button.Left))
+        moveFocusInDirection(world, zircon, menu, childEntities, DIR_LEFT)
+      else if (zircon.buttons.isPressedJustNow(Button.Right))
+        moveFocusInDirection(world, zircon, menu, childEntities, DIR_RIGHT)
     },
   })
 }
 
-export const MenuSetsStatusSystem = (world: World) =>
-  System.for([Context, Menu, Agate.Status], {
-    runEach(entity, context, menu, status) {
-      status.set("active", entity === context.activeMenuEntity)
-      status.set("focused", entity === context.focusedMenuEntity)
+export const MenuSetsStatusSystem = (zircon: Context) =>
+  System.for(zircon, [Menu, Agate.Status], {
+    runEach(entity, menu, status) {
+      status.set("active", entity === zircon.activeMenuEntity)
+      status.set("focused", entity === zircon.focusedMenuEntity)
     },
   })
 

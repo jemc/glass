@@ -13,11 +13,11 @@ export class ColorPaletteAnimation {
   constructor(readonly config: ColorPaletteAnimationConfig) {}
 }
 
-export const ColorPaletteAnimationSystem = (world: World) =>
-  System.for([Context, ColorPaletteAnimation], {
+export const ColorPaletteAnimationSystem = (opal: Context) =>
+  System.for(opal, [ColorPaletteAnimation], {
     shouldMatchAll: [ColorPaletteAnimation],
 
-    runEach(entity, opal, animation) {
+    runEach(entity, animation) {
       const { config } = animation
 
       const palette = opal.colorPalettes.get(config.name)
@@ -25,7 +25,7 @@ export const ColorPaletteAnimationSystem = (world: World) =>
 
       const framesPerStep = config.framesPerStep || 1
 
-      if (world.clock.frame % framesPerStep === 0) {
+      if (opal.world.clock.frame % framesPerStep === 0) {
         const { colors } = palette
 
         const { cycles } = config

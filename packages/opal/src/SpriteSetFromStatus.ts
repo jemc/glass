@@ -1,6 +1,7 @@
-import { System, World, registerComponent } from "@glass/core"
+import { registerComponent, System } from "@glass/core"
 import { Agate } from "@glass/agate"
 import { Sprite } from "./Sprite"
+import { Context } from "./Context"
 
 export class SpriteSetFromStatus {
   static readonly componentId = registerComponent(this)
@@ -8,8 +9,8 @@ export class SpriteSetFromStatus {
   constructor(readonly mappings: ReadonlyArray<[string[], string]>) {}
 }
 
-export const SpriteSetFromStatusSystem = (world: World) =>
-  System.for([SpriteSetFromStatus, Agate.Status, Sprite], {
+export const SpriteSetFromStatusSystem = (opal: Context) =>
+  System.for(opal, [SpriteSetFromStatus, Agate.Status, Sprite], {
     shouldMatchAll: [SpriteSetFromStatus],
 
     runEach(entity, spriteSetFromStatus, status, sprite) {

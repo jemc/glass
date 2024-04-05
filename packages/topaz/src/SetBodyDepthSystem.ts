@@ -1,4 +1,4 @@
-import { System, World } from "@glass/core"
+import { System } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Body } from "./Body"
 import { Context } from "./Context"
@@ -9,7 +9,7 @@ import { Context } from "./Context"
 // all these depth values being in the range (-0.5, 0] - which leaves room
 // for overlay elements with depth values in the range (-1, -0.5),
 // and for the background elemets with depth value in the range (0, 1).
-export const SetBodyDepthSystem = (world: World) => {
+export const SetBodyDepthSystem = (topaz: Context) => {
   // We need to scale down the y coordinates to generate the depth values,
   // so that they end up in the desired range. But if we scale them too far,
   // they won't be discernable by the depth tests. So we have experimented
@@ -18,12 +18,12 @@ export const SetBodyDepthSystem = (world: World) => {
   const maxTileMapHeight = 2 ** 23 // ~8 million tiles should be plenty
   const depthFactor = -0.5 / maxTileMapHeight
 
-  return System.for([Context, Body, Opal.Position, Opal.Renderable], {
+  return System.for(topaz, [Body, Opal.Position, Opal.Renderable], {
     shouldMatchAll: [Body],
 
-    runEach(entity, context, body, position, renderable) {
+    runEach(entity, body, position, renderable) {
       renderable.depth =
-        (position.coords.y * depthFactor) / context.config.tileSize
+        (position.coords.y * depthFactor) / topaz.config.tileSize
     },
   })
 }

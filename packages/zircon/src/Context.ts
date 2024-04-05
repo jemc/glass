@@ -1,18 +1,30 @@
-import { registerComponent, World, Entity, ButtonState } from "@glass/core"
+import {
+  registerComponent,
+  Entity,
+  ButtonState,
+  SystemContext,
+  Phase,
+} from "@glass/core"
 import { Opal } from "@glass/opal"
 import { FOCUSED_MENU_ENTITY, ACTIVE_MENU_ENTITY } from "./Zircon.private"
 import { setFocusedMenuEntity, setActiveMenuEntity } from "./Menu"
+import { MenuNavigateSystem, MenuSetsStatusSystem, RenderTextSystem } from "."
 
-export class Context {
+export class Context extends SystemContext {
   static readonly componentId = registerComponent(this)
 
   readonly buttons: ButtonState
+  readonly world = this.opal.world
+  readonly agate = this.opal.agate
 
-  constructor(
-    readonly world: World,
-    readonly opal: Opal.Context,
-  ) {
-    this.buttons = new ButtonState(world.clock)
+  constructor(readonly opal: Opal.Context) {
+    super()
+
+    this.buttons = new ButtonState(this.world.clock)
+
+    this.world.addSystem(Phase.Impetus, MenuNavigateSystem, this)
+    this.world.addSystem(Phase.Impetus, MenuSetsStatusSystem, this)
+    this.world.addSystem(Phase.PreRender, RenderTextSystem, this)
   }
 
   // Get the menu entity that is currently focused.

@@ -9,6 +9,7 @@ import {
 } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
+import { Topaz } from "."
 
 export class Camera {
   static readonly componentId = registerComponent(this)
@@ -65,14 +66,14 @@ export class Camera {
   }
 }
 
-export const CameraFocusSystem = (world: World) => {
-  return System.for([Context, Camera, Opal.Renderable, Opal.Position], {
+export const CameraFocusSystem = (topaz: Topaz.Context) => {
+  return System.for(topaz, [Camera, Opal.Renderable, Opal.Position], {
     shouldMatchAll: [Camera],
 
-    runEach(entity, context, camera, renderable, position) {
-      camera.resize(context.opal.render.width, context.opal.render.height)
+    runEach(entity, camera, renderable, position) {
+      camera.resize(topaz.opal.render.width, topaz.opal.render.height)
       position.updateCoords((coords) => {
-        camera.focus(context.playerPosition.coords, coords)
+        camera.focus(topaz.playerPosition.coords, coords)
       })
     },
   })

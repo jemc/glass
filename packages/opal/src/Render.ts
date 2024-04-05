@@ -1,5 +1,12 @@
 import { Vector2 } from "@glass/core"
 
+export type RenderOptions = WebGLContextAttributes & {
+  canvas: HTMLCanvasElement
+  width?: number
+  height?: number
+  magnify?: number
+}
+
 export class Render {
   readonly gl: WebGL2RenderingContext // TODO: private
 
@@ -13,14 +20,8 @@ export class Render {
     return this.size.y
   }
 
-  constructor(
-    canvas: HTMLCanvasElement,
-    attrs: WebGLContextAttributes & {
-      width?: number
-      height?: number
-      magnify?: number
-    } = {},
-  ) {
+  constructor(attrs: RenderOptions) {
+    const { canvas } = attrs
     attrs.alpha ??= false
     attrs.width ??= 256 // NES Resolution
     attrs.height ??= 240 // NES Resolution

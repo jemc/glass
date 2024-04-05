@@ -3,10 +3,13 @@ import { World, Phase } from "@glass/core"
 import { Agate } from "@glass/agate"
 import { Opal } from "@glass/opal"
 
-describe("Opal", () => {
+describe("Context", () => {
   test("it sets up Opal systems in the correct order", () => {
     const world = new World()
-    Opal.setup(world)
+    const agate = new Agate.Context(world)
+    const opal = new Opal.Context(agate, {
+      canvas: document.createElement("canvas"),
+    })
 
     expect([...world.phasesAndSystemFactories()]).toEqual([
       [Phase.Load, Opal.LoadSpriteSheetAssetsSystem],

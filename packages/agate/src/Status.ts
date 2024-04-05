@@ -1,4 +1,5 @@
 import { registerComponent, World, Clock, System } from "@glass/core"
+import { Context } from "./Context"
 
 export interface StatusConfig {
   readonly setAtStart?: boolean
@@ -141,8 +142,8 @@ export class Status {
   }
 }
 
-export const StatusSystem = (world: World) =>
-  System.for([Status], {
+export const StatusSystem = (agate: Context) =>
+  System.for(agate, [Status], {
     shouldMatchAll: [Status],
 
     runEach(entity, status) {

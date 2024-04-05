@@ -3,10 +3,11 @@ import { World, Phase } from "@glass/core"
 import { Agate } from "@glass/agate"
 import { Onyx } from "@glass/onyx"
 
-describe("Onyx", () => {
-  test("it sets up Onyx systems in the correct order", () => {
+describe("Context", () => {
+  test("it sets up Onyx systems in the correct order", async () => {
     const world = new World()
-    Onyx.setup(world)
+    const agate = new Agate.Context(world)
+    const onyx = await Onyx.Context.setup(agate)
 
     expect([...world.phasesAndSystemFactories()]).toEqual([
       [Phase.Action, Agate.StatusSystem],

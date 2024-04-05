@@ -84,7 +84,8 @@ export class ArrangementPlay {
     this.scheduleFinishTime = greatestRiffTimeOffset
   }
 
-  continuePlaying(context: Context, clock: Clock) {
+  continuePlaying(context: Context) {
+    const { clock } = context.world
     const timestamp = clock.timestamp / 1000
 
     if (this.startTimestamp === 0) {
@@ -113,17 +114,17 @@ export class ArrangementPlay {
   }
 }
 
-export const ArrangementPlaySystem = (world: World) =>
-  System.for([Context, ArrangementPlay], {
+export const ArrangementPlaySystem = (onyx: Context) =>
+  System.for(onyx, [ArrangementPlay], {
     shouldMatchAll: [ArrangementPlay],
 
-    runEach(entity, context, play) {
-      context.audio.resume() // TODO: move to another system, and add suspend when tab loses focus
+    runEach(entity, play) {
+      onyx.audio.resume() // TODO: move to another system, and add suspend when tab loses focus
 
-      play.continuePlaying(context, world.clock)
+      play.continuePlaying(onyx)
     },
 
-    runEachSet(entity, context, play) {
-      play.setupVoicesIfNeeded(context)
+    runEachSet(entity, play) {
+      play.setupVoicesIfNeeded(onyx)
     },
   })
