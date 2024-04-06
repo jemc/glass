@@ -32,13 +32,12 @@ export const RenderTextSystem = (zircon: Context) =>
         const texture = zircon.opal.textures.get(`font-${font}-${glyph}`)
         if (!texture) return
 
-        zircon.world.create([
-          zircon.opal,
+        zircon.create(
           new Opal.PositionWithin(entity),
           new Opal.Position(offset, 0),
           new Opal.Renderable({ depth: renderable.depth }),
           new Opal.Sprite(`font-${font}-${glyph}`),
-        ])
+        )
 
         offset += texture.width
       })

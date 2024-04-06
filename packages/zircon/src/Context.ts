@@ -4,6 +4,7 @@ import {
   ButtonState,
   SystemContext,
   Phase,
+  Component,
 } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { FOCUSED_MENU_ENTITY, ACTIVE_MENU_ENTITY } from "./Zircon.private"
@@ -25,6 +26,10 @@ export class Context extends SystemContext {
     this.world.addSystem(Phase.Impetus, MenuNavigateSystem, this)
     this.world.addSystem(Phase.Impetus, MenuSetsStatusSystem, this)
     this.world.addSystem(Phase.PreRender, RenderTextSystem, this)
+  }
+
+  create(...components: Component[]): number {
+    return this.world.create(this.agate, this.opal, this, ...components)
   }
 
   // Get the menu entity that is currently focused.

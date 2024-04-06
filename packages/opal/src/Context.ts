@@ -1,4 +1,10 @@
-import { Phase, SystemContext, World, registerComponent } from "@glass/core"
+import {
+  Component,
+  Phase,
+  SystemContext,
+  World,
+  registerComponent,
+} from "@glass/core"
 import { Agate } from "@glass/agate"
 import { Render, RenderOptions } from "./Render"
 import { ColorPalette } from "./ColorPalette"
@@ -60,5 +66,9 @@ export class Context extends SystemContext {
     this.world.addSystem(Phase.Render, RenderBeginSystem, this)
     this.world.addSystem(Phase.Render, RenderRenderablesSystem, this)
     this.world.addSystem(Phase.Render, RenderTileMapSystem, this)
+  }
+
+  create(...components: Component[]): number {
+    return this.world.create(this.agate, this, ...components)
   }
 }

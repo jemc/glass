@@ -6,6 +6,7 @@ import {
   System,
   Phase,
   SystemContext,
+  Component,
 } from "../src"
 
 // An example context component, which all the test systems are associated to.
@@ -17,6 +18,10 @@ class TestContext extends SystemContext {
 
     world.addSystem(Phase.PreRender, ColorSystem, this)
     world.addSystem(Phase.PreRender, RequiresColorAndLocatedInSystem, this)
+  }
+
+  create(...components: Component[]) {
+    return this.world.create(this, ...components)
   }
 }
 
@@ -63,9 +68,9 @@ describe("World", () => {
     const world = new World()
     const f = world.create()
     const b = world.create()
-    const foo = world.create([new LocatedIn(f)])
-    const bar = world.create([new LocatedIn(b)])
-    const baz = world.create([new LocatedIn(b)])
+    const foo = world.create(new LocatedIn(f))
+    const bar = world.create(new LocatedIn(b))
+    const baz = world.create(new LocatedIn(b))
 
     expect(world.get(foo, LocatedIn)?.collectionEntity).toBe(f)
     expect(world.get(bar, LocatedIn)?.collectionEntity).toBe(b)
@@ -108,9 +113,9 @@ describe("World", () => {
   test("can cleanly reuse an old entity ID after it has been destroyed", () => {
     const world = new World()
     const context = new TestContext(world)
-    const example = world.create([context])
-    const parent = world.create([context])
-    const child = world.create([context])
+    const example = context.create()
+    const parent = context.create()
+    const child = context.create()
 
     // Create an example entity with a color and in the middle of a hierarchy.
     world.set(example, [new Color("red"), new LocatedIn(parent)])
@@ -140,7 +145,7 @@ describe("World", () => {
     expect(colorSystemEntities.size).toBe(0)
 
     // A new entity is created, which reuses the ID of the destroyed entity.
-    const newEntity = world.create([context])
+    const newEntity = context.create()
     expect(newEntity).toBe(example)
 
     // The reuse is clean - the new entity has no associations.
@@ -154,9 +159,9 @@ describe("World", () => {
   test("can get a component for a batch of entities", () => {
     const world = new World()
 
-    const red = world.create([new Color("red")])
-    const green = world.create([new Color("green")])
-    const blue = world.create([new Color("blue")])
+    const red = world.create(new Color("red"))
+    const green = world.create(new Color("green"))
+    const blue = world.create(new Color("blue"))
 
     const colors = world.getForMany([red, green, blue], Color)
     expect(colors.get(red)?.name).toBe("red")
@@ -167,23 +172,20 @@ describe("World", () => {
   test("can scan for warnings about missing prerequisite components", () => {
     const world = new World()
     const context = new TestContext(world)
-    const entity1 = world.create([context, new RequiresColorAndLocatedIn()])
-    const entity2 = world.create([
-      context,
+    const entity1 = context.create(new RequiresColorAndLocatedIn())
+    const entity2 = context.create(
       new RequiresColorAndLocatedIn(),
       new Color("red"),
-    ])
-    const entity3 = world.create([
-      context,
+    )
+    const entity3 = world.create(
       new RequiresColorAndLocatedIn(),
       new LocatedIn(entity1),
-    ])
-    const entity4 = world.create([
-      context,
+    )
+    const entity4 = world.create(
       new RequiresColorAndLocatedIn(),
       new Color("blue"),
       new LocatedIn(entity3),
-    ]) // no warnings for this one
+    ) // no warnings for this one
 
     expect(world.debugScanForWarnings()).toEqual([
       {

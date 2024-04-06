@@ -69,9 +69,9 @@ export class World {
     this.clock.startRunning()
   }
 
-  create(components?: ComponentClass["prototype"][]): Entity {
+  create(...components: Component[]): Entity {
     const entity = this.entityPool.alloc()
-    if (components) this.set(entity, components)
+    if (components.length !== 0) this.set(entity, components)
     return entity
   }
 

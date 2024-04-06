@@ -48,226 +48,190 @@ function setup(canvas: HTMLCanvasElement) {
 }
 
 function setupTestSprites(world: World, opal: Opal.Context) {
-  world.create([
-    opal,
-    new Opal.LoadSpriteSheetAsset("data/TestBackground.aseprite"),
-  ])
+  opal.create(new Opal.LoadSpriteSheetAsset("data/TestBackground.aseprite"))
 
-  world.create([
-    opal,
-    new Opal.LoadSpriteSheetAsset("data/TestSprites.aseprite"),
-  ])
+  opal.create(new Opal.LoadSpriteSheetAsset("data/TestSprites.aseprite"))
 
-  world.create([
-    opal,
+  opal.create(
     new Opal.Position(CANVAS_RESOLUTION.x / 2, CANVAS_RESOLUTION.y / 2),
     new Opal.Renderable({ depth: 0.999 }),
     new Opal.Sprite("test-background-1"),
-  ])
+  )
 
-  const ballFront = world.create([
-    opal,
+  const ballFront = opal.create(
     new Opal.Position(16 + 8, 16 + 8),
     new Opal.Renderable(),
     new Opal.Sprite("ball-front-idle"),
-  ])
+  )
 
-  const ballFrontCool = world.create([
-    opal,
+  const ballFrontCool = opal.create(
     new Opal.Position(32 + 16 + 8, 16 + 8),
     new Opal.Renderable(),
     new Opal.Sprite("ball-front-idle"),
-  ])
-  world.create([
-    opal,
+  )
+  opal.create(
     new Opal.PositionWithin(ballFrontCool),
     new Opal.Position(0, -2),
     new Opal.Renderable(),
     new Opal.Sprite("sunglasses-front"),
-  ])
-  world.create([
-    opal,
+  )
+  opal.create(
     new Opal.PositionWithin(ballFrontCool),
     new Opal.Position(0, -6),
     new Opal.Renderable(),
     new Opal.Sprite("top-hat"),
-  ])
+  )
 
-  const ballRight = world.create([
-    opal,
+  const ballRight = opal.create(
     new Opal.Position(16 + 8, 32 + 16 + 8),
     new Opal.Renderable(),
     new Opal.Sprite("ball-side-idle"),
-  ])
+  )
 
-  const ballRightCool = world.create([
-    opal,
+  const ballRightCool = opal.create(
     new Opal.Position(32 + 16 + 8, 32 + 16 + 8),
     new Opal.Renderable(),
     new Opal.Sprite("ball-side-idle"),
-  ])
-  world.create([
-    opal,
+  )
+  opal.create(
     new Opal.PositionWithin(ballRightCool),
     new Opal.Position(3, -2),
     new Opal.Renderable(),
     new Opal.Sprite("sunglasses-side"),
-  ])
-  world.create([
-    opal,
+  )
+  opal.create(
     new Opal.PositionWithin(ballRightCool),
     new Opal.Position(0, -6),
     new Opal.Renderable(),
     new Opal.Sprite("top-hat"),
-  ])
+  )
 
-  const ballLeft = world.create([
-    opal,
+  const ballLeft = opal.create(
     new Opal.Position(16 + 8, 64 + 16 + 8, -1),
     new Opal.Renderable(),
     new Opal.Sprite("ball-side-idle"),
-  ])
-  world.create([
-    opal,
+  )
+  opal.create(
     new Opal.PositionWithin(ballLeft),
     new Opal.Position(0, -6),
     new Opal.Renderable({ depth: 0.5 }), // places it behind the ball
     new Opal.Sprite("top-hat"),
-  ])
+  )
 
-  const ballLeftCool = world.create([
-    opal,
+  const ballLeftCool = opal.create(
     new Opal.Position(32 + 16 + 8, 64 + 16 + 8, -1),
     new Opal.Renderable(),
     new Opal.Sprite("ball-side-idle"),
-  ])
-  world.create([
-    opal,
+  )
+  opal.create(
     new Opal.PositionWithin(ballLeftCool),
     new Opal.Position(3, -2),
     new Opal.Renderable(),
     new Opal.Sprite("sunglasses-side"),
-  ])
-  world.create([
-    opal,
+  )
+  opal.create(
     new Opal.PositionWithin(ballLeftCool),
     new Opal.Position(0, -6),
     new Opal.Renderable(),
     new Opal.Sprite("top-hat"),
-  ])
+  )
 
-  const ballLeftRotated = world.create([
-    opal,
+  const ballLeftRotated = opal.create(
     new Opal.Position(16 + 8, 64 + 32 + 16 + 8, -1, 1, 90),
     new Opal.Renderable(),
     new Opal.Sprite("ball-side-idle"),
-  ])
+  )
 
-  const ballRightRotatedCool = world.create([
-    opal,
+  const ballRightRotatedCool = opal.create(
     new Opal.Position(32 + 16 + 8, 64 + 32 + 16 + 8, 1, 1, -90),
     new Opal.Renderable(),
     new Opal.Sprite("ball-side-idle"),
-  ])
-  world.create([
-    opal,
+  )
+  opal.create(
     new Opal.PositionWithin(ballRightRotatedCool),
     new Opal.Position(3, -2),
     new Opal.Renderable(),
     new Opal.Sprite("sunglasses-side"),
-  ])
-  world.create([
-    opal,
+  )
+  opal.create(
     new Opal.PositionWithin(ballRightRotatedCool),
     new Opal.Position(0, -6),
     new Opal.Renderable(),
     new Opal.Sprite("top-hat"),
-  ])
+  )
 
-  const ballRightSmall = world.create([
-    opal,
+  const ballRightSmall = opal.create(
     new Opal.Position(5.5 * 16, 1.5 * 16, 0.75, 0.75),
     new Opal.Renderable(),
     new Opal.Sprite("ball-side-idle"),
-  ])
+  )
 
-  const ballLeftSmallCool = world.create([
-    opal,
+  const ballLeftSmallCool = opal.create(
     new Opal.Position(9.5 * 16, 1.5 * 16, -0.75, 0.75),
     new Opal.Renderable(),
     new Opal.Sprite("ball-side-idle"),
-  ])
-  world.create([
-    opal,
+  )
+  opal.create(
     new Opal.PositionWithin(ballLeftSmallCool),
     new Opal.Position(3, -2),
     new Opal.Renderable(),
     new Opal.Sprite("sunglasses-side"),
-  ])
-  world.create([
-    opal,
+  )
+  opal.create(
     new Opal.PositionWithin(ballLeftSmallCool),
     new Opal.Position(0, -6),
     new Opal.Renderable(),
     new Opal.Sprite("top-hat"),
-  ])
+  )
 
-  const ballHuge = world.create([
-    opal,
+  const ballHuge = opal.create(
     new Opal.Position(7.5 * 16, 3.5 * 16, 5, 5),
     new Opal.Renderable(),
     new Opal.Sprite("ball-front-idle"),
-  ])
-  world.create([
-    opal,
+  )
+  opal.create(
     new Opal.PositionWithin(ballHuge),
     new Opal.Position(0, -1, 1, 0.4),
     new Opal.Renderable(),
     new Opal.Sprite("sunglasses-front"),
-  ])
-  world.create([
-    opal,
+  )
+  opal.create(
     new Opal.PositionWithin(ballHuge),
     new Opal.Position(0, -7, 0.4, 0.2),
     new Opal.Renderable(),
     new Opal.Sprite("top-hat"),
-  ])
+  )
 
-  const ballBigCoolUpsideDownGhostly = world.create([
-    opal,
+  const ballBigCoolUpsideDownGhostly = opal.create(
     new Opal.Position(12.5 * 16, 2.5 * 16, -3, -3),
     new Opal.Renderable({ alpha: 0.5 }),
     new Opal.Sprite("ball-side-idle"),
-  ])
-  world.create([
-    opal,
+  )
+  opal.create(
     new Opal.PositionWithin(ballBigCoolUpsideDownGhostly),
     new Opal.Position(3, -2),
     new Opal.Renderable({ alpha: 2 }), // cancels out the half-transparency of the parent
     new Opal.Sprite("sunglasses-side"),
-  ])
-  world.create([
-    opal,
+  )
+  opal.create(
     new Opal.PositionWithin(ballBigCoolUpsideDownGhostly),
     new Opal.Position(0, -6),
     new Opal.Renderable(),
     new Opal.Sprite("top-hat"),
-  ])
+  )
 
-  let ballChain = world.create([
-    opal,
+  let ballChain = opal.create(
     new Opal.Position(96 - 8, 96 + 16 + 8),
     new Opal.Renderable(),
     new Opal.Sprite("ball-side-idle"),
-  ])
+  )
   for (let i = 0; i < 8; i += 1) {
-    ballChain = world.create([
-      opal,
+    ballChain = opal.create(
       new Opal.PositionWithin(ballChain),
       new Opal.Position(8, 2),
       new Opal.Renderable({ alpha: 0.8 }),
       new Opal.Sprite("ball-side-idle"),
-    ])
+    )
   }
 }
 
@@ -279,10 +243,9 @@ function setupTestTileMap(
   const url = "data/TestLevel.aseprite"
   const offset = new Vector2(options?.offset?.x ?? 0, options?.offset?.y ?? 0)
 
-  world.create([opal, new Opal.LoadTileMapAsset(url)])
+  opal.create(new Opal.LoadTileMapAsset(url))
 
-  world.create([
-    opal,
+  opal.create(
     new Opal.Position(-offset.x, -offset.y),
     new Opal.Renderable({ depth: 0.999 }),
     new Opal.RenderTileMap(
@@ -293,5 +256,5 @@ function setupTestTileMap(
         CANVAS_RESOLUTION.y / 2 - offset.y,
       ),
     ),
-  ])
+  )
 }

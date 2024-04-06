@@ -1,4 +1,10 @@
-import { Phase, SystemContext, World, registerComponent } from "@glass/core"
+import {
+  Component,
+  Phase,
+  SystemContext,
+  World,
+  registerComponent,
+} from "@glass/core"
 import { Agate } from "@glass/agate"
 import { ArrangementPlaySystem } from "./Arrangement"
 
@@ -26,5 +32,9 @@ export class Context extends SystemContext {
     super()
 
     this.world.addSystem(Phase.PreRender, ArrangementPlaySystem, this)
+  }
+
+  create(...components: Component[]): number {
+    return this.world.create(this.agate, this, ...components)
   }
 }

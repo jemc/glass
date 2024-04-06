@@ -1,5 +1,6 @@
 import {
   ButtonState,
+  Component,
   Entity,
   Phase,
   registerComponent,
@@ -34,13 +35,11 @@ export class Context extends SystemContext {
     super()
 
     this.buttons = new ButtonState(this.world.clock)
-    this.scene = this.world.create([
-      this,
-      this.opal,
+    this.scene = this.create(
       this.camera,
       new Opal.Position(0, 0),
       new Opal.Renderable(),
-    ])
+    )
 
     this.world.addSystem(Phase.Load, LoadTileMapSpawnsSystem, this)
 
@@ -50,5 +49,9 @@ export class Context extends SystemContext {
     this.world.addSystem(Phase.Reaction, CameraFocusSystem, this)
 
     this.world.addSystem(Phase.PreRender, SetBodyDepthSystem, this)
+  }
+
+  create(...components: readonly Component[]): number {
+    return this.world.create(this.agate, this.opal, this, ...components)
   }
 }

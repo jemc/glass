@@ -11,11 +11,10 @@ describe("AnimatePosition", () => {
       canvas: document.createElement("canvas"),
     })
 
-    const entity = world.create([
-      opal,
+    const entity = opal.create(
       new Opal.Position(5, -3),
       new Opal.AnimatePosition({ delta: new Vector2(-8, 10), frames: 10 }),
-    ])
+    )
 
     function pos() {
       return world.get(entity, Opal.Position)?.coords?.toArray()

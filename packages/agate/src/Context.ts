@@ -1,4 +1,10 @@
-import { registerComponent, World, SystemContext, Phase } from "@glass/core"
+import {
+  registerComponent,
+  World,
+  SystemContext,
+  Phase,
+  Component,
+} from "@glass/core"
 import { StatusSystem } from "."
 
 export class Context extends SystemContext {
@@ -8,5 +14,9 @@ export class Context extends SystemContext {
     super()
 
     this.world.addSystem(Phase.Action, StatusSystem, this)
+  }
+
+  create(...components: Component[]): number {
+    return this.world.create(this, ...components)
   }
 }

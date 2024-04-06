@@ -11,7 +11,10 @@ import {
 
 export abstract class SystemContext implements Component {
   isPaused: boolean = false
+
   abstract world: World
+
+  abstract create(...components: Component[]): Entity
 }
 
 function SystemFor<
