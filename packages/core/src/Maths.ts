@@ -1,3 +1,12 @@
+export function clampToRange(
+  value: number,
+  config: { readonly min: number; readonly max: number },
+) {
+  if (value < config.min) return config.min
+  if (value > config.max) return config.max
+  return value
+}
+
 const DEG_RAD = Math.PI / 180
 export function toRadians(deg: number): number {
   return deg * DEG_RAD

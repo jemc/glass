@@ -63,6 +63,7 @@ export class World {
     this.phases.declarePhase(Phase.Correction)
     this.phases.declarePhase(Phase.PreRender)
     this.phases.declarePhase(Phase.Render)
+    this.phases.declarePhase(Phase.Advance)
   }
 
   startRunning() {

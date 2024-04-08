@@ -10,8 +10,9 @@ describe("Context", () => {
     const onyx = await Onyx.Context.setup(agate)
 
     expect([...world.phasesAndSystemFactories()]).toEqual([
-      [Phase.Action, Agate.StatusSystem],
+      [Phase.Action, Agate.StatusAffectsGaugesSystem],
       [Phase.PreRender, Onyx.ArrangementPlaySystem],
+      [Phase.Advance, Agate.StatusAdvanceSystem],
     ])
   })
 })

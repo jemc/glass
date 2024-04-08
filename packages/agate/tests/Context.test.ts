@@ -8,7 +8,8 @@ describe("Context", () => {
     const agate = new Agate.Context(world)
 
     expect([...world.phasesAndSystemFactories()]).toEqual([
-      [Phase.Action, Agate.StatusSystem],
+      [Phase.Action, Agate.StatusAffectsGaugesSystem],
+      [Phase.Advance, Agate.StatusAdvanceSystem],
     ])
   })
 })

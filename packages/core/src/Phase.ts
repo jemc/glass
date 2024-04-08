@@ -12,6 +12,7 @@ export class Phase {
   static readonly Correction = new Phase("Correction")
   static readonly PreRender = new Phase("PreRender")
   static readonly Render = new Phase("Render")
+  static readonly Advance = new Phase("Advance")
 }
 
 export class PhaseGraph {
