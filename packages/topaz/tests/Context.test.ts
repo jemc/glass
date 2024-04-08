@@ -18,7 +18,7 @@ describe("Context", () => {
       [Phase.Load, Opal.LoadTileMapAssetsSystem],
       [Phase.Load, Opal.LoadTileMapSlicesSystem],
       [Phase.Load, Topaz.LoadTileMapSpawnsSystem],
-      [Phase.Action, Agate.StatusSystem],
+      [Phase.Action, Agate.StatusAffectsGaugesSystem],
       [Phase.Action, Topaz.WalkSystem],
       [Phase.Action, Topaz.WarpPlayerSystem],
       [Phase.Reaction, Topaz.CameraFocusSystem],
@@ -31,6 +31,7 @@ describe("Context", () => {
       [Phase.Render, Opal.RenderBeginSystem],
       [Phase.Render, Opal.RenderRenderablesSystem],
       [Phase.Render, Opal.RenderTileMapSystem],
+      [Phase.Advance, Agate.StatusAdvanceSystem],
     ])
   })
 })

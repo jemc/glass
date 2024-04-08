@@ -17,7 +17,7 @@ describe("Context", () => {
       [Phase.Load, Opal.LoadSpriteSheetAssetsSystem],
       [Phase.Load, Opal.LoadTileMapAssetsSystem],
       [Phase.Load, Opal.LoadTileMapSlicesSystem],
-      [Phase.Action, Agate.StatusSystem],
+      [Phase.Action, Agate.StatusAffectsGaugesSystem],
       [Phase.Action, Pyrope.SpawnOnStatusSystem],
       [Phase.Action, Pyrope.MoveSystem],
       [Phase.Action, Pyrope.JumpSystem],
@@ -31,6 +31,7 @@ describe("Context", () => {
       [Phase.Render, Opal.RenderBeginSystem],
       [Phase.Render, Opal.RenderRenderablesSystem],
       [Phase.Render, Opal.RenderTileMapSystem],
+      [Phase.Advance, Agate.StatusAdvanceSystem],
     ])
   })
 })

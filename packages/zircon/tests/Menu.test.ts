@@ -15,20 +15,12 @@ describe("Menu", () => {
 
     function makeMenu(x: number, y: number, opts: { inside?: Entity } = {}) {
       const pos = new Opal.Position(x, y)
-      const menu = zircon.create(
-        pos,
-        new Zircon.Menu(opts),
-        new Agate.Status(world.clock),
-      )
+      const menu = zircon.create(pos, new Zircon.Menu(opts), new Agate.Status())
       return menu
     }
     function makeTerminal(x: number, y: number, opts: { inside: Entity }) {
       const pos = new Opal.Position(x, y)
-      return zircon.create(
-        pos,
-        new Zircon.Menu(opts),
-        new Agate.Status(world.clock),
-      )
+      return zircon.create(pos, new Zircon.Menu(opts), new Agate.Status())
     }
 
     // Menu categories are in a perfect rhombus shape,

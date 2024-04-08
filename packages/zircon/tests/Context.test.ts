@@ -19,7 +19,7 @@ describe("Context", () => {
       [Phase.Load, Opal.LoadTileMapSlicesSystem],
       [Phase.Impetus, Zircon.MenuNavigateSystem],
       [Phase.Impetus, Zircon.MenuSetsStatusSystem],
-      [Phase.Action, Agate.StatusSystem],
+      [Phase.Action, Agate.StatusAffectsGaugesSystem],
       [Phase.Correction, Opal.PositionWrapsAtEdgesSystem],
       [Phase.PreRender, Opal.SpriteSetFromStatusSystem],
       [Phase.PreRender, Opal.SpriteAnimationSystem],
@@ -29,6 +29,7 @@ describe("Context", () => {
       [Phase.Render, Opal.RenderBeginSystem],
       [Phase.Render, Opal.RenderRenderablesSystem],
       [Phase.Render, Opal.RenderTileMapSystem],
+      [Phase.Advance, Agate.StatusAdvanceSystem],
     ])
   })
 })

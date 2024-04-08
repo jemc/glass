@@ -1,4 +1,4 @@
-import { registerComponent, World, Clock, System } from "@glass/core"
+import { registerComponent, Clock, System } from "@glass/core"
 import { Context } from "./Context"
 
 export interface StatusConfig {
@@ -22,10 +22,7 @@ export class Status {
   private configs: { [name: string]: CompiledStatusConfig } = {}
   private map: { [name: string]: number } = {}
 
-  constructor(
-    private clock: Clock,
-    configs: { [name: string]: StatusConfig } = {},
-  ) {
+  constructor(configs: { [name: string]: StatusConfig } = {}) {
     this.configs = configs
 
     // Take note of statuses that are blocked by other statuses.
@@ -69,7 +66,7 @@ export class Status {
   }
 
   isStarting(name: string) {
-    return this.map[name] === this.clock.frame
+    return this.map[name] === 0
   }
 
   stop(name: string) {
@@ -112,7 +109,7 @@ export class Status {
     }
 
     // Activate it at this frame.
-    this.map[name] = this.clock.frame
+    this.map[name] = 0
 
     // Run any relevant triggers.
     if (config?.sets) config.sets.forEach((other) => this.set(other))
@@ -133,16 +130,19 @@ export class Status {
   }
 
   noticeTime() {
-    for (const [name, frame] of Object.entries(this.map)) {
+    for (const [name, priorFrameCount] of Object.entries(this.map)) {
+      const frameCount = priorFrameCount + 1
+      this.map[name] = frameCount
+
       const config = this.configs[name]
-      if (config?.maxFrames && config?.maxFrames < this.clock.frame - frame) {
+      if (config?.maxFrames && config?.maxFrames < frameCount) {
         this.stop(name)
       }
     }
   }
 }
 
-export const StatusSystem = (agate: Context) =>
+export const StatusAdvanceSystem = (agate: Context) =>
   System.for(agate, [Status], {
     shouldMatchAll: [Status],
 
