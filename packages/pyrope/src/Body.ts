@@ -166,9 +166,7 @@ export const BodyUpdateSystem = (pyrope: Context) =>
 
     runEach(entity, body, position) {
       // TODO: less hard-coded here
-      const tileMap = pyrope.opal.tileMaps.get(
-        "data/mega/levels/TestLevel.aseprite",
-      )
+      const tileMap = pyrope.opal.tileMaps.get("data/levels/TestLevel.aseprite")
       const collisions = tileMap && new CollisionsTruth(tileMap.layer("Solids"))
 
       body.updatePosition(position, collisions)
