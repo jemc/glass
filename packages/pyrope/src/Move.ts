@@ -34,9 +34,7 @@ export const MoveSystem = (pyrope: Context) =>
     shouldMatchAll: [Mover],
 
     runEach(entity, mover, position, status, body) {
-      status.each((name, statusConfig, initialFrame) => {
-        const { frame } = pyrope.world.clock
-
+      status.each((name, statusConfig, frameCount) => {
         const config = mover.config[name]
         if (!config) return
 
@@ -46,10 +44,7 @@ export const MoveSystem = (pyrope: Context) =>
             config.verticalTargetVelocityIncrement,
           )
         }
-        if (
-          config.verticalInitialVelocity !== undefined &&
-          frame === initialFrame
-        ) {
+        if (config.verticalInitialVelocity !== undefined && frameCount === 0) {
           body.setVerticalConstantVelocity(config.verticalInitialVelocity)
         }
 
@@ -66,7 +61,7 @@ export const MoveSystem = (pyrope: Context) =>
         }
 
         // Handle initial velocity if it's the first frame of this status.
-        if (frame === initialFrame) {
+        if (frameCount === 0) {
           if (config.verticalInitialVelocity !== undefined) {
             body.setVerticalConstantVelocity(config.verticalInitialVelocity)
           }
