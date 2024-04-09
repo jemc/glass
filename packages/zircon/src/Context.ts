@@ -9,7 +9,12 @@ import {
 import { Opal } from "@glass/opal"
 import { FOCUSED_MENU_ENTITY, ACTIVE_MENU_ENTITY } from "./Zircon.private"
 import { setFocusedMenuEntity, setActiveMenuEntity } from "./Menu"
-import { MenuNavigateSystem, MenuSetsStatusSystem, RenderTextSystem } from "."
+import {
+  MenuNavigateSystem,
+  MenuSetsStatusSystem,
+  RenderTextSystem,
+  RenderChunkedGaugeOfSystem,
+} from "."
 
 export class Context extends SystemContext {
   static readonly componentId = registerComponent(this)
@@ -26,6 +31,7 @@ export class Context extends SystemContext {
     this.world.addSystem(Phase.Impetus, MenuNavigateSystem, this)
     this.world.addSystem(Phase.Impetus, MenuSetsStatusSystem, this)
     this.world.addSystem(Phase.PreRender, RenderTextSystem, this)
+    this.world.addSystem(Phase.PreRender, RenderChunkedGaugeOfSystem, this)
   }
 
   create(...components: Component[]): number {

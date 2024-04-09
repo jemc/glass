@@ -46,6 +46,19 @@ export class Gauges {
     return this.gauge(name).value
   }
 
+  getPercent(name: string) {
+    const gauge = this.gauge(name)
+    return (gauge.value - gauge.min) / (gauge.max - gauge.min)
+  }
+
+  getMin(name: string) {
+    return this.gauge(name).min
+  }
+
+  getMax(name: string) {
+    return this.gauge(name).max
+  }
+
   apply(effect: GaugeEffect) {
     this[effect.type](effect.name, effect.value)
   }

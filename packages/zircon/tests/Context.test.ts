@@ -26,6 +26,7 @@ describe("Context", () => {
       [Phase.PreRender, Opal.AnimatePositionSystem],
       [Phase.PreRender, Opal.ColorPaletteAnimationSystem],
       [Phase.PreRender, Zircon.RenderTextSystem],
+      [Phase.PreRender, Zircon.RenderChunkedGaugeOfSystem],
       [Phase.Render, Opal.RenderBeginSystem],
       [Phase.Render, Opal.RenderRenderablesSystem],
       [Phase.Render, Opal.RenderTileMapSystem],

@@ -292,7 +292,10 @@ export class World {
     componentType: ComponentClass,
   ): ReadonlySet<Entity> {
     const { componentId } = componentType
-    return this.collectedStorage[entity]?.get(componentId) ?? new Set()
+    const collectedStorage = (this.collectedStorage[entity] ??= new AutoMap(
+      Set<number>,
+    ))
+    return collectedStorage.getOrCreate(componentId)
   }
 
   addSystem<
