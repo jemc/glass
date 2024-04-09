@@ -166,15 +166,20 @@ export class World {
         // If the removed component is a collection relationship component,
         // remove the entity from the collection set it was being tracked in.
         if (removedComponent.collectionEntity !== undefined) {
-          this.collectedStorage[removedComponent.collectionEntity]
-            ?.get(componentId)
-            ?.delete(entity)
+          const { collectionEntity } = removedComponent
+          this._removeCollected(collectionEntity, componentId, entity)
+        }
+        if (removedComponent.collectionEntities !== undefined) {
+          for (const collectionEntity of removedComponent.collectionEntities.values()) {
+            this._removeCollected(collectionEntity, componentId, entity)
+          }
         }
       }
       bitMask.clear()
     }
-    // If this entity had any collected entities, remove those relationship
-    // components from each of the collected entites.
+    // If this entity had any collected entities, remove one-to-many
+    // relationship components from each of the collected entites,
+    // and update any many-to-many relationship components.
     const collectedStorage = this.collectedStorage[entity]
     if (collectedStorage) {
       for (const [
@@ -182,7 +187,11 @@ export class World {
         collectedEntities,
       ] of collectedStorage.entries()) {
         for (const collectedEntity of collectedEntities) {
-          this.remove(collectedEntity, [getComponentClassById(componentId)!])
+          const componentType = getComponentClassById(componentId)!
+          const component = this.get(collectedEntity, componentType)
+          if (component?.collectionEntity === entity)
+            this.remove(collectedEntity, [componentType])
+          component?.collectionEntities?.remove(entity)
         }
       }
       delete this.collectedStorage[entity]
@@ -238,7 +247,8 @@ export class World {
       // Deal with tracking collection membership if this is a collection
       // relationship component (i.e. one with the `collectionEntity` set).
       const removedCollectionEntity = removedComponent?.collectionEntity
-      const { collectionEntity } = component
+      const removedCollectionEntities = removedComponent?.collectionEntities
+      const { collectionEntity, collectionEntities } = component
       if (collectionEntity !== removedCollectionEntity) {
         // Remove the entity from the old collection (if applicable).
         if (removedCollectionEntity !== undefined)
@@ -246,10 +256,31 @@ export class World {
             ?.get(componentId)
             ?.delete(entity)
         // Add the entity to the new collection (if applicable).
-        if (collectionEntity !== undefined) {
-          const collectedStorage = (this.collectedStorage[collectionEntity] ??=
-            new CollectedEntityStorage(Set<Entity>))
-          collectedStorage.getOrCreate(componentId).add(entity)
+        if (collectionEntity !== undefined)
+          this._addCollected(collectionEntity, componentId, entity)
+      }
+      if (collectionEntities !== removedCollectionEntities) {
+        if (collectionEntities !== undefined) {
+          collectionEntities._setTracking(this, componentId, entity)
+          // Add new collection membership links which weren't tracked yet.
+          for (const collectionEntity of collectionEntities.values()) {
+            if (removedCollectionEntities?.has(collectionEntity)) continue
+            this._addCollected(collectionEntity, componentId, entity)
+          }
+          // Remove old collection membership links which are no longer tracked.
+          if (removedCollectionEntities !== undefined) {
+            for (const collectionEntity of removedCollectionEntities.values()) {
+              if (collectionEntities.has(collectionEntity)) continue
+              this._removeCollected(collectionEntity, componentId, entity)
+            }
+          }
+        } else {
+          // Remove any old collection membership links.
+          if (removedCollectionEntities !== undefined) {
+            for (const collectionEntity of removedCollectionEntities.values()) {
+              this._removeCollected(collectionEntity, componentId, entity)
+            }
+          }
         }
       }
     }
@@ -274,17 +305,36 @@ export class World {
         delete componentStorage[entity]
 
         // If the component is a collection relationship component, remove the
-        // entity from the collection it was in.
+        // entity from the collection(s) it was in.
         const removedCollectionEntity = removedComponent?.collectionEntity
         if (removedCollectionEntity !== undefined) {
-          this.collectedStorage[removedCollectionEntity]
-            ?.get(componentId)
-            ?.delete(entity)
+          this._removeCollected(removedCollectionEntity, componentId, entity)
+        }
+        const removedCollectionEntities = removedComponent?.collectionEntities
+        if (removedCollectionEntities !== undefined) {
+          for (const collectionEntity of removedCollectionEntities.values()) {
+            this._removeCollected(collectionEntity, componentId, entity)
+          }
         }
       }
     }
 
     this.updateSystemsForEntity(entity, bitMask)
+  }
+
+  // TODO: Use a truly private symbol for this method name
+  _addCollected(collection: Entity, componentId: Entity, collected: Entity) {
+    const collectedStorage = (this.collectedStorage[collection] ??= new AutoMap(
+      Set<number>,
+    ))
+    collectedStorage.getOrCreate(componentId).add(collected)
+  }
+
+  // TODO: Use a truly private symbol for this method name
+  _removeCollected(collection: Entity, componentId: Entity, collected: Entity) {
+    const collectedStorage = this.collectedStorage[collection]
+    if (!collectedStorage) return
+    collectedStorage.get(componentId)?.delete(collected)
   }
 
   getCollected(

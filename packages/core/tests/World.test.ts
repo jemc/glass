@@ -1,12 +1,13 @@
 import { describe, expect, test } from "vitest"
 import {
   World,
-  Entity,
+  Component,
   registerComponent,
+  Entity,
+  EntitySet,
+  SystemContext,
   System,
   Phase,
-  SystemContext,
-  Component,
 } from "../src"
 
 // An example context component, which all the test systems are associated to.
@@ -30,6 +31,17 @@ class LocatedIn {
   static readonly componentId = registerComponent(this)
 
   constructor(readonly collectionEntity: Entity) {}
+}
+
+// An example relationship component, referring to a given parent entity.
+class LocatedInMany {
+  static readonly componentId = registerComponent(this)
+
+  readonly collectionEntities: EntitySet
+
+  constructor(entities: Iterable<Entity> = []) {
+    this.collectionEntities = new EntitySet(entities)
+  }
 }
 
 // An example "color" component, with a named color.
@@ -108,6 +120,66 @@ describe("World", () => {
     world.destroy(b) // implicitly removes LocatedIn from foo and baz
     expect(world.get(foo, LocatedIn)).toBeUndefined()
     expect(world.get(baz, LocatedIn)).toBeUndefined()
+  })
+
+  test("can relate entities via many-to-many collection relationships", () => {
+    const world = new World()
+    const b = world.create()
+    const a = world.create()
+    const r = world.create()
+    const z = world.create()
+
+    const bSet = world.getCollected(b, LocatedInMany)!
+    const aSet = world.getCollected(a, LocatedInMany)!
+    const rSet = world.getCollected(r, LocatedInMany)!
+    const zSet = world.getCollected(z, LocatedInMany)!
+
+    const bar = world.create(new LocatedInMany([b, a, r]))
+    const baz = world.create(new LocatedInMany([b, a, z]))
+
+    let barSet = world.get(bar, LocatedInMany)!.collectionEntities
+    let bazSet = world.get(baz, LocatedInMany)!.collectionEntities
+
+    expect([...barSet.values()]).toEqual([b, a, r])
+    expect([...bazSet.values()]).toEqual([b, a, z])
+    expect([...bSet.values()]).toEqual([bar, baz])
+    expect([...aSet.values()]).toEqual([bar, baz])
+    expect([...rSet.values()]).toEqual([bar])
+    expect([...zSet.values()]).toEqual([baz])
+
+    barSet.remove(a)
+    bazSet.add(r)
+
+    expect([...barSet.values()]).toEqual([b, r])
+    expect([...bazSet.values()]).toEqual([b, a, z, r])
+    expect([...bSet.values()]).toEqual([bar, baz])
+    expect([...aSet.values()]).toEqual([baz])
+    expect([...rSet.values()]).toEqual([bar, baz])
+    expect([...zSet.values()]).toEqual([baz])
+
+    barSet.add(a)
+    world.set(baz, [new LocatedInMany([b, a, z])])
+    bazSet = world.get(baz, LocatedInMany)!.collectionEntities
+
+    expect([...barSet.values()]).toEqual([b, r, a])
+    expect([...bazSet.values()]).toEqual([b, a, z])
+    expect([...bSet.values()]).toEqual([bar, baz])
+    expect([...aSet.values()]).toEqual([baz, bar])
+    expect([...rSet.values()]).toEqual([bar])
+    expect([...zSet.values()]).toEqual([baz])
+
+    world.destroy(a)
+    expect([...barSet.values()]).toEqual([b, r])
+    expect([...bazSet.values()]).toEqual([b, z])
+    expect([...bSet.values()]).toEqual([bar, baz])
+    expect([...rSet.values()]).toEqual([bar])
+    expect([...zSet.values()]).toEqual([baz])
+
+    world.destroy(bar)
+    expect([...bazSet.values()]).toEqual([b, z])
+    expect([...bSet.values()]).toEqual([baz])
+    expect([...rSet.values()]).toEqual([])
+    expect([...zSet.values()]).toEqual([baz])
   })
 
   test("can cleanly reuse an old entity ID after it has been destroyed", () => {

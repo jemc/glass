@@ -1,10 +1,11 @@
 import { BitMask } from "./BitMask"
-import { Entity } from "./Entity"
+import { Entity, EntitySet } from "./Entity"
 import { EntityPool } from "./EntityPool"
 
 export interface Component {
   readonly constructor: Function
-  readonly collectionEntity?: Entity
+  readonly collectionEntity?: Entity // for one-to-many relationships
+  readonly collectionEntities?: EntitySet // for many-to-many relationships
 }
 
 export type ComponentClass<T extends {} = {}> = {
