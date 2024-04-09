@@ -16,6 +16,7 @@ describe("Context", () => {
       [Phase.Load, Opal.LoadTileMapAssetsSystem],
       [Phase.Load, Opal.LoadTileMapSlicesSystem],
       [Phase.Action, Agate.StatusAffectsGaugesSystem],
+      [Phase.Action, Agate.GaugesSetStatusSystem],
       [Phase.Correction, Opal.PositionWrapsAtEdgesSystem],
       [Phase.PreRender, Opal.SpriteSetFromStatusSystem],
       [Phase.PreRender, Opal.SpriteAnimationSystem],

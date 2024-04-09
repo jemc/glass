@@ -122,6 +122,12 @@ export class Status {
     }
   }
 
+  *values() {
+    for (const name of Object.keys(this.map)) {
+      yield name
+    }
+  }
+
   each(callback: (name: string, config: StatusConfig, frame: number) => void) {
     for (const [name, frame] of Object.entries(this.map)) {
       const config = this.configs[name]

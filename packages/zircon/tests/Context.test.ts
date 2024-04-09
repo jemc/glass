@@ -20,6 +20,7 @@ describe("Context", () => {
       [Phase.Impetus, Zircon.MenuNavigateSystem],
       [Phase.Impetus, Zircon.MenuSetsStatusSystem],
       [Phase.Action, Agate.StatusAffectsGaugesSystem],
+      [Phase.Action, Agate.GaugesSetStatusSystem],
       [Phase.Correction, Opal.PositionWrapsAtEdgesSystem],
       [Phase.PreRender, Opal.SpriteSetFromStatusSystem],
       [Phase.PreRender, Opal.SpriteAnimationSystem],

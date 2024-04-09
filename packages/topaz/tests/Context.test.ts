@@ -19,6 +19,7 @@ describe("Context", () => {
       [Phase.Load, Opal.LoadTileMapSlicesSystem],
       [Phase.Load, Topaz.LoadTileMapSpawnsSystem],
       [Phase.Action, Agate.StatusAffectsGaugesSystem],
+      [Phase.Action, Agate.GaugesSetStatusSystem],
       [Phase.Action, Topaz.WalkSystem],
       [Phase.Action, Topaz.WarpPlayerSystem],
       [Phase.Reaction, Topaz.CameraFocusSystem],

@@ -5,7 +5,11 @@ import {
   Phase,
   Component,
 } from "@glass/core"
-import { StatusAdvanceSystem, StatusAffectsGaugesSystem } from "."
+import {
+  StatusAffectsGaugesSystem,
+  GaugesSetStatusSystem,
+  StatusAdvanceSystem,
+} from "."
 
 export class Context extends SystemContext {
   static readonly componentId = registerComponent(this)
@@ -14,6 +18,7 @@ export class Context extends SystemContext {
     super()
 
     this.world.addSystem(Phase.Action, StatusAffectsGaugesSystem, this) // TODO: Should this be in Phase.Reaction instead?
+    this.world.addSystem(Phase.Action, GaugesSetStatusSystem, this) // TODO: Should this be in Phase.Reaction instead?
     this.world.addSystem(Phase.Advance, StatusAdvanceSystem, this)
   }
 

@@ -9,6 +9,7 @@ describe("Context", () => {
 
     expect([...world.phasesAndSystemFactories()]).toEqual([
       [Phase.Action, Agate.StatusAffectsGaugesSystem],
+      [Phase.Action, Agate.GaugesSetStatusSystem],
       [Phase.Advance, Agate.StatusAdvanceSystem],
     ])
   })

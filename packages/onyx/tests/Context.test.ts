@@ -11,6 +11,7 @@ describe("Context", () => {
 
     expect([...world.phasesAndSystemFactories()]).toEqual([
       [Phase.Action, Agate.StatusAffectsGaugesSystem],
+      [Phase.Action, Agate.GaugesSetStatusSystem],
       [Phase.PreRender, Onyx.ArrangementPlaySystem],
       [Phase.Advance, Agate.StatusAdvanceSystem],
     ])
