@@ -23,7 +23,6 @@ describe("Context", () => {
       [Phase.Action, Agate.GaugesSetStatusSystem],
       [Phase.Action, Pyrope.SpawnOnStatusSystem],
       [Phase.Action, Pyrope.MoveSystem],
-      [Phase.Action, Pyrope.JumpSystem],
       [Phase.Action, Pyrope.BodyUpdateSystem],
       [Phase.Reaction, Coral.StatusSetsBoundsSystem],
       [Phase.Reaction, Coral.SpatialIndexSystem],
