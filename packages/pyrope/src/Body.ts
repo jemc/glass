@@ -1,7 +1,6 @@
 import type { Writable } from "type-fest"
 import {
   registerComponent,
-  World,
   ReadVector2,
   MutableVector2,
   System,
@@ -72,18 +71,6 @@ export class Body {
 
   get isTouchingRightSolid() {
     return (this.latestSolidCollisionBits & CollisionBits.Right) !== 0
-  }
-
-  get isMovingLeft() {
-    return this.velocity.x < 0
-  }
-
-  get isMovingRight() {
-    return this.velocity.x > 0
-  }
-
-  get horizontalSpeed() {
-    return Math.abs(this.velocity.x)
   }
 
   setVerticalConstantVelocity(speed: number) {
