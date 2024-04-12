@@ -24,7 +24,7 @@ describe("Context", () => {
       [Phase.Action, Topaz.WarpPlayerSystem],
       [Phase.Reaction, Topaz.CameraFocusSystem],
       [Phase.Correction, Opal.PositionWrapsAtEdgesSystem],
-      [Phase.PreRender, Opal.SpriteSetFromStatusSystem],
+      [Phase.PreRender, Opal.StatusSetsSpriteSystem],
       [Phase.PreRender, Opal.SpriteAnimationSystem],
       [Phase.PreRender, Opal.AnimatePositionSystem],
       [Phase.PreRender, Opal.ColorPaletteAnimationSystem],

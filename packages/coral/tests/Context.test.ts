@@ -23,7 +23,7 @@ describe("Context", () => {
       [Phase.Reaction, Coral.SpatialIndexSystem],
       [Phase.Reaction, Coral.SpatialIndexPruneSystem],
       [Phase.Correction, Opal.PositionWrapsAtEdgesSystem],
-      [Phase.PreRender, Opal.SpriteSetFromStatusSystem],
+      [Phase.PreRender, Opal.StatusSetsSpriteSystem],
       [Phase.PreRender, Opal.SpriteAnimationSystem],
       [Phase.PreRender, Opal.AnimatePositionSystem],
       [Phase.PreRender, Opal.ColorPaletteAnimationSystem],

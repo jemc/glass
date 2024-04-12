@@ -18,7 +18,7 @@ import {
   LoadTileMapAssetsSystem,
   LoadTileMapSlicesSystem,
   PositionWrapsAtEdgesSystem,
-  SpriteSetFromStatusSystem,
+  StatusSetsSpriteSystem,
   SpriteAnimationSystem,
   AnimatePositionSystem,
   ColorPaletteAnimationSystem,
@@ -58,7 +58,7 @@ export class Context extends SystemContext {
 
     this.world.addSystem(Phase.Correction, PositionWrapsAtEdgesSystem, this)
 
-    this.world.addSystem(Phase.PreRender, SpriteSetFromStatusSystem, this)
+    this.world.addSystem(Phase.PreRender, StatusSetsSpriteSystem, this)
     this.world.addSystem(Phase.PreRender, SpriteAnimationSystem, this)
     this.world.addSystem(Phase.PreRender, AnimatePositionSystem, this)
     this.world.addSystem(Phase.PreRender, ColorPaletteAnimationSystem, this)

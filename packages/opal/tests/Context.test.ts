@@ -18,7 +18,7 @@ describe("Context", () => {
       [Phase.Action, Agate.StatusAffectsGaugesSystem],
       [Phase.Action, Agate.GaugesSetStatusSystem],
       [Phase.Correction, Opal.PositionWrapsAtEdgesSystem],
-      [Phase.PreRender, Opal.SpriteSetFromStatusSystem],
+      [Phase.PreRender, Opal.StatusSetsSpriteSystem],
       [Phase.PreRender, Opal.SpriteAnimationSystem],
       [Phase.PreRender, Opal.AnimatePositionSystem],
       [Phase.PreRender, Opal.ColorPaletteAnimationSystem],
