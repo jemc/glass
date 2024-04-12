@@ -90,9 +90,17 @@ export class World {
       const component = componentStorage?.[entity]
       if (!component) return
 
-      const componentName =
-        getComponentClassById(componentId)?.name ?? `${componentId}`
-      info[componentName] = component
+      const componentClass = getComponentClassById(componentId)
+      const componentName = componentClass?.name ?? `${componentId}`
+      info[componentName] =
+        "world" in component
+          ? true
+          : "collectionEntities" in component
+            ? {
+                ...component,
+                collectionEntities: [...component.collectionEntities!],
+              }
+            : component
     })
     return info
   }
