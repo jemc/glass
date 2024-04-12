@@ -6,7 +6,9 @@ import { Context } from "./Context"
 export class SpriteSetFromStatus {
   static readonly componentId = registerComponent(this)
 
-  constructor(readonly mappings: ReadonlyArray<[string[], string]>) {}
+  constructor(
+    readonly mappings: ReadonlyArray<[ReadonlyArray<string>, string]>,
+  ) {}
 }
 
 export const SpriteSetFromStatusSystem = (opal: Context) =>
