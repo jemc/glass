@@ -12,7 +12,8 @@
   "dependencies": {
     "@glass/core": "workspace:*",
     "@glass/agate": "workspace:*",
-    "@glass/opal": "workspace:*"
+    "@glass/opal": "workspace:*",
+    "@glass/coral": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.11.16",

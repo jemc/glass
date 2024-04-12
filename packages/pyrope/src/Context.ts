@@ -7,6 +7,7 @@ import {
   SystemContext,
 } from "@glass/core"
 import { Opal } from "@glass/opal"
+import { Coral } from "@glass/coral"
 import { Camera, CameraFocusSystem } from "./Camera"
 import {
   BodyUpdateSystem,
@@ -23,11 +24,12 @@ export class Context extends SystemContext {
   readonly camera = new Camera()
   readonly scene: Entity
 
-  readonly world = this.opal.world
-  readonly agate = this.opal.agate
+  readonly world = this.coral.world
+  readonly agate = this.coral.agate
+  readonly opal = this.coral.opal
 
   constructor(
-    readonly opal: Opal.Context,
+    readonly coral: Coral.Context,
     readonly config: { tileSize: number },
   ) {
     super()
@@ -48,6 +50,12 @@ export class Context extends SystemContext {
   }
 
   create(...components: Component[]): number {
-    return this.world.create(this.agate, this.opal, this, ...components)
+    return this.world.create(
+      this.agate,
+      this.opal,
+      this.coral,
+      this,
+      ...components,
+    )
   }
 }

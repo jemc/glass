@@ -1,4 +1,3 @@
-import type { Writable } from "type-fest"
 import {
   registerComponent,
   ReadVector2,
@@ -7,49 +6,16 @@ import {
 } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
+import { Coral } from "@glass/coral"
 
 export class Body {
   static readonly componentId = registerComponent(this)
 
   passThroughSolids: boolean = false
 
-  readonly width: number = 0
-  readonly height: number = 0
-  readonly offsetX: number = 0
-  readonly offsetY: number = 0
-  readonly offsetLeft: number = 0
-  readonly offsetRight: number = 0
-  readonly offsetTop: number = 0
-  readonly offsetBottom: number = 0
-
   tap(callback: (body: this) => void) {
     callback(this)
     return this
-  }
-
-  updateSize(
-    width: number,
-    height: number,
-    offsetX: number = 0,
-    offsetY: number = 0,
-  ) {
-    const self: Writable<Body> = this
-
-    const halfWidth = width / 2
-    const halfHeight = height / 2
-
-    self.width = width
-    self.height = height
-    self.offsetX = offsetX
-    self.offsetY = offsetY
-    self.offsetLeft = (offsetX ?? 0) - halfWidth
-    self.offsetRight = (offsetX ?? 0) + halfWidth
-    self.offsetTop = (offsetY ?? 0) - halfHeight
-    self.offsetBottom = (offsetY ?? 0) + halfHeight
-  }
-
-  constructor(...args: Parameters<typeof Body.prototype.updateSize>) {
-    this.updateSize(...args)
   }
 
   private velocity = new MutableVector2(0, 0)
@@ -111,6 +77,7 @@ export class Body {
 
   updatePosition(
     position: Opal.Position,
+    bounds: Coral.Bounds,
     collisionsTruth: CollisionsTruth | undefined,
   ) {
     this.previousCoords.copyFrom(position.coords)
@@ -125,7 +92,7 @@ export class Body {
         this.latestSolidCollisionBits = collisionsTruth.stopAtSolids(
           coords,
           this.previousCoords,
-          this,
+          bounds,
         )
 
         if (
@@ -148,15 +115,15 @@ export class Body {
 }
 
 export const BodyUpdateSystem = (pyrope: Context) =>
-  System.for(pyrope, [Body, Opal.Position], {
+  System.for(pyrope, [Body, Opal.Position, Coral.Bounds], {
     shouldMatchAll: [Body],
 
-    runEach(entity, body, position) {
+    runEach(entity, body, position, bounds) {
       // TODO: less hard-coded here
       const tileMap = pyrope.opal.tileMaps.get("data/levels/TestLevel.aseprite")
       const collisions = tileMap && new CollisionsTruth(tileMap.layer("Solids"))
 
-      body.updatePosition(position, collisions)
+      body.updatePosition(position, bounds, collisions)
     },
   })
 
@@ -178,7 +145,7 @@ class CollisionsTruth {
   stopAtSolids(
     coords: MutableVector2,
     prevCoords: ReadVector2,
-    body: Body,
+    bounds: Coral.Bounds,
   ): CollisionBits {
     const { tileWidth, tileHeight } = this.solidsLayer.tileset
 
@@ -201,14 +168,14 @@ class CollisionsTruth {
     // TODO: Is there a more elegant solution that acheives the same goal?
     const fudge = 0.001
 
-    const x0 = coords.x + body.offsetLeft - fudge
-    const x1 = coords.x + body.offsetRight
-    const y0 = coords.y + body.offsetTop - fudge
-    const y1 = coords.y + body.offsetBottom
-    const prevX0 = prevCoords.x + body.offsetLeft
-    const prevX1 = prevCoords.x + body.offsetRight - fudge
-    const prevY0 = prevCoords.y + body.offsetTop
-    const prevY1 = prevCoords.y + body.offsetBottom - fudge
+    const x0 = coords.x + bounds.relativeX0 - fudge
+    const x1 = coords.x + bounds.relativeX1
+    const y0 = coords.y + bounds.relativeY0 - fudge
+    const y1 = coords.y + bounds.relativeY1
+    const prevX0 = prevCoords.x + bounds.relativeX0
+    const prevX1 = prevCoords.x + bounds.relativeX1 - fudge
+    const prevY0 = prevCoords.y + bounds.relativeY0
+    const prevY1 = prevCoords.y + bounds.relativeY1 - fudge
     const iX0 = Math.floor(x0 / tileWidth)
     const iX1 = Math.floor(x1 / tileWidth)
     const iY0 = Math.floor(y0 / tileHeight)
@@ -232,9 +199,9 @@ class CollisionsTruth {
     }
 
     if (collisions === CollisionBits.Top) {
-      coords.y = (iY0 + 1) * tileHeight - body.offsetTop
+      coords.y = (iY0 + 1) * tileHeight - bounds.relativeY0
     } else if (collisions === CollisionBits.Bottom) {
-      coords.y = iY1 * tileHeight - body.offsetBottom
+      coords.y = iY1 * tileHeight - bounds.relativeY1
     }
 
     const collisionsY = collisions
@@ -252,9 +219,9 @@ class CollisionsTruth {
     }
 
     if (collisions === CollisionBits.Left) {
-      coords.x = (iX0 + 1) * tileWidth - body.offsetLeft
+      coords.x = (iX0 + 1) * tileWidth - bounds.relativeX0
     } else if (collisions === CollisionBits.Right) {
-      coords.x = iX1 * tileWidth - body.offsetRight
+      coords.x = iX1 * tileWidth - bounds.relativeX1
     }
 
     collisions |= collisionsY

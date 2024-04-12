@@ -3,6 +3,7 @@ import { World, Phase } from "@glass/core"
 import { Agate } from "@glass/agate"
 import { Opal } from "@glass/opal"
 import { Pyrope } from "@glass/pyrope"
+import { Coral } from "@glass/coral"
 
 describe("Context", () => {
   test("it sets up Pyrope systems in the correct order", () => {
@@ -11,7 +12,8 @@ describe("Context", () => {
     const opal = new Opal.Context(agate, {
       canvas: document.createElement("canvas"),
     })
-    const pyrope = new Pyrope.Context(opal, { tileSize: 16 })
+    const coral = new Coral.Context(opal)
+    const pyrope = new Pyrope.Context(coral, { tileSize: 16 })
 
     expect([...world.phasesAndSystemFactories()]).toEqual([
       [Phase.Load, Opal.LoadSpriteSheetAssetsSystem],
@@ -23,6 +25,9 @@ describe("Context", () => {
       [Phase.Action, Pyrope.MoveSystem],
       [Phase.Action, Pyrope.JumpSystem],
       [Phase.Action, Pyrope.BodyUpdateSystem],
+      [Phase.Reaction, Coral.StatusSetsBoundsSystem],
+      [Phase.Reaction, Coral.SpatialIndexSystem],
+      [Phase.Reaction, Coral.SpatialIndexPruneSystem],
       [Phase.Reaction, Pyrope.CameraFocusSystem],
       [Phase.Correction, Opal.PositionWrapsAtEdgesSystem],
       [Phase.PreRender, Opal.SpriteSetFromStatusSystem],
