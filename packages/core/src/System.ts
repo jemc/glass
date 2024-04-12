@@ -35,6 +35,10 @@ function SystemFor<
         if (componentType !== prerequisiteType)
           setComponentPrerequisite(componentType, prerequisiteType)
       })
+      setComponentPrerequisite(
+        componentType,
+        context.constructor as unknown as ComponentClass<C>,
+      )
     })
   }
 

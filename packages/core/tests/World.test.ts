@@ -249,17 +249,29 @@ describe("World", () => {
       new RequiresColorAndLocatedIn(),
       new Color("red"),
     )
-    const entity3 = world.create(
+    const entity3 = context.create(
       new RequiresColorAndLocatedIn(),
       new LocatedIn(entity1),
     )
     const entity4 = world.create(
+      // not created via TestContext
+      new RequiresColorAndLocatedIn(),
+      new Color("blue"),
+      new LocatedIn(entity1),
+    )
+    const entity5 = context.create(
       new RequiresColorAndLocatedIn(),
       new Color("blue"),
       new LocatedIn(entity3),
     ) // no warnings for this one
 
     expect(world.debugScanForWarnings()).toEqual([
+      {
+        "entity is missing prerequisite components": {
+          entity: world.debugInfoFor(entity4),
+          missing: ["TestContext", "TestContext"],
+        },
+      },
       {
         "entity is missing prerequisite components": {
           entity: world.debugInfoFor(entity1),
