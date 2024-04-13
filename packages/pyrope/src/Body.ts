@@ -39,61 +39,35 @@ export class Body {
     return (this.latestSolidCollisionBits & CollisionBits.Right) !== 0
   }
 
-  setVerticalConstantVelocity(speed: number) {
-    this.velocity.y = speed
-    this.residuals.y = 0
-  }
-
-  setHorizontalConstantVelocity(speed: number) {
-    this.velocity.x = speed
-    this.residuals.x = 0
-  }
-
-  approachVerticalVelocity(target: number, maxChange?: number) {
-    if (!maxChange) {
-      this.velocity.y = target
-      return
-    }
-
-    if (target > this.velocity.y) {
-      this.velocity.y = Math.min(this.velocity.y + maxChange, target)
-    } else if (target < this.velocity.y) {
-      this.velocity.y = Math.max(this.velocity.y - maxChange, target)
-    }
-  }
-
-  approachHorizontalVelocity(target: number, maxChange?: number) {
-    if (!maxChange) {
-      this.velocity.x = target
-      return
-    }
-
-    if (target > this.velocity.x) {
-      this.velocity.x = Math.min(this.velocity.x + maxChange, target)
-    } else if (target < this.velocity.x) {
-      this.velocity.x = Math.max(this.velocity.x - maxChange, target)
-    }
-  }
-
   updatePosition(
     position: Opal.Position,
     bounds: Coral.Bounds,
-    collisionsTruth: CollisionsTruth | undefined,
+    collisions: Coral.Collisions,
   ) {
     this.previousCoords.copyFrom(position.coords)
 
     position.updateCoords((coords) => {
-      coords
-        .plusEquals(this.residuals)
-        .plusEquals(this.velocity)
-        .toRoundedCapturingResiduals(this.residuals)
+      if (!this.passThroughSolids) {
+        this.latestSolidCollisionBits = 0 // TODO: Set this when a collision is detected
 
-      if (!this.passThroughSolids && collisionsTruth) {
-        this.latestSolidCollisionBits = collisionsTruth.stopAtSolids(
-          coords,
-          this.previousCoords,
-          bounds,
-        )
+        for (const [otherEntity, collisionList] of collisions.results()) {
+          for (const collision of collisionList) {
+            if (otherEntity === collision.entityB) {
+              coords.minusEquals(collision.incursionA)
+            } else {
+              coords.plusEquals(collision.incursionA)
+            }
+
+            if (collision.incursionA.y < 0)
+              this.latestSolidCollisionBits |= CollisionBits.Top
+            if (collision.incursionA.y > 0)
+              this.latestSolidCollisionBits |= CollisionBits.Bottom
+            if (collision.incursionA.x < 0)
+              this.latestSolidCollisionBits |= CollisionBits.Left
+            if (collision.incursionA.x > 0)
+              this.latestSolidCollisionBits |= CollisionBits.Right
+          }
+        }
 
         if (
           (this.isTouchingLeftSolid && this.velocity.x < 0) ||
@@ -115,14 +89,10 @@ export class Body {
 }
 
 export const BodyUpdateSystem = (pyrope: Context) =>
-  System.for(pyrope, [Body, Opal.Position, Coral.Bounds], {
+  System.for(pyrope, [Body, Opal.Position, Coral.Bounds, Coral.Collisions], {
     shouldMatchAll: [Body],
 
-    runEach(entity, body, position, bounds) {
-      // TODO: less hard-coded here
-      const tileMap = pyrope.opal.tileMaps.get("data/levels/TestLevel.aseprite")
-      const collisions = tileMap && new CollisionsTruth(tileMap.layer("Solids"))
-
+    runEach(entity, body, position, bounds, collisions) {
       body.updatePosition(position, bounds, collisions)
     },
   })

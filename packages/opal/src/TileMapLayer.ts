@@ -55,6 +55,16 @@ export class TileMapLayer {
   readonly userData: TileMapLayerUserData
   readonly tileset: TileMapTileSet
 
+  xToIndex(x: number) {
+    // TODO: use bitwise operations when tileset.tileWidth is a power of 2
+    return Math.floor(x / this.tileset.tileWidth)
+  }
+
+  yToIndex(y: number) {
+    // TODO: use bitwise operations when tileset.tileHeight is a power of 2
+    return Math.floor(y / this.tileset.tileHeight)
+  }
+
   constructor(
     private ase: Aseprite,
     private tileMap: TileMap,

@@ -1,4 +1,6 @@
 export * from "./Bounds"
+export * from "./Collisions"
 export * from "./Context"
 export * from "./SpatialIndex"
 export * from "./StatusSetsBounds"
+export * from "./Velocity"

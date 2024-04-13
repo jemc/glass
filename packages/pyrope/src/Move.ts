@@ -1,6 +1,7 @@
 import { registerComponent, System } from "@glass/core"
 import { Agate } from "@glass/agate"
 import { Opal } from "@glass/opal"
+import { Coral } from "@glass/coral"
 import { Body } from "./Body"
 import { Context } from "./Context"
 
@@ -30,50 +31,59 @@ export interface MoverModeConfig {
 }
 
 export const MoveSystem = (pyrope: Context) =>
-  System.for(pyrope, [Mover, Opal.Position, Agate.Status, Body], {
-    shouldMatchAll: [Mover],
+  System.for(
+    pyrope,
+    [Mover, Opal.Position, Agate.Status, Coral.Velocity, Body],
+    {
+      shouldMatchAll: [Mover],
 
-    runEach(entity, mover, position, status, body) {
-      status.each((name, statusConfig, frameCount) => {
-        const config = mover.config[name]
-        if (!config) return
+      runEach(entity, mover, position, status, body) {
+        status.each((name, statusConfig, frameCount) => {
+          const config = mover.config[name]
+          if (!config) return
 
-        if (config.verticalTargetVelocity !== undefined) {
-          body.approachVerticalVelocity(
-            config.verticalTargetVelocity,
-            config.verticalTargetVelocityIncrement,
-          )
-        }
-        if (config.verticalInitialVelocity !== undefined && frameCount === 0) {
-          body.setVerticalConstantVelocity(config.verticalInitialVelocity)
-        }
-
-        if (config.horizontalTargetVelocity !== undefined) {
-          body.approachHorizontalVelocity(
-            config.horizontalTargetVelocity,
-            config.horizontalTargetVelocityIncrement,
-          )
-        } else if (config.horizontalTargetSpeed !== undefined) {
-          body.approachHorizontalVelocity(
-            config.horizontalTargetSpeed * (position.scale.x < 0 ? -1 : 1),
-            config.horizontalTargetSpeedIncrement,
-          )
-        }
-
-        // Handle initial velocity if it's the first frame of this status.
-        if (frameCount === 0) {
-          if (config.verticalInitialVelocity !== undefined) {
+          if (config.verticalTargetVelocity !== undefined) {
+            body.approachVerticalVelocity(
+              config.verticalTargetVelocity,
+              config.verticalTargetVelocityIncrement,
+            )
+          }
+          if (
+            config.verticalInitialVelocity !== undefined &&
+            frameCount === 0
+          ) {
             body.setVerticalConstantVelocity(config.verticalInitialVelocity)
           }
 
-          if (config.horizontalInitialVelocity !== undefined) {
-            body.setHorizontalConstantVelocity(config.horizontalInitialVelocity)
-          } else if (config.horizontalInitialSpeed !== undefined) {
-            body.setHorizontalConstantVelocity(
-              config.horizontalInitialSpeed * (position.scale.x < 0 ? -1 : 1),
+          if (config.horizontalTargetVelocity !== undefined) {
+            body.approachHorizontalVelocity(
+              config.horizontalTargetVelocity,
+              config.horizontalTargetVelocityIncrement,
+            )
+          } else if (config.horizontalTargetSpeed !== undefined) {
+            body.approachHorizontalVelocity(
+              config.horizontalTargetSpeed * (position.scale.x < 0 ? -1 : 1),
+              config.horizontalTargetSpeedIncrement,
             )
           }
-        }
-      })
+
+          // Handle initial velocity if it's the first frame of this status.
+          if (frameCount === 0) {
+            if (config.verticalInitialVelocity !== undefined) {
+              body.setVerticalConstantVelocity(config.verticalInitialVelocity)
+            }
+
+            if (config.horizontalInitialVelocity !== undefined) {
+              body.setHorizontalConstantVelocity(
+                config.horizontalInitialVelocity,
+              )
+            } else if (config.horizontalInitialSpeed !== undefined) {
+              body.setHorizontalConstantVelocity(
+                config.horizontalInitialSpeed * (position.scale.x < 0 ? -1 : 1),
+              )
+            }
+          }
+        })
+      },
     },
-  })
+  )

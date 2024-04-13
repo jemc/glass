@@ -34,12 +34,13 @@ export class Context extends SystemContext {
       this.camera,
       new Opal.Position(0, 0),
       new Opal.Renderable(),
+      new Coral.SpatialIndex(),
     )
 
     this.world.addSystem(Phase.Action, SpawnOnStatusSystem, this)
     this.world.addSystem(Phase.Action, MoveSystem, this)
-    this.world.addSystem(Phase.Action, BodyUpdateSystem, this)
 
+    this.world.addSystem(Phase.Reaction, BodyUpdateSystem, this)
     this.world.addSystem(Phase.Reaction, CameraFocusSystem, this)
   }
 
