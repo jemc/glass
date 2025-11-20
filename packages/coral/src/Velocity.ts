@@ -1,6 +1,4 @@
-import { registerComponent, MutableVector2, System } from "@glass/core"
-import { Opal } from "@glass/opal"
-import { Context } from "./Context"
+import { registerComponent, MutableVector2, ReadVector2 } from "@glass/core"
 
 const VELOCITY = Symbol("Velocity._velocity")
 const RESIDUALS = Symbol("Velocity._residuals")
@@ -10,6 +8,11 @@ export class Velocity {
 
   readonly [VELOCITY] = new MutableVector2();
   readonly [RESIDUALS] = new MutableVector2()
+
+  // TODO: Find a better name for this.
+  get vector(): ReadVector2 {
+    return this[VELOCITY]
+  }
 
   setVerticalConstantVelocity(speed: number) {
     this[VELOCITY].y = speed
@@ -47,17 +50,3 @@ export class Velocity {
     }
   }
 }
-
-export const VelocitySystem = (coral: Context) =>
-  System.for(coral, [Velocity, Opal.Position], {
-    shouldMatchAll: [Velocity],
-
-    runEach(entity, velocity, position) {
-      position.updateCoords((coords) => {
-        coords
-          .plusEquals(velocity[RESIDUALS])
-          .plusEquals(velocity[VELOCITY])
-          .toRoundedCapturingResiduals(velocity[RESIDUALS])
-      })
-    },
-  })

@@ -15,9 +15,6 @@ export class Clock {
   readonly currentFramesPerSecond: number = 0
   private tickAndKeepRunningFn: (timestamp: DOMHighResTimeStamp) => void
 
-  // TODO: Refine this mechanism or remove it.
-  private slowMotionFactor?: number
-
   // Create a new clock, which will call the given `runFn` on each `tick`.
   constructor(
     private runFn: () => void = () => {},
@@ -35,9 +32,12 @@ export class Clock {
     this.alreadyStarted = true
   }
   private tickAndKeepRunning(timestamp: DOMHighResTimeStamp) {
-    this.tick(timestamp)
     requestAnimationFrame(this.tickAndKeepRunningFn)
+    this.tick(timestamp)
   }
+
+  private maxFPS = 60
+  private maxFPSInterval = 1000 / this.maxFPS
 
   // Run the next frame, using the given `timestamp`, and call the held `runFn`.
   //
@@ -47,18 +47,24 @@ export class Clock {
   // However, this method is exposed to allow manual control during tests.
   // Be sure to supply a monotonic increasing `timestamp` to avoid weirdness.
   tick(timestamp: DOMHighResTimeStamp) {
-    const timeDelta = 1000 / (timestamp - this.timestamp)
+    // Schedule the next tick.
+    // requestAnimationFrame(this.tick.bind(this))
 
-    // In slow motion, we skip processing some frames.
-    if (this.slowMotionFactor && this.slowMotionFactor > 60 / timeDelta) return
+    // Throttle to maxFPS.
+    let lastTimestamp = this.timestamp
+    const delta = (timestamp ?? 0) - lastTimestamp
+    if (delta < this.maxFPSInterval) return
+
+    // Set lastTimestamp, aligning to a multiple of maxFPSInterval.
+    lastTimestamp = timestamp - (delta % this.maxFPSInterval)
 
     // Update the clock state using a writeable view of the clock.
     // This hack is a simple way of exposing a read-only interface,
     // while still allowing us to update them internally.
     const write: Writable<Clock> = this
     write.frame++
-    write.timestamp = timestamp
-    write.currentFramesPerSecond = timeDelta
+    write.timestamp = lastTimestamp
+    write.currentFramesPerSecond = 1000 / delta
 
     // Run the designated run function that the clock is driving.
     this.runFn()

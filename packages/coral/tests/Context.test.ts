@@ -22,6 +22,7 @@ describe("Context", () => {
       [Phase.Reaction, Coral.StatusSetsBoundsSystem],
       [Phase.Reaction, Coral.SpatialIndexSystem],
       [Phase.Reaction, Coral.SpatialIndexPruneSystem],
+      [Phase.Reaction, Coral.CollisionsCheckSystem],
       [Phase.Correction, Opal.PositionWrapsAtEdgesSystem],
       [Phase.PreRender, Opal.StatusSetsSpriteSystem],
       [Phase.PreRender, Opal.SpriteAnimationSystem],
@@ -31,6 +32,7 @@ describe("Context", () => {
       [Phase.Render, Opal.RenderRenderablesSystem],
       [Phase.Render, Opal.RenderTileMapSystem],
       [Phase.Advance, Agate.StatusAdvanceSystem],
+      [Phase.Advance, Coral.CollisionsFinalizeSystem],
     ])
   })
 })
