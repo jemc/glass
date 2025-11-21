@@ -1,14 +1,14 @@
 import { registerComponent, QueryLike, System, Entity } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
-import { Collisions } from "./Collisions"
+import { Body } from "./Body"
 
 export class BlockedBy {
   static readonly componentId = registerComponent(this)
 
   constructor(
     readonly queries: ReadonlyArray<
-      QueryLike<[typeof Collisions, typeof Opal.Position]>
+      QueryLike<[typeof Body, typeof Opal.Position]>
     >,
   ) {}
 
@@ -51,11 +51,11 @@ export class BlockedBy {
   }
 
   entitiesThatMayBlock(): Iterable<
-    [Entity, [Collisions, Opal.Position, ...unknown[]]]
+    [Entity, [Body, Opal.Position, ...unknown[]]]
   > {
     let outerIter = this.queries.values()
     let innerIter: Iterator<
-      [Entity, [Collisions, Opal.Position, ...unknown[]]]
+      [Entity, [Body, Opal.Position, ...unknown[]]]
     > | null = null
 
     return {

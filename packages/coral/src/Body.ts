@@ -1,25 +1,18 @@
-import { Entity, System, registerComponent } from "@glass/core"
-import { Opal } from "@glass/opal"
-import { Bounds } from "./Bounds"
+import { registerComponent } from "@glass/core"
 import { Context } from "./Context"
-import { Velocity } from "./Velocity"
-import { BlockedBy } from "./BlockedBy"
 
-export class Collisions {
+export class Body {
   static readonly componentId = registerComponent(this)
 
-  readonly shape: Collisions.Shape
+  readonly shape: Body.Shape
   readonly tileMapName?: string
   readonly tileMapLayerName?: string
 
   constructor(
-    ...args:
-      | []
-      | [Collisions.Shape.Box]
-      | [Collisions.Shape.TileMap, string, string]
+    ...args: [] | [Body.Shape.Box] | [Body.Shape.TileMap, string, string]
   ) {
-    this.shape = args[0] ?? Collisions.Shape.Box
-    if (this.shape === Collisions.Shape.TileMap) {
+    this.shape = args[0] ?? Body.Shape.Box
+    if (this.shape === Body.Shape.TileMap) {
       this.tileMapName = args[1]
       this.tileMapLayerName = args[2]
     }
@@ -32,7 +25,7 @@ export class Collisions {
     y0: number,
     y1: number,
   ): boolean {
-    if (this.shape !== Collisions.Shape.TileMap)
+    if (this.shape !== Body.Shape.TileMap)
       throw new TypeError("This is not a TileMap collision shape.")
 
     return (
@@ -44,7 +37,7 @@ export class Collisions {
   }
 }
 
-export namespace Collisions {
+export namespace Body {
   export enum Shape {
     Box = 0,
     // TODO: Circle,

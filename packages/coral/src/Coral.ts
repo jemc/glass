@@ -1,6 +1,6 @@
 export * from "./BlockedBy"
 export * from "./Bounds"
-export * from "./Collisions"
+export * from "./Body"
 export * from "./Context"
 export * from "./StatusSetsBounds"
 export * from "./Velocity"

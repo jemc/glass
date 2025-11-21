@@ -7,7 +7,7 @@ import {
 } from "@glass/core"
 import { Context } from "./Context"
 import { BlockedBy } from "./BlockedBy"
-import { Collisions } from "./Collisions"
+import { Body } from "./Body"
 import { Opal } from "@glass/opal"
 import { Bounds } from "./Bounds"
 
@@ -62,14 +62,11 @@ function tryMoveRight(
   entityA: Entity,
   coral: Context,
   blockedBy: BlockedBy,
-  a: Collisions,
+  a: Body,
   posA: Opal.Position,
 ) {
   for (const [entityB, [b, posB]] of blockedBy.entitiesThatMayBlock()) {
-    if (
-      a.shape === Collisions.Shape.Box &&
-      b.shape === Collisions.Shape.TileMap
-    ) {
+    if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
       const boundsA = coral.world.get(entityA, Bounds)
       if (!boundsA) continue
 
@@ -89,14 +86,11 @@ function tryMoveLeft(
   entityA: Entity,
   coral: Context,
   blockedBy: BlockedBy,
-  a: Collisions,
+  a: Body,
   posA: Opal.Position,
 ) {
   for (const [entityB, [b, posB]] of blockedBy.entitiesThatMayBlock()) {
-    if (
-      a.shape === Collisions.Shape.Box &&
-      b.shape === Collisions.Shape.TileMap
-    ) {
+    if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
       const boundsA = coral.world.get(entityA, Bounds)
       if (!boundsA) continue
 
@@ -116,14 +110,11 @@ function tryMoveUp(
   entityA: Entity,
   coral: Context,
   blockedBy: BlockedBy,
-  a: Collisions,
+  a: Body,
   posA: Opal.Position,
 ) {
   for (const [entityB, [b, posB]] of blockedBy.entitiesThatMayBlock()) {
-    if (
-      a.shape === Collisions.Shape.Box &&
-      b.shape === Collisions.Shape.TileMap
-    ) {
+    if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
       const boundsA = coral.world.get(entityA, Bounds)
       if (!boundsA) continue
 
@@ -143,14 +134,11 @@ function tryMoveDown(
   entityA: Entity,
   coral: Context,
   blockedBy: BlockedBy,
-  a: Collisions,
+  a: Body,
   posA: Opal.Position,
 ) {
   for (const [entityB, [b, posB]] of blockedBy.entitiesThatMayBlock()) {
-    if (
-      a.shape === Collisions.Shape.Box &&
-      b.shape === Collisions.Shape.TileMap
-    ) {
+    if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
       const boundsA = coral.world.get(entityA, Bounds)
       if (!boundsA) continue
 
@@ -195,15 +183,15 @@ export const VelocitySystem = (coral: Context) =>
       for (let i = 0; i < totalSubsteps; i++) {
         for (const [entity, [velocity, position]] of entities) {
           const blockedBy = world.get(entity, BlockedBy)
-          const collisions = world.get(entity, Collisions)
+          const body = world.get(entity, Body)
 
           // Determine if this entity should move along the X axis this substep.
           // TODO: use modular arithmetic to get them interspersed better.
           if (velocity.vector.x > i) {
             if (
               !blockedBy ||
-              !collisions ||
-              tryMoveRight(entity, coral, blockedBy, collisions, position)
+              !body ||
+              tryMoveRight(entity, coral, blockedBy, body, position)
             ) {
               position.updateCoords((coords) => (coords.x += 1))
             } else {
@@ -213,8 +201,8 @@ export const VelocitySystem = (coral: Context) =>
           } else if (velocity.vector.x < -i) {
             if (
               !blockedBy ||
-              !collisions ||
-              tryMoveLeft(entity, coral, blockedBy, collisions, position)
+              !body ||
+              tryMoveLeft(entity, coral, blockedBy, body, position)
             ) {
               position.updateCoords((coords) => (coords.x -= 1))
             } else {
@@ -227,8 +215,8 @@ export const VelocitySystem = (coral: Context) =>
           if (velocity.vector.y > i) {
             if (
               !blockedBy ||
-              !collisions ||
-              tryMoveDown(entity, coral, blockedBy, collisions, position)
+              !body ||
+              tryMoveDown(entity, coral, blockedBy, body, position)
             ) {
               position.updateCoords((coords) => (coords.y += 1))
             } else {
@@ -238,8 +226,8 @@ export const VelocitySystem = (coral: Context) =>
           } else if (velocity.vector.y < -i) {
             if (
               !blockedBy ||
-              !collisions ||
-              tryMoveUp(entity, coral, blockedBy, collisions, position)
+              !body ||
+              tryMoveUp(entity, coral, blockedBy, body, position)
             ) {
               position.updateCoords((coords) => (coords.y -= 1))
             } else {
