@@ -12,13 +12,11 @@ import { Opal } from "@glass/opal"
 import { Bounds } from "./Bounds"
 
 const VELOCITY = Symbol("Velocity._velocity")
-const RESIDUALS = Symbol("Velocity._residuals")
 
 export class Velocity {
   static readonly componentId = registerComponent(this);
 
-  readonly [VELOCITY] = new MutableVector2();
-  readonly [RESIDUALS] = new MutableVector2()
+  readonly [VELOCITY] = new MutableVector2()
 
   // TODO: Find a better name for this.
   get vector(): ReadVector2 {
@@ -27,12 +25,10 @@ export class Velocity {
 
   setVerticalConstantVelocity(speed: number) {
     this[VELOCITY].y = speed
-    this[RESIDUALS].y = 0
   }
 
   setHorizontalConstantVelocity(speed: number) {
     this[VELOCITY].x = speed
-    this[RESIDUALS].x = 0
   }
 
   approachVerticalVelocity(target: number, maxChange?: number) {
