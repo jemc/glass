@@ -1,22 +1,9 @@
-import {
-  Entity,
-  ReadVector2,
-  System,
-  Vector2,
-  registerComponent,
-} from "@glass/core"
+import { Entity, System, registerComponent } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Bounds } from "./Bounds"
 import { Context } from "./Context"
 import { Velocity } from "./Velocity"
 import { BlockedBy } from "./BlockedBy"
-
-const RESULTS = Symbol("Collisions._results")
-
-const NORMAL_UP = new Vector2(0, -1)
-const NORMAL_DOWN = new Vector2(0, 1)
-const NORMAL_LEFT = new Vector2(-1, 0)
-const NORMAL_RIGHT = new Vector2(1, 0)
 
 export class Collisions {
   static readonly componentId = registerComponent(this)
@@ -37,12 +24,6 @@ export class Collisions {
       this.tileMapLayerName = args[2]
     }
   }
-
-  readonly [RESULTS]: Collisions.Info[] = []
-
-  results() {
-    return this[RESULTS].entries()
-  }
 }
 
 export namespace Collisions {
@@ -52,33 +33,6 @@ export namespace Collisions {
     // TODO: Bitmap,
     TileMap,
   }
-
-  export interface Info {
-    entityA: Entity
-    posA: ReadVector2
-
-    entityB: Entity
-    posB: ReadVector2
-
-    normalA: Vector2
-    normalB: Vector2
-  }
-}
-
-export function findPossibleCollisions(
-  entityA: Entity,
-  blockedBy: BlockedBy,
-): Map<Entity, [Collisions, Opal.Position]> {
-  const found = new Map<Entity, [Collisions, Opal.Position]>()
-
-  for (const query of blockedBy.queries) {
-    for (const [entityB, [b, posB]] of query.entities) {
-      if (entityA === entityB) continue
-      found.set(entityB, [b, posB])
-    }
-  }
-
-  return found
 }
 
 function tileMapIsSolidAtRange(
@@ -114,10 +68,7 @@ function tryMoveRight(
   a: Collisions,
   posA: Opal.Position,
 ) {
-  for (const [entityB, [b, posB]] of findPossibleCollisions(
-    entityA,
-    blockedBy,
-  ).entries()) {
+  for (const [entityB, [b, posB]] of blockedBy.entitiesThatMayBlock()) {
     if (
       a.shape === Collisions.Shape.Box &&
       b.shape === Collisions.Shape.TileMap
@@ -130,14 +81,6 @@ function tryMoveRight(
       const y0 = posA.coords.y + boundsA.relativeY0
       const y1 = posA.coords.y + boundsA.relativeY1 - 1
       if (tileMapIsSolidAtRange(coral, b, x, x, y0, y1)) {
-        a[RESULTS].push({
-          entityA,
-          entityB,
-          posA: posA.coords,
-          posB: posB.coords,
-          normalA: NORMAL_RIGHT,
-          normalB: NORMAL_LEFT,
-        })
         return false
       }
     }
@@ -152,10 +95,7 @@ function tryMoveLeft(
   a: Collisions,
   posA: Opal.Position,
 ) {
-  for (const [entityB, [b, posB]] of findPossibleCollisions(
-    entityA,
-    blockedBy,
-  ).entries()) {
+  for (const [entityB, [b, posB]] of blockedBy.entitiesThatMayBlock()) {
     if (
       a.shape === Collisions.Shape.Box &&
       b.shape === Collisions.Shape.TileMap
@@ -168,14 +108,6 @@ function tryMoveLeft(
       const y0 = posA.coords.y + boundsA.relativeY0
       const y1 = posA.coords.y + boundsA.relativeY1 - 1
       if (tileMapIsSolidAtRange(coral, b, x, x, y0, y1)) {
-        a[RESULTS].push({
-          entityA,
-          entityB,
-          posA: posA.coords,
-          posB: posB.coords,
-          normalA: NORMAL_LEFT,
-          normalB: NORMAL_RIGHT,
-        })
         return false
       }
     }
@@ -190,10 +122,7 @@ function tryMoveUp(
   a: Collisions,
   posA: Opal.Position,
 ) {
-  for (const [entityB, [b, posB]] of findPossibleCollisions(
-    entityA,
-    blockedBy,
-  ).entries()) {
+  for (const [entityB, [b, posB]] of blockedBy.entitiesThatMayBlock()) {
     if (
       a.shape === Collisions.Shape.Box &&
       b.shape === Collisions.Shape.TileMap
@@ -206,14 +135,6 @@ function tryMoveUp(
       const x1 = posA.coords.x + boundsA.relativeX1 - 1
       const y = posA.coords.y + boundsA.relativeY0 - 1
       if (tileMapIsSolidAtRange(coral, b, x0, x1, y, y)) {
-        a[RESULTS].push({
-          entityA,
-          entityB,
-          posA: posA.coords,
-          posB: posB.coords,
-          normalA: NORMAL_UP,
-          normalB: NORMAL_DOWN,
-        })
         return false
       }
     }
@@ -228,10 +149,7 @@ function tryMoveDown(
   a: Collisions,
   posA: Opal.Position,
 ) {
-  for (const [entityB, [b, posB]] of findPossibleCollisions(
-    entityA,
-    blockedBy,
-  ).entries()) {
+  for (const [entityB, [b, posB]] of blockedBy.entitiesThatMayBlock()) {
     if (
       a.shape === Collisions.Shape.Box &&
       b.shape === Collisions.Shape.TileMap
@@ -244,14 +162,6 @@ function tryMoveDown(
       const x1 = posA.coords.x + boundsA.relativeX1 - 1
       const y = posA.coords.y + boundsA.relativeY1 + 1
       if (tileMapIsSolidAtRange(coral, b, x0, x1, y, y)) {
-        a[RESULTS].push({
-          entityA,
-          entityB,
-          posA: posA.coords,
-          posB: posB.coords,
-          normalA: NORMAL_DOWN,
-          normalB: NORMAL_UP,
-        })
         return false
       }
     }
@@ -265,13 +175,6 @@ export const VelocitySystem = (coral: Context) =>
 
     run(entities) {
       const { world } = coral
-
-      ///
-      // Clear previous collision results.
-      for (const [entity, [velocity, _position]] of entities) {
-        const collisions = world.get(entity, Collisions)
-        if (collisions) collisions[RESULTS].length = 0
-      }
 
       ///
       // Find the fastest axis-aligned speed among all dynamic entities,

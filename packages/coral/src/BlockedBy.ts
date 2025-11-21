@@ -1,4 +1,4 @@
-import { registerComponent, QueryLike, System } from "@glass/core"
+import { registerComponent, QueryLike, System, Entity } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 import { Collisions } from "./Collisions"
@@ -48,6 +48,37 @@ export class BlockedBy {
 
   get wasBlockedOnRight() {
     return (this._bits & BlockedBy.Bits.Right) !== 0
+  }
+
+  entitiesThatMayBlock(): Iterable<
+    [Entity, [Collisions, Opal.Position, ...unknown[]]]
+  > {
+    let outerIter = this.queries.values()
+    let innerIter: Iterator<
+      [Entity, [Collisions, Opal.Position, ...unknown[]]]
+    > | null = null
+
+    return {
+      [Symbol.iterator]() {
+        return {
+          next: () => {
+            while (true) {
+              if (innerIter) {
+                const innerResult = innerIter.next()
+                if (!innerResult.done) return innerResult
+
+                innerIter = null
+              }
+
+              const outerResult = outerIter.next()
+              if (outerResult.done) return { done: true, value: undefined }
+
+              innerIter = outerResult.value.entities[Symbol.iterator]()
+            }
+          },
+        }
+      },
+    }
   }
 }
 
