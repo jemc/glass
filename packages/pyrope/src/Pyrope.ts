@@ -1,4 +1,3 @@
-export * from "./Body"
 export * from "./Camera"
 export * from "./Context"
 export * from "./Move"
