@@ -124,4 +124,18 @@ export class TileMapLayer {
   makeDataTextureSurface(render: Render): TextureSurface {
     return new TextureSurface(render, this.tileIds.size, this.tileIds)
   }
+
+  isNonZeroInXYRange(x0: number, x1: number, y0: number, y1: number): boolean {
+    let iX0 = this.xToIndex(x0)
+    let iX1 = this.xToIndex(x1)
+    let iY0 = this.yToIndex(y0)
+    let iY1 = this.yToIndex(y1)
+
+    for (let iX = iX0; iX <= iX1; iX++) {
+      for (let iY = iY0; iY <= iY1; iY++) {
+        if (this.tileIds.get(iX, iY) !== 0) return true
+      }
+    }
+    return false
+  }
 }
