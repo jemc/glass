@@ -166,6 +166,9 @@ export const ButtonSourceConfig: { Default: ButtonSourceConfig } = {
       KeyC: [{ button: Button.X }],
       KeyV: [{ button: Button.Y }],
 
+      KeyR: [{ button: Button.B }],
+      KeyG: [{ button: Button.A }],
+
       ControlRight: [{ button: Button.A }],
       AltRight: [{ button: Button.B }],
     },
