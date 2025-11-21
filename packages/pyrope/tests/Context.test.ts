@@ -25,8 +25,6 @@ describe("Context", () => {
       [Phase.Action, Pyrope.MoveSystem],
       [Phase.Action, Pyrope.BodyUpdateSystem],
       [Phase.Reaction, Coral.StatusSetsBoundsSystem],
-      [Phase.Reaction, Coral.SpatialIndexSystem],
-      [Phase.Reaction, Coral.SpatialIndexPruneSystem],
       [Phase.Reaction, Pyrope.CameraFocusSystem],
       [Phase.Correction, Opal.PositionWrapsAtEdgesSystem],
       [Phase.PreRender, Opal.StatusSetsSpriteSystem],

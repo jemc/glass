@@ -259,17 +259,18 @@ function tryMoveDown(
   return true
 }
 
-export const CollisionsCheckSystem = (coral: Context) =>
-  System.for(coral, [Collisions, Opal.Position], {
-    shouldMatchAll: [Collisions],
+export const VelocitySystem = (coral: Context) =>
+  System.for(coral, [Velocity, Opal.Position], {
+    shouldMatchAll: [Velocity],
 
     run(entities) {
       const { world } = coral
 
       ///
       // Clear previous collision results.
-      for (const [_, [collisions, _position]] of entities) {
-        collisions[RESULTS].length = 0
+      for (const [entity, [velocity, _position]] of entities) {
+        const collisions = world.get(entity, Collisions)
+        if (collisions) collisions[RESULTS].length = 0
       }
 
       ///
@@ -277,10 +278,7 @@ export const CollisionsCheckSystem = (coral: Context) =>
       // and set that as the number of substeps to simulate.
 
       let totalSubsteps = 0
-      for (const [entity, [collisions, position]] of entities) {
-        const velocity = world.get(entity, Velocity)
-        if (!velocity) continue
-
+      for (const [entity, [velocity, position]] of entities) {
         const absDx = Math.abs(velocity.vector.x)
         const absDy = Math.abs(velocity.vector.y)
         const entityFastest = absDx > absDy ? absDx : absDy
@@ -295,20 +293,25 @@ export const CollisionsCheckSystem = (coral: Context) =>
       // Slower objects will skip some of the substeps.
 
       for (let i = 0; i < totalSubsteps; i++) {
-        for (const [entity, [collisions, position]] of entities) {
-          const velocity = world.get(entity, Velocity)
-          if (!velocity) continue
+        for (const [entity, [velocity, position]] of entities) {
+          const collisions = world.get(entity, Collisions)
 
           // Determine if this entity should move along the X axis this substep.
           // TODO: use modular arithmetic to get them interspersed better.
           if (velocity.vector.x > i) {
-            if (tryMoveRight(entity, coral, collisions, position)) {
+            if (
+              !collisions ||
+              tryMoveRight(entity, coral, collisions, position)
+            ) {
               position.updateCoords((coords) => (coords.x += 1))
             } else {
               velocity.setHorizontalConstantVelocity(0)
             }
           } else if (velocity.vector.x < -i) {
-            if (tryMoveLeft(entity, coral, collisions, position)) {
+            if (
+              !collisions ||
+              tryMoveLeft(entity, coral, collisions, position)
+            ) {
               position.updateCoords((coords) => (coords.x -= 1))
             } else {
               velocity.setHorizontalConstantVelocity(0)
@@ -317,13 +320,16 @@ export const CollisionsCheckSystem = (coral: Context) =>
 
           // Determine if this entity should move along the Y axis this substep.
           if (velocity.vector.y > i) {
-            if (tryMoveDown(entity, coral, collisions, position)) {
+            if (
+              !collisions ||
+              tryMoveDown(entity, coral, collisions, position)
+            ) {
               position.updateCoords((coords) => (coords.y += 1))
             } else {
               velocity.setVerticalConstantVelocity(0.1) // TODO: zero
             }
           } else if (velocity.vector.y < -i) {
-            if (tryMoveUp(entity, coral, collisions, position)) {
+            if (!collisions || tryMoveUp(entity, coral, collisions, position)) {
               position.updateCoords((coords) => (coords.y -= 1))
             } else {
               velocity.setVerticalConstantVelocity(0)

@@ -1,11 +1,6 @@
 import { Component, Phase, registerComponent, SystemContext } from "@glass/core"
 import { Opal } from "@glass/opal"
-import {
-  StatusSetsBoundsSystem,
-  SpatialIndexSystem,
-  SpatialIndexPruneSystem,
-  CollisionsCheckSystem,
-} from "."
+import { StatusSetsBoundsSystem, VelocitySystem } from "."
 
 const TODO = Symbol("TODO")
 
@@ -22,9 +17,7 @@ export class Context extends SystemContext {
     super()
 
     this.world.addSystem(Phase.Reaction, StatusSetsBoundsSystem, this)
-    this.world.addSystem(Phase.Reaction, SpatialIndexSystem, this)
-    this.world.addSystem(Phase.Reaction, SpatialIndexPruneSystem, this)
-    this.world.addSystem(Phase.Reaction, CollisionsCheckSystem, this)
+    this.world.addSystem(Phase.Reaction, VelocitySystem, this)
   }
 
   create(...components: Component[]): number {
