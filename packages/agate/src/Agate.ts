@@ -1,4 +1,5 @@
 export * from "./Context"
+export * from "./DestroyOnStatus"
 export * from "./Gauges"
 export * from "./GaugesSetStatus"
 export * from "./Status"
