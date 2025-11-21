@@ -369,10 +369,6 @@ export class World {
       throw new Error("System context is not associated to this world")
     const system = systemFactory(context)
     this.phases.addSystem<C, T>(phase, systemFactory, context, system, opts)
-    system._requiredBits.set(system._contextComponentType.componentId, true)
-    system.componentTypes.forEach(({ componentId }) => {
-      system._requiredBits.set(componentId, true)
-    })
     this.entityBitMasks.forEach((bitMask, entity) => {
       this.updateSystemForEntity(system, entity, bitMask)
     })
@@ -387,21 +383,20 @@ export class World {
   run() {
     for (const system of this.phases.systems()) {
       if (system.context.isPaused) continue
-      system.run(system._entities)
+      system.run(system.query.entities)
     }
   }
 
+  // TODO: Which one of these is actually used? Are they both needed?
   private updateSystemsForEntity(entity: Entity, bits: BitMask) {
     for (const system of this.phases.systems()) {
       this.updateSystemForEntity(system, entity, bits)
     }
   }
 
+  // TODO: Which one of these is actually used? Are they both needed?
   private updateSystemForEntity(system: System, entity: Entity, bits: BitMask) {
-    if (
-      bits.isSuperSetOf(system._requiredBits) &&
-      this.get(entity, system._contextComponentType) === system.context
-    ) {
+    if (system.query.matchesEntityWithBits(this, entity, bits)) {
       system.setEntityComponents(
         entity,
         system.componentTypes.map((component) => this.get(entity, component)!),

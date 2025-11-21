@@ -72,7 +72,7 @@ export namespace Collisions {
 export function findPossibleCollisions(
   coral: Context,
   entityA: Entity,
-  entities: Map<number, [Collisions, Opal.Position]>,
+  entities: ReadonlyMap<number, [Collisions, Opal.Position]>,
 ): Map<Entity, Collisions> {
   const { world } = coral
   const found = new Map<Entity, Collisions>()
@@ -114,7 +114,7 @@ function tileMapIsSolidAtRange(
 function tryMoveRight(
   entityA: Entity,
   coral: Context,
-  entities: Map<number, [Collisions, Opal.Position]>,
+  entities: ReadonlyMap<number, [Collisions, Opal.Position]>,
   a: Collisions,
   posA: Opal.Position,
 ) {
@@ -156,7 +156,7 @@ function tryMoveRight(
 function tryMoveLeft(
   entityA: Entity,
   coral: Context,
-  entities: Map<number, [Collisions, Opal.Position]>,
+  entities: ReadonlyMap<number, [Collisions, Opal.Position]>,
   a: Collisions,
   posA: Opal.Position,
 ) {
@@ -198,7 +198,7 @@ function tryMoveLeft(
 function tryMoveUp(
   entityA: Entity,
   coral: Context,
-  entities: Map<number, [Collisions, Opal.Position]>,
+  entities: ReadonlyMap<number, [Collisions, Opal.Position]>,
   a: Collisions,
   posA: Opal.Position,
 ) {
@@ -240,7 +240,7 @@ function tryMoveUp(
 function tryMoveDown(
   entityA: Entity,
   coral: Context,
-  entities: Map<number, [Collisions, Opal.Position]>,
+  entities: ReadonlyMap<number, [Collisions, Opal.Position]>,
   a: Collisions,
   posA: Opal.Position,
 ) {

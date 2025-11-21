@@ -1,4 +1,3 @@
-import { BitMask } from "./BitMask"
 import { Entity } from "./Entity"
 import { World } from "./World"
 import {
@@ -6,8 +5,8 @@ import {
   ComponentClass,
   ComponentClasses,
   ComponentInstances,
-  setComponentPrerequisite,
 } from "./Component"
+import { Query } from "./Query"
 
 export abstract class SystemContext implements Component {
   isPaused: boolean = false
@@ -26,24 +25,10 @@ function SystemFor<
   componentTypes: T,
   overrides: S & { shouldMatchAll?: ComponentClass[] },
 ): System<C, T> & S {
-  // If the `shouldMatchAll` property is set, then for every component type
-  // in that list, set a prerequisite relationship with every other component
-  // type in the list.
-  if (overrides.shouldMatchAll) {
-    overrides.shouldMatchAll.forEach((componentType) => {
-      componentTypes.forEach((prerequisiteType) => {
-        if (componentType !== prerequisiteType)
-          setComponentPrerequisite(componentType, prerequisiteType)
-      })
-      setComponentPrerequisite(
-        componentType,
-        context.constructor as unknown as ComponentClass<C>,
-      )
-    })
-  }
-
-  // Return the System object.
-  return Object.assign(new System<C, T>(context, componentTypes), overrides)
+  return Object.assign(
+    new System<C, T>(Query.for(context, componentTypes, overrides)),
+    overrides,
+  )
 }
 
 export type SystemFactory<
@@ -57,44 +42,34 @@ export class System<
 > {
   static readonly for = SystemFor
 
-  readonly _contextComponentType: ComponentClass
-  readonly _requiredBits = new BitMask()
-  readonly _entities = new Map<Entity, ComponentInstances<T>>()
-
-  constructor(
-    readonly context: C,
-    readonly componentTypes: T,
-  ) {
-    this._contextComponentType = this.context
-      .constructor as unknown as ComponentClass
-    // TODO: How to enforce this properly with the type system?
-    if (this._contextComponentType.componentId === undefined)
-      throw new Error("System context must be a component")
-  }
+  constructor(readonly query: Query<C, T>) {}
 
   get world() {
-    return this.context.world
+    return this.query.world
+  }
+  get context() {
+    return this.query.context
+  }
+  get componentTypes() {
+    return this.query.componentTypes
   }
 
   setEntityComponents(entity: Entity, components: ComponentInstances<T>) {
-    const priorSize = this._entities.size
-    this._entities.set(entity, components)
-
-    if (priorSize !== this._entities.size)
+    if (this.query.addEntity(entity, components)) {
       this.runEachAdded(entity, ...components)
-    else this.runEachModified(entity, ...components)
-
+    } else {
+      this.runEachModified(entity, ...components)
+    }
     this.runEachSet(entity, ...components)
   }
 
   removeEntityIfPresent(entity: Entity) {
-    const priorSize = this._entities.size
-    this._entities.delete(entity)
-
-    if (priorSize !== this._entities.size) this.runEachRemoved(entity)
+    if (this.query.removeEntity(entity)) {
+      this.runEachRemoved(entity)
+    }
   }
 
-  run(entities: Map<Entity, ComponentInstances<T>>) {
+  run(entities: ReadonlyMap<Entity, ComponentInstances<T>>) {
     for (const [entity, components] of entities.entries()) {
       this.runEach(entity, ...components)
     }
