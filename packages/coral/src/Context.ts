@@ -5,7 +5,6 @@ import {
   SpatialIndexSystem,
   SpatialIndexPruneSystem,
   CollisionsCheckSystem,
-  CollisionsFinalizeSystem,
 } from "."
 
 const TODO = Symbol("TODO")
@@ -26,7 +25,6 @@ export class Context extends SystemContext {
     this.world.addSystem(Phase.Reaction, SpatialIndexSystem, this)
     this.world.addSystem(Phase.Reaction, SpatialIndexPruneSystem, this)
     this.world.addSystem(Phase.Reaction, CollisionsCheckSystem, this)
-    this.world.addSystem(Phase.Advance, CollisionsFinalizeSystem, this)
   }
 
   create(...components: Component[]): number {

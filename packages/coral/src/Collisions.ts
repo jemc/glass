@@ -1,6 +1,5 @@
 import {
   Entity,
-  MutableVector2,
   ReadVector2,
   System,
   Vector2,
@@ -10,9 +9,8 @@ import { Opal } from "@glass/opal"
 import { Bounds } from "./Bounds"
 import { Context } from "./Context"
 import { Velocity } from "./Velocity"
+import { BlockedBy } from "./BlockedBy"
 
-const PREV_CELLS = Symbol("Collisions._prevCells")
-const PREV_COORDS = Symbol("Collisions._prevCoords")
 const RESULTS = Symbol("Collisions._results")
 
 const NORMAL_UP = new Vector2(0, -1)
@@ -40,8 +38,6 @@ export class Collisions {
     }
   }
 
-  [PREV_CELLS] = new Set<Entity>();
-  readonly [PREV_COORDS] = new MutableVector2();
   readonly [RESULTS]: Collisions.Info[] = []
 
   results() {
@@ -72,14 +68,18 @@ export namespace Collisions {
 export function findPossibleCollisions(
   coral: Context,
   entityA: Entity,
-  entities: ReadonlyMap<number, [Collisions, Opal.Position]>,
-): Map<Entity, Collisions> {
+): Map<Entity, [Collisions, Opal.Position]> {
   const { world } = coral
-  const found = new Map<Entity, Collisions>()
+  const found = new Map<Entity, [Collisions, Opal.Position]>()
 
-  for (const [entityB, [b, _]] of entities) {
-    if (entityA === entityB) continue
-    found.set(entityB, b)
+  const blockedBy = world.get(entityA, BlockedBy)
+  if (blockedBy === undefined) return found
+
+  for (const query of blockedBy.queries) {
+    for (const [entityB, [b, posB]] of query.entities) {
+      if (entityA === entityB) continue
+      found.set(entityB, [b, posB])
+    }
   }
 
   return found
@@ -114,14 +114,12 @@ function tileMapIsSolidAtRange(
 function tryMoveRight(
   entityA: Entity,
   coral: Context,
-  entities: ReadonlyMap<number, [Collisions, Opal.Position]>,
   a: Collisions,
   posA: Opal.Position,
 ) {
-  for (const [entityB, b] of findPossibleCollisions(
+  for (const [entityB, [b, posB]] of findPossibleCollisions(
     coral,
     entityA,
-    entities,
   ).entries()) {
     if (
       a.shape === Collisions.Shape.Box &&
@@ -131,9 +129,6 @@ function tryMoveRight(
       if (!boundsA) continue
 
       // TODO: Take posB into account for tilemaps not at (0,0)
-      const posB = coral.world.get(entityB, Opal.Position)
-      if (!posB) continue
-
       const x = posA.coords.x + boundsA.relativeX1 + 1
       const y0 = posA.coords.y + boundsA.relativeY0
       const y1 = posA.coords.y + boundsA.relativeY1 - 1
@@ -156,14 +151,12 @@ function tryMoveRight(
 function tryMoveLeft(
   entityA: Entity,
   coral: Context,
-  entities: ReadonlyMap<number, [Collisions, Opal.Position]>,
   a: Collisions,
   posA: Opal.Position,
 ) {
-  for (const [entityB, b] of findPossibleCollisions(
+  for (const [entityB, [b, posB]] of findPossibleCollisions(
     coral,
     entityA,
-    entities,
   ).entries()) {
     if (
       a.shape === Collisions.Shape.Box &&
@@ -173,9 +166,6 @@ function tryMoveLeft(
       if (!boundsA) continue
 
       // TODO: Take posB into account for tilemaps not at (0,0)
-      const posB = coral.world.get(entityB, Opal.Position)
-      if (!posB) continue
-
       const x = posA.coords.x + boundsA.relativeX0 - 1
       const y0 = posA.coords.y + boundsA.relativeY0
       const y1 = posA.coords.y + boundsA.relativeY1 - 1
@@ -198,14 +188,12 @@ function tryMoveLeft(
 function tryMoveUp(
   entityA: Entity,
   coral: Context,
-  entities: ReadonlyMap<number, [Collisions, Opal.Position]>,
   a: Collisions,
   posA: Opal.Position,
 ) {
-  for (const [entityB, b] of findPossibleCollisions(
+  for (const [entityB, [b, posB]] of findPossibleCollisions(
     coral,
     entityA,
-    entities,
   ).entries()) {
     if (
       a.shape === Collisions.Shape.Box &&
@@ -215,9 +203,6 @@ function tryMoveUp(
       if (!boundsA) continue
 
       // TODO: Take posB into account for tilemaps not at (0,0)
-      const posB = coral.world.get(entityB, Opal.Position)
-      if (!posB) continue
-
       const x0 = posA.coords.x + boundsA.relativeX0
       const x1 = posA.coords.x + boundsA.relativeX1 - 1
       const y = posA.coords.y + boundsA.relativeY0 - 1
@@ -240,14 +225,12 @@ function tryMoveUp(
 function tryMoveDown(
   entityA: Entity,
   coral: Context,
-  entities: ReadonlyMap<number, [Collisions, Opal.Position]>,
   a: Collisions,
   posA: Opal.Position,
 ) {
-  for (const [entityB, b] of findPossibleCollisions(
+  for (const [entityB, [b, posB]] of findPossibleCollisions(
     coral,
     entityA,
-    entities,
   ).entries()) {
     if (
       a.shape === Collisions.Shape.Box &&
@@ -257,9 +240,6 @@ function tryMoveDown(
       if (!boundsA) continue
 
       // TODO: Take posB into account for tilemaps not at (0,0)
-      const posB = coral.world.get(entityB, Opal.Position)
-      if (!posB) continue
-
       const x0 = posA.coords.x + boundsA.relativeX0
       const x1 = posA.coords.x + boundsA.relativeX1 - 1
       const y = posA.coords.y + boundsA.relativeY1 + 1
@@ -322,13 +302,13 @@ export const CollisionsCheckSystem = (coral: Context) =>
           // Determine if this entity should move along the X axis this substep.
           // TODO: use modular arithmetic to get them interspersed better.
           if (velocity.vector.x > i) {
-            if (tryMoveRight(entity, coral, entities, collisions, position)) {
+            if (tryMoveRight(entity, coral, collisions, position)) {
               position.updateCoords((coords) => (coords.x += 1))
             } else {
               velocity.setHorizontalConstantVelocity(0)
             }
           } else if (velocity.vector.x < -i) {
-            if (tryMoveLeft(entity, coral, entities, collisions, position)) {
+            if (tryMoveLeft(entity, coral, collisions, position)) {
               position.updateCoords((coords) => (coords.x -= 1))
             } else {
               velocity.setHorizontalConstantVelocity(0)
@@ -337,13 +317,13 @@ export const CollisionsCheckSystem = (coral: Context) =>
 
           // Determine if this entity should move along the Y axis this substep.
           if (velocity.vector.y > i) {
-            if (tryMoveDown(entity, coral, entities, collisions, position)) {
+            if (tryMoveDown(entity, coral, collisions, position)) {
               position.updateCoords((coords) => (coords.y += 1))
             } else {
               velocity.setVerticalConstantVelocity(0.1) // TODO: zero
             }
           } else if (velocity.vector.y < -i) {
-            if (tryMoveUp(entity, coral, entities, collisions, position)) {
+            if (tryMoveUp(entity, coral, collisions, position)) {
               position.updateCoords((coords) => (coords.y -= 1))
             } else {
               velocity.setVerticalConstantVelocity(0)
@@ -351,15 +331,5 @@ export const CollisionsCheckSystem = (coral: Context) =>
           }
         }
       }
-    },
-  })
-
-// TODO: Remove this system if it's covered properly by the full dynamics
-export const CollisionsFinalizeSystem = (coral: Context) =>
-  System.for(coral, [Collisions, Opal.Position], {
-    shouldMatchAll: [Collisions],
-
-    runEach(entity, collisions, position) {
-      // collisions[PREV_COORDS].copyFrom(position.coords)
     },
   })

@@ -13,6 +13,7 @@ import { BitMask } from "./BitMask"
 import { AutoMap } from "./AutoMap"
 import { Phase, PhaseGraph } from "./Phase"
 import { OrderedListAddOpts } from "./OrderedList"
+import { Query, QueryCache, QueryFactory, QueryLike } from "./Query"
 
 const ComponentStorage = Array
 type ComponentStorage = Component[]
@@ -47,11 +48,15 @@ export class World {
   // The systems that are currently running in the world.
   private phases: PhaseGraph
 
+  // The queries that are currently observing the world.
+  private queries: QueryCache
+
   // The world clock (public); used for advancing the world's state.
   readonly clock: Clock
 
   constructor() {
     this.phases = new PhaseGraph()
+    this.queries = new QueryCache(this)
     this.clock = new Clock(() => this.run())
 
     // Set up the core phases.
@@ -157,9 +162,12 @@ export class World {
   }
 
   destroy(entity: Entity): void {
-    // Any system that was tracking this entity must drop it.
+    // Any system and/or query that was tracking this entity must drop it.
     for (const system of this.phases.systems()) {
       system.removeEntityIfPresent(entity)
+    }
+    for (const query of this.queries.values()) {
+      query.removeEntity(entity)
     }
     // Any component that was attached to this entity must be dropped.
     const bitMask = this.entityBitMasks[entity]
@@ -294,6 +302,7 @@ export class World {
     }
 
     this.updateSystemsForEntity(entity, bitMask)
+    this.updateQueriesForEntity(entity, bitMask)
   }
 
   remove(entity: Entity, componentTypes: ComponentClasses) {
@@ -328,6 +337,7 @@ export class World {
     }
 
     this.updateSystemsForEntity(entity, bitMask)
+    this.updateQueriesForEntity(entity, bitMask)
   }
 
   // TODO: Use a truly private symbol for this method name
@@ -374,6 +384,19 @@ export class World {
     })
   }
 
+  query<C extends SystemContext, T extends ComponentClasses>(
+    context: C,
+    factory: QueryFactory<C, T>,
+  ): Query<C, T> {
+    return this.queries.get(context, factory)
+  }
+
+  _registerNewQueryFromQueryCache(newQuery: QueryLike) {
+    this.entityBitMasks.forEach((bitMask, entity) => {
+      this.updateQueryForEntity(newQuery as Query, entity, bitMask)
+    })
+  }
+
   public *phasesAndSystemFactories() {
     for (const info of this.phases.phasesAndSystemFactories()) {
       yield info
@@ -387,14 +410,12 @@ export class World {
     }
   }
 
-  // TODO: Which one of these is actually used? Are they both needed?
   private updateSystemsForEntity(entity: Entity, bits: BitMask) {
     for (const system of this.phases.systems()) {
       this.updateSystemForEntity(system, entity, bits)
     }
   }
 
-  // TODO: Which one of these is actually used? Are they both needed?
   private updateSystemForEntity(system: System, entity: Entity, bits: BitMask) {
     if (system.query.matchesEntityWithBits(this, entity, bits)) {
       system.setEntityComponents(
@@ -403,6 +424,23 @@ export class World {
       )
     } else {
       system.removeEntityIfPresent(entity)
+    }
+  }
+
+  private updateQueriesForEntity(entity: Entity, bits: BitMask) {
+    for (const query of this.queries.values()) {
+      this.updateQueryForEntity(query, entity, bits)
+    }
+  }
+
+  private updateQueryForEntity(query: Query, entity: Entity, bits: BitMask) {
+    if (query.matchesEntityWithBits(this, entity, bits)) {
+      query.addEntity(
+        entity,
+        query.componentTypes.map((component) => this.get(entity, component)!),
+      )
+    } else {
+      query.removeEntity(entity)
     }
   }
 }

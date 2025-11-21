@@ -32,7 +32,6 @@ describe("Context", () => {
       [Phase.Render, Opal.RenderRenderablesSystem],
       [Phase.Render, Opal.RenderTileMapSystem],
       [Phase.Advance, Agate.StatusAdvanceSystem],
-      [Phase.Advance, Coral.CollisionsFinalizeSystem],
     ])
   })
 })

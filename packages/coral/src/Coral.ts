@@ -1,3 +1,4 @@
+export * from "./BlockedBy"
 export * from "./Bounds"
 export * from "./Collisions"
 export * from "./Context"
