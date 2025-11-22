@@ -7,6 +7,8 @@ export class ColorPalette {
   private _colors: ReadonlyArray<Aseprite.Color>
   private _surface: TextureSurface
 
+  readonly originalColors: ReadonlyArray<Aseprite.Color>
+
   get surface() {
     return this._surface
   }
@@ -23,6 +25,7 @@ export class ColorPalette {
   constructor(render: Render, colors: Aseprite.Color[]) {
     this._render = render
     this._colors = colors
+    this.originalColors = colors.slice()
     this._surface = surfaceFromColors(render, colors)
   }
 }

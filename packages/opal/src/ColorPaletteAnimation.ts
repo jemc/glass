@@ -17,6 +17,12 @@ export const ColorPaletteAnimationSystem = (opal: Context) =>
   System.for(opal, [ColorPaletteAnimation], {
     shouldMatchAll: [ColorPaletteAnimation],
 
+    // Reset color palette when an animation is set.
+    runEachSet(entity, animation) {
+      const palette = opal.colorPalettes.get(animation.config.name)
+      if (palette) palette.colors = palette.originalColors
+    },
+
     runEach(entity, animation) {
       const { config } = animation
 
