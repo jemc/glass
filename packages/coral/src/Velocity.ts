@@ -65,7 +65,10 @@ function tryMoveRight(
   a: Body,
   posA: Opal.Position,
 ) {
-  for (const [entityB, [b, posB]] of blockedBy.entitiesThatMayBlock()) {
+  for (const [
+    entityB,
+    [posB, boundsB, b],
+  ] of blockedBy.entitiesThatMayBlock()) {
     if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
       const boundsA = coral.world.get(entityA, Bounds)
       if (!boundsA) continue
@@ -89,7 +92,10 @@ function tryMoveLeft(
   a: Body,
   posA: Opal.Position,
 ) {
-  for (const [entityB, [b, posB]] of blockedBy.entitiesThatMayBlock()) {
+  for (const [
+    entityB,
+    [posB, boundsB, b],
+  ] of blockedBy.entitiesThatMayBlock()) {
     if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
       const boundsA = coral.world.get(entityA, Bounds)
       if (!boundsA) continue
@@ -113,7 +119,10 @@ function tryMoveUp(
   a: Body,
   posA: Opal.Position,
 ) {
-  for (const [entityB, [b, posB]] of blockedBy.entitiesThatMayBlock()) {
+  for (const [
+    entityB,
+    [posB, boundsB, b],
+  ] of blockedBy.entitiesThatMayBlock()) {
     if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
       const boundsA = coral.world.get(entityA, Bounds)
       if (!boundsA) continue
@@ -137,7 +146,10 @@ function tryMoveDown(
   a: Body,
   posA: Opal.Position,
 ) {
-  for (const [entityB, [b, posB]] of blockedBy.entitiesThatMayBlock()) {
+  for (const [
+    entityB,
+    [posB, boundsB, b],
+  ] of blockedBy.entitiesThatMayBlock()) {
     if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
       const boundsA = coral.world.get(entityA, Bounds)
       if (!boundsA) continue
