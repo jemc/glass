@@ -5,11 +5,10 @@ import {
   MutableVector2,
   ReadVector2,
 } from "@glass/core"
+import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 import { BlockedBy } from "./BlockedBy"
 import { Body } from "./Body"
-import { Opal } from "@glass/opal"
-import { Bounds } from "./Bounds"
 
 const VELOCITY = Symbol("Velocity._velocity")
 
@@ -65,18 +64,15 @@ function tryMoveRight(
   a: Body,
   posA: Opal.Position,
 ) {
-  for (const [
-    entityB,
-    [posB, boundsB, b],
-  ] of blockedBy.entitiesThatMayBlock()) {
+  for (const [entityB, [posB, b]] of blockedBy.entitiesThatMayBlock()) {
     if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      const boundsA = coral.world.get(entityA, Bounds)
-      if (!boundsA) continue
+      const a = coral.world.get(entityA, Body)
+      if (!a) continue
 
       // TODO: Take posB into account for tilemaps not at (0,0)
-      const x = posA.coords.x + boundsA.relativeX1 + 1
-      const y0 = posA.coords.y + boundsA.relativeY0
-      const y1 = posA.coords.y + boundsA.relativeY1 - 1
+      const x = posA.coords.x + a.relativeX1 + 1
+      const y0 = posA.coords.y + a.relativeY0
+      const y1 = posA.coords.y + a.relativeY1 - 1
       if (b.tileMapIsSolidInXYRange(coral, x, x, y0, y1)) {
         return false
       }
@@ -92,18 +88,15 @@ function tryMoveLeft(
   a: Body,
   posA: Opal.Position,
 ) {
-  for (const [
-    entityB,
-    [posB, boundsB, b],
-  ] of blockedBy.entitiesThatMayBlock()) {
+  for (const [entityB, [posB, b]] of blockedBy.entitiesThatMayBlock()) {
     if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      const boundsA = coral.world.get(entityA, Bounds)
-      if (!boundsA) continue
+      const a = coral.world.get(entityA, Body)
+      if (!a) continue
 
       // TODO: Take posB into account for tilemaps not at (0,0)
-      const x = posA.coords.x + boundsA.relativeX0 - 1
-      const y0 = posA.coords.y + boundsA.relativeY0
-      const y1 = posA.coords.y + boundsA.relativeY1 - 1
+      const x = posA.coords.x + a.relativeX0 - 1
+      const y0 = posA.coords.y + a.relativeY0
+      const y1 = posA.coords.y + a.relativeY1 - 1
       if (b.tileMapIsSolidInXYRange(coral, x, x, y0, y1)) {
         return false
       }
@@ -119,18 +112,15 @@ function tryMoveUp(
   a: Body,
   posA: Opal.Position,
 ) {
-  for (const [
-    entityB,
-    [posB, boundsB, b],
-  ] of blockedBy.entitiesThatMayBlock()) {
+  for (const [entityB, [posB, b]] of blockedBy.entitiesThatMayBlock()) {
     if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      const boundsA = coral.world.get(entityA, Bounds)
-      if (!boundsA) continue
+      const a = coral.world.get(entityA, Body)
+      if (!a) continue
 
       // TODO: Take posB into account for tilemaps not at (0,0)
-      const x0 = posA.coords.x + boundsA.relativeX0
-      const x1 = posA.coords.x + boundsA.relativeX1 - 1
-      const y = posA.coords.y + boundsA.relativeY0 - 1
+      const x0 = posA.coords.x + a.relativeX0
+      const x1 = posA.coords.x + a.relativeX1 - 1
+      const y = posA.coords.y + a.relativeY0 - 1
       if (b.tileMapIsSolidInXYRange(coral, x0, x1, y, y)) {
         return false
       }
@@ -146,18 +136,15 @@ function tryMoveDown(
   a: Body,
   posA: Opal.Position,
 ) {
-  for (const [
-    entityB,
-    [posB, boundsB, b],
-  ] of blockedBy.entitiesThatMayBlock()) {
+  for (const [entityB, [posB, b]] of blockedBy.entitiesThatMayBlock()) {
     if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      const boundsA = coral.world.get(entityA, Bounds)
-      if (!boundsA) continue
+      const a = coral.world.get(entityA, Body)
+      if (!a) continue
 
       // TODO: Take posB into account for tilemaps not at (0,0)
-      const x0 = posA.coords.x + boundsA.relativeX0
-      const x1 = posA.coords.x + boundsA.relativeX1 - 1
-      const y = posA.coords.y + boundsA.relativeY1 + 1
+      const x0 = posA.coords.x + a.relativeX0
+      const x1 = posA.coords.x + a.relativeX1 - 1
+      const y = posA.coords.y + a.relativeY1 + 1
       if (b.tileMapIsSolidInXYRange(coral, x0, x1, y, y)) {
         return false
       }

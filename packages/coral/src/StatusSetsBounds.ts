@@ -1,7 +1,7 @@
 import { registerComponent, System } from "@glass/core"
 import { Agate } from "@glass/agate"
 import { Context } from "./Context"
-import { Bounds } from "./Bounds"
+import { Body } from "./Body"
 
 export class StatusSetsBounds {
   static readonly componentId = registerComponent(this)
@@ -14,16 +14,16 @@ export class StatusSetsBounds {
 }
 
 export const StatusSetsBoundsSystem = (coral: Context) =>
-  System.for(coral, [StatusSetsBounds, Agate.Status, Bounds], {
+  System.for(coral, [StatusSetsBounds, Agate.Status, Body], {
     shouldMatchAll: [StatusSetsBounds],
 
-    runEach(entity, statusSetsBounds, status, bounds) {
+    runEach(entity, statusSetsBounds, status, body) {
       const { mappings } = statusSetsBounds
       // Set bounds based on the first mapping whose required status names
       // are all present in the current status.
       for (const [requiredStatusNames, boundsValues] of mappings) {
         if (requiredStatusNames.every((name) => status.is(name))) {
-          bounds.update(...boundsValues)
+          body.updateBounds(...boundsValues)
           break
         }
       }

@@ -1,5 +1,4 @@
 export * from "./BlockedBy"
-export * from "./Bounds"
 export * from "./Body"
 export * from "./Context"
 export * from "./StatusSetsBounds"
