@@ -21,6 +21,7 @@ import {
   StatusSetsSpriteSystem,
   SpriteAnimationSystem,
   AnimatePositionSystem,
+  AnimateAlphaOnStatusSystem,
   ColorPaletteAnimationSystem,
   RenderBeginSystem,
   RenderRenderablesSystem,
@@ -61,6 +62,7 @@ export class Context extends SystemContext {
     this.world.addSystem(Phase.PreRender, StatusSetsSpriteSystem, this)
     this.world.addSystem(Phase.PreRender, SpriteAnimationSystem, this)
     this.world.addSystem(Phase.PreRender, AnimatePositionSystem, this)
+    this.world.addSystem(Phase.PreRender, AnimateAlphaOnStatusSystem, this)
     this.world.addSystem(Phase.PreRender, ColorPaletteAnimationSystem, this)
 
     this.world.addSystem(Phase.Render, RenderBeginSystem, this)

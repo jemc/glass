@@ -8,8 +8,13 @@ import {
 } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Coral } from "@glass/coral"
-import { Camera, CameraFocusSystem } from "./Camera"
-import { MoveSystem, SpawnOnStatusSystem } from "."
+import {
+  SpawnOnStatusSystem,
+  MoveSystem,
+  Camera,
+  CameraFocusSystem,
+  DamageOnContactSystem,
+} from "."
 
 export class Context extends SystemContext {
   static readonly componentId = registerComponent(this)
@@ -40,6 +45,7 @@ export class Context extends SystemContext {
     this.world.addSystem(Phase.Action, MoveSystem, this)
 
     this.world.addSystem(Phase.Reaction, CameraFocusSystem, this)
+    this.world.addSystem(Phase.Correction, DamageOnContactSystem, this)
   }
 
   create(...components: Component[]): number {

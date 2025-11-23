@@ -1,4 +1,5 @@
 export * from "./Camera"
 export * from "./Context"
+export * from "./DamageOnContact"
 export * from "./Move"
 export * from "./Spawn"

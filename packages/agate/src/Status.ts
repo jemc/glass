@@ -69,6 +69,10 @@ export class Status {
     return this.map[name] === 0
   }
 
+  framesSinceStarted(name: string) {
+    return this.map[name]
+  }
+
   stop(name: string) {
     // If it's already stopped, do nothing.
     if (this.map[name] === undefined) return

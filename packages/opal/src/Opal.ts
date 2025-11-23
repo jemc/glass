@@ -1,4 +1,5 @@
 export * from "./AnimatePosition"
+export * from "./AnimateAlphaOnStatus"
 export * from "./Context"
 export * from "./ColorPalette"
 export * from "./ColorPaletteAnimation"
