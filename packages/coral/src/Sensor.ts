@@ -29,7 +29,6 @@ export const SensorSystem = (coral: Context) =>
         for (const [other, otherComponents] of query.entities) {
           const [posB, bodyB] = otherComponents
           if (bodyA.checkOverlap(coral, bodyB, posA, posB)) {
-            console.log("Sensed overlap between", entity, "and", other)
             sensor.sensed.push([other, otherComponents])
           }
         }
