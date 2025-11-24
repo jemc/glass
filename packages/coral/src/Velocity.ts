@@ -179,6 +179,10 @@ export const VelocitySystem = (coral: Context) =>
 
       for (let i = 0; i < totalSubsteps; i++) {
         for (const [entity, [velocity, position]] of entities) {
+          // Determine if this body is blocked by something.
+          // We do this check regardless of velocity, which is useful for
+          // checking things like whether a character is standing on the ground,
+          // which may be true even when the character has a zero velocity.
           const blockedBy = world.get(entity, BlockedBy)
           const body = world.get(entity, Body)
           if (blockedBy && body) {
