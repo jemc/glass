@@ -213,7 +213,7 @@ export const VelocitySystem = (coral: Context) =>
               willMove = true
             } else if (velocity.vector.x + velocity[RESIDUALS].x < -i - 1) {
               willMove = true
-              velocity[RESIDUALS].x = 0 // TODO: set to partial correct value
+              velocity[RESIDUALS].x = 0
             } else {
               velocity[RESIDUALS].x +=
                 velocity.vector.x - Math.ceil(velocity.vector.x)
@@ -239,7 +239,7 @@ export const VelocitySystem = (coral: Context) =>
               willMove = true
             } else if (velocity.vector.y + velocity[RESIDUALS].y > i + 1) {
               willMove = true
-              velocity[RESIDUALS].y = 0 // TODO: set to partial correct value
+              velocity[RESIDUALS].y = 0
             } else {
               velocity[RESIDUALS].y +=
                 velocity.vector.y - Math.floor(velocity.vector.y)
