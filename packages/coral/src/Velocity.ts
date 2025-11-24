@@ -171,7 +171,7 @@ export const VelocitySystem = (coral: Context) =>
           totalSubsteps = entityFastest
         }
       }
-      totalSubsteps = Math.ceil(totalSubsteps)
+      totalSubsteps = Math.max(Math.ceil(totalSubsteps), 1)
 
       ///
       // Move each entity forward one pixel at a time during each substep.
@@ -181,6 +181,28 @@ export const VelocitySystem = (coral: Context) =>
         for (const [entity, [velocity, position]] of entities) {
           const blockedBy = world.get(entity, BlockedBy)
           const body = world.get(entity, Body)
+          if (blockedBy && body) {
+            if (
+              !blockedBy.wasBlockedOnRight &&
+              !tryMoveRight(entity, coral, blockedBy, body, position)
+            )
+              blockedBy.markBlockedOnRight()
+            if (
+              !blockedBy.wasBlockedOnLeft &&
+              !tryMoveLeft(entity, coral, blockedBy, body, position)
+            )
+              blockedBy.markBlockedOnLeft()
+            if (
+              !blockedBy.wasBlockedOnBottom &&
+              !tryMoveDown(entity, coral, blockedBy, body, position)
+            )
+              blockedBy.markBlockedOnBottom()
+            if (
+              !blockedBy.wasBlockedOnTop &&
+              !tryMoveUp(entity, coral, blockedBy, body, position)
+            )
+              blockedBy.markBlockedOnTop()
+          }
 
           // Determine if this entity should move along the X axis this substep.
           // TODO: use modular arithmetic to get them interspersed better.
@@ -196,15 +218,10 @@ export const VelocitySystem = (coral: Context) =>
                 velocity.vector.x - Math.floor(velocity.vector.x)
             }
             if (willMove) {
-              if (
-                !blockedBy ||
-                !body ||
-                tryMoveRight(entity, coral, blockedBy, body, position)
-              ) {
-                position.updateCoords((coords) => (coords.x += 1))
-              } else {
-                blockedBy?.markBlockedOnRight()
+              if (blockedBy?.wasBlockedOnRight) {
                 velocity.setHorizontalConstantVelocity(0)
+              } else {
+                position.updateCoords((coords) => (coords.x += 1))
               }
             }
           } else if (velocity.vector.x < 0) {
@@ -219,15 +236,10 @@ export const VelocitySystem = (coral: Context) =>
                 velocity.vector.x - Math.ceil(velocity.vector.x)
             }
             if (willMove) {
-              if (
-                !blockedBy ||
-                !body ||
-                tryMoveLeft(entity, coral, blockedBy, body, position)
-              ) {
-                position.updateCoords((coords) => (coords.x -= 1))
-              } else {
-                blockedBy?.markBlockedOnLeft()
+              if (blockedBy?.wasBlockedOnLeft) {
                 velocity.setHorizontalConstantVelocity(0)
+              } else {
+                position.updateCoords((coords) => (coords.x -= 1))
               }
             }
           }
@@ -245,15 +257,10 @@ export const VelocitySystem = (coral: Context) =>
                 velocity.vector.y - Math.floor(velocity.vector.y)
             }
             if (willMove) {
-              if (
-                !blockedBy ||
-                !body ||
-                tryMoveDown(entity, coral, blockedBy, body, position)
-              ) {
-                position.updateCoords((coords) => (coords.y += 1))
+              if (blockedBy?.wasBlockedOnBottom) {
+                velocity.setVerticalConstantVelocity(0)
               } else {
-                blockedBy?.markBlockedOnBottom()
-                velocity.setVerticalConstantVelocity(1.1) // TODO: zero
+                position.updateCoords((coords) => (coords.y += 1))
               }
             }
           } else if (velocity.vector.y < 0) {
@@ -268,15 +275,10 @@ export const VelocitySystem = (coral: Context) =>
                 velocity.vector.y - Math.ceil(velocity.vector.y)
             }
             if (willMove) {
-              if (
-                !blockedBy ||
-                !body ||
-                tryMoveUp(entity, coral, blockedBy, body, position)
-              ) {
-                position.updateCoords((coords) => (coords.y -= 1))
-              } else {
-                blockedBy?.markBlockedOnTop()
+              if (blockedBy?.wasBlockedOnTop) {
                 velocity.setVerticalConstantVelocity(0)
+              } else {
+                position.updateCoords((coords) => (coords.y -= 1))
               }
             }
           }
