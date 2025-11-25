@@ -9,11 +9,11 @@ import {
 import { Opal } from "@glass/opal"
 import { Coral } from "@glass/coral"
 import {
+  DamageOnContactSystem,
   SpawnOnStatusSystem,
   MoveSystem,
   Camera,
   CameraFocusSystem,
-  DamageOnContactSystem,
 } from "."
 
 export class Context extends SystemContext {
@@ -41,11 +41,12 @@ export class Context extends SystemContext {
       new Opal.Renderable(),
     )
 
+    this.world.addSystem(Phase.Impetus, DamageOnContactSystem, this)
+
     this.world.addSystem(Phase.Action, SpawnOnStatusSystem, this)
     this.world.addSystem(Phase.Action, MoveSystem, this)
 
     this.world.addSystem(Phase.Reaction, CameraFocusSystem, this)
-    this.world.addSystem(Phase.Correction, DamageOnContactSystem, this)
   }
 
   create(...components: Component[]): number {
