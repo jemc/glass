@@ -164,8 +164,10 @@ export const VelocitySystem = (coral: Context) =>
 
       let totalSubsteps = 0
       for (const [entity, [velocity, position]] of entities) {
-        const absDx = Math.abs(velocity.vector.x)
-        const absDy = Math.abs(velocity.vector.y)
+        const absDx =
+          Math.abs(velocity.vector.x) + Math.abs(velocity[RESIDUALS].x)
+        const absDy =
+          Math.abs(velocity.vector.y) + Math.abs(velocity[RESIDUALS].y)
         const entityFastest = absDx > absDy ? absDx : absDy
         if (entityFastest > totalSubsteps) {
           totalSubsteps = entityFastest
