@@ -26,6 +26,7 @@ import {
   RenderBeginSystem,
   RenderRenderablesSystem,
   RenderTileMapSystem,
+  GaugesWatchPositionOfNearestSystem,
 } from "."
 
 export class Context extends SystemContext {
@@ -58,6 +59,11 @@ export class Context extends SystemContext {
     this.world.addSystem(Phase.Load, LoadTileMapSlicesSystem, this)
 
     this.world.addSystem(Phase.Correction, PositionWrapsAtEdgesSystem, this)
+    this.world.addSystem(
+      Phase.Correction,
+      GaugesWatchPositionOfNearestSystem,
+      this,
+    )
 
     this.world.addSystem(Phase.PreRender, StatusSetsSpriteSystem, this)
     this.world.addSystem(Phase.PreRender, SpriteAnimationSystem, this)

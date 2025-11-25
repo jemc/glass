@@ -212,7 +212,7 @@ export const VelocitySystem = (coral: Context) =>
           // TODO: use modular arithmetic to get them interspersed better.
           if (velocity.vector.x > 0) {
             let willMove = false
-            if (velocity.vector.x > i + 1) {
+            if (velocity.vector.x >= i + 1) {
               willMove = true
             } else if (velocity.vector.x + velocity[RESIDUALS].x > i + 1) {
               willMove = true
@@ -230,7 +230,7 @@ export const VelocitySystem = (coral: Context) =>
             }
           } else if (velocity.vector.x < 0) {
             let willMove = false
-            if (velocity.vector.x < -i - 1) {
+            if (velocity.vector.x <= -i - 1) {
               willMove = true
             } else if (velocity.vector.x + velocity[RESIDUALS].x < -i - 1) {
               willMove = true
@@ -251,7 +251,7 @@ export const VelocitySystem = (coral: Context) =>
           // Determine if this entity should move along the Y axis this substep.
           if (velocity.vector.y > 0) {
             let willMove = false
-            if (velocity.vector.y > i + 1) {
+            if (velocity.vector.y >= i + 1) {
               willMove = true
             } else if (velocity.vector.y + velocity[RESIDUALS].y > i + 1) {
               willMove = true
@@ -269,7 +269,7 @@ export const VelocitySystem = (coral: Context) =>
             }
           } else if (velocity.vector.y < 0) {
             let willMove = false
-            if (velocity.vector.y < -i - 1) {
+            if (velocity.vector.y <= -i - 1) {
               willMove = true
             } else if (velocity.vector.y + velocity[RESIDUALS].y < -i - 1) {
               willMove = true

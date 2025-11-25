@@ -33,28 +33,28 @@ export const MoveSystem = (pyrope: Context) =>
   System.for(pyrope, [Mover, Opal.Position, Agate.Status, Coral.Velocity], {
     shouldMatchAll: [Mover],
 
-    runEach(entity, mover, position, status, body) {
+    runEach(entity, mover, position, status, velocity) {
       status.each((name, statusConfig, frameCount) => {
         const config = mover.config[name]
         if (!config) return
 
         if (config.verticalTargetVelocity !== undefined) {
-          body.approachVerticalVelocity(
+          velocity.approachVerticalVelocity(
             config.verticalTargetVelocity,
             config.verticalTargetVelocityIncrement,
           )
         }
         if (config.verticalInitialVelocity !== undefined && frameCount === 0) {
-          body.setVerticalConstantVelocity(config.verticalInitialVelocity)
+          velocity.setVerticalConstantVelocity(config.verticalInitialVelocity)
         }
 
         if (config.horizontalTargetVelocity !== undefined) {
-          body.approachHorizontalVelocity(
+          velocity.approachHorizontalVelocity(
             config.horizontalTargetVelocity,
             config.horizontalTargetVelocityIncrement,
           )
         } else if (config.horizontalTargetSpeed !== undefined) {
-          body.approachHorizontalVelocity(
+          velocity.approachHorizontalVelocity(
             config.horizontalTargetSpeed * (position.scale.x < 0 ? -1 : 1),
             config.horizontalTargetSpeedIncrement,
           )
@@ -63,13 +63,15 @@ export const MoveSystem = (pyrope: Context) =>
         // Handle initial velocity if it's the first frame of this status.
         if (frameCount === 0) {
           if (config.verticalInitialVelocity !== undefined) {
-            body.setVerticalConstantVelocity(config.verticalInitialVelocity)
+            velocity.setVerticalConstantVelocity(config.verticalInitialVelocity)
           }
 
           if (config.horizontalInitialVelocity !== undefined) {
-            body.setHorizontalConstantVelocity(config.horizontalInitialVelocity)
+            velocity.setHorizontalConstantVelocity(
+              config.horizontalInitialVelocity,
+            )
           } else if (config.horizontalInitialSpeed !== undefined) {
-            body.setHorizontalConstantVelocity(
+            velocity.setHorizontalConstantVelocity(
               config.horizontalInitialSpeed * (position.scale.x < 0 ? -1 : 1),
             )
           }

@@ -12,8 +12,6 @@ class Gauge {
     Object.assign(this, config)
 
     if (this.min >= this.max) throw new Error("min must be less than max")
-    if (!Number.isFinite(this.min)) throw new Error("min must be finite")
-    if (!Number.isFinite(this.max)) throw new Error("max must be finite")
 
     this.value = clampToRange(this.value, this)
   }
@@ -48,6 +46,10 @@ export class Gauges {
 
   getPercent(name: string) {
     const gauge = this.gauge(name)
+    if (!Number.isFinite(gauge.min))
+      throw new Error("gauge min must be finite to use percentages")
+    if (!Number.isFinite(gauge.max))
+      throw new Error("gauge max must be finite to use percentages")
     return (gauge.value - gauge.min) / (gauge.max - gauge.min)
   }
 
@@ -75,6 +77,10 @@ export class Gauges {
     else if (percent > 1) percent = 1
 
     const gauge = this.gauge(name)
+    if (!Number.isFinite(gauge.min))
+      throw new Error("gauge min must be finite to use percentages")
+    if (!Number.isFinite(gauge.max))
+      throw new Error("gauge max must be finite to use percentages")
     const value = gauge.min + (gauge.max - gauge.min) * percent
     if (gauge.value === value) return
 
