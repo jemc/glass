@@ -1,22 +1,32 @@
-import { registerComponent, World, ReadVector2, System } from "@glass/core"
+import {
+  registerComponent,
+  ReadVector2,
+  System,
+  SystemContext,
+} from "@glass/core"
 import { Status } from "@glass/agate"
 import { Opal } from "@glass/opal"
-import { Context } from "./Context"
 
-type SpawnFn = (world: World, pyrope: Context, position: Opal.Position) => void
+type SpawnFn<C extends SystemContext> = (
+  context: C,
+  position: Opal.Position,
+) => void
 
-interface SpawnConfig {
-  readonly fn: SpawnFn
+interface SpawnConfig<C extends SystemContext> {
+  readonly fn: SpawnFn<C>
   readonly positionOffset?: ReadVector2
 }
 
-export class SpawnOnStatus {
+export class SpawnOnStatus<C extends SystemContext> {
   static readonly componentId = registerComponent(this)
 
-  constructor(readonly map: Record<string, SpawnConfig>) {}
+  constructor(
+    readonly context: C,
+    readonly map: Record<string, SpawnConfig<C>>,
+  ) {}
 }
 
-export const SpawnOnStatusSystem = (pyrope: Context) =>
+export const SpawnOnStatusSystem = <C extends SystemContext>(pyrope: C) =>
   System.for(pyrope, [SpawnOnStatus, Status, Opal.Position], {
     shouldMatchAll: [SpawnOnStatus],
 
@@ -26,8 +36,7 @@ export const SpawnOnStatusSystem = (pyrope: Context) =>
       for (const [statusName, config] of Object.entries(spawn.map)) {
         if (status.isStarting(statusName)) {
           config.fn(
-            pyrope.world,
-            pyrope,
+            spawn.context,
             new Opal.Position(
               coords.x + (config.positionOffset?.x ?? 0) * direction.x,
               coords.y + (config.positionOffset?.y ?? 0) * direction.y,
