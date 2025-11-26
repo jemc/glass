@@ -1,14 +1,22 @@
-import { registerComponent, ComponentClass, System } from "@glass/core"
+import { registerComponent, ComponentClass, System, Entity } from "@glass/core"
 import { Agate } from "@glass/agate"
 import { Coral } from "@glass/coral"
 import { Context } from "./Context"
 
+const ALREADY_DAMAGED = Symbol("DamageOnContact._alreadyDamaged")
+
 export class DamageOnContact {
-  static readonly componentId = registerComponent(this)
+  static readonly componentId = registerComponent(this);
+
+  readonly [ALREADY_DAMAGED]: Set<Entity> = new Set()
 
   constructor(
     readonly targetComponentClass: ComponentClass,
     readonly amount: number,
+    readonly config: {
+      readonly thenDestroy?: boolean
+      readonly justOnce?: boolean
+    } = {},
   ) {}
 }
 
@@ -21,6 +29,13 @@ export const DamageOnContactSystem = (context: Context) =>
         // Check if the other entity has the target component class.
         // If it doesn't, it won't be the target of any damage.
         if (!context.world.get(other, damage.targetComponentClass)) continue
+
+        // If configured to damage an entity just once, then track that here.
+        // If we've already damaged this entity, we won't damage it again.
+        if (damage.config.justOnce) {
+          if (damage[ALREADY_DAMAGED].has(other)) continue
+          damage[ALREADY_DAMAGED].add(other)
+        }
 
         // Check if the other entity has a Status component.
         // If it does, try to set the "damage" status.
@@ -41,6 +56,9 @@ export const DamageOnContactSystem = (context: Context) =>
         if (gauges) {
           gauges.add("health", -damage.amount)
         }
+
+        // If configured to destroy itself after dealing damage, do that now.
+        if (damage.config.thenDestroy) context.world.destroy(entity)
       }
     },
   })
