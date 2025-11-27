@@ -6,6 +6,8 @@ import {
   Component,
 } from "@glass/core"
 import {
+  StatusBringsComponentsSystem,
+  StatusRemovesComponentsSystem,
   StatusAffectsGaugesSystem,
   GaugesSetStatusSystem,
   DestroyOnStatusSystem,
@@ -18,6 +20,8 @@ export class Context extends SystemContext {
   constructor(readonly world: World) {
     super()
 
+    this.world.addSystem(Phase.Action, StatusBringsComponentsSystem, this) // TODO: Should this be in Phase.Reaction instead?
+    this.world.addSystem(Phase.Action, StatusRemovesComponentsSystem, this) // TODO: Should this be in Phase.Reaction instead?
     this.world.addSystem(Phase.Action, StatusAffectsGaugesSystem, this) // TODO: Should this be in Phase.Reaction instead?
     this.world.addSystem(Phase.Action, GaugesSetStatusSystem, this) // TODO: Should this be in Phase.Reaction instead?
     this.world.addSystem(Phase.Action, DestroyOnStatusSystem, this) // TODO: Should this be in Phase.Reaction instead?

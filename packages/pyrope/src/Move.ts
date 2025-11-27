@@ -17,6 +17,8 @@ export interface MoverConfig {
 export interface MoverModeConfig {
   readonly maxFrames?: number
 
+  readonly directionFlipXOnStart?: boolean
+
   readonly verticalInitialVelocity?: number
   readonly horizontalInitialVelocity?: number
   readonly horizontalInitialSpeed?: number
@@ -74,6 +76,10 @@ export const MoveSystem = (pyrope: Context) =>
             velocity.setHorizontalConstantVelocity(
               config.horizontalInitialSpeed * (position.scale.x < 0 ? -1 : 1),
             )
+          }
+
+          if (config.directionFlipXOnStart) {
+            position.xScale *= -1
           }
         }
       })

@@ -1,6 +1,7 @@
 export * from "./BlockedBy"
 export * from "./Body"
 export * from "./Context"
+export * from "./StatusOnContact"
 export * from "./StatusSetsBounds"
 export * from "./Sensor"
 export * from "./Velocity"

@@ -1,4 +1,10 @@
-import { registerComponent, ComponentClass, System, Entity } from "@glass/core"
+import {
+  registerComponent,
+  ComponentClass,
+  System,
+  Entity,
+  World,
+} from "@glass/core"
 import { Agate } from "@glass/agate"
 import { Coral } from "@glass/coral"
 import { Context } from "./Context"
@@ -16,8 +22,22 @@ export class DamageOnContact {
     readonly config: {
       readonly thenDestroy?: boolean
       readonly justOnce?: boolean
+      readonly unless?: DamageOnContactUnlessConfig[]
     } = {},
   ) {}
+}
+
+export interface DamageOnContactUnlessConfig<
+  C extends ComponentClass = ComponentClass,
+> {
+  otherHas: C
+  satisfying?: (
+    world: World,
+    entity: Entity,
+    other: Entity,
+    component: C["prototype"],
+  ) => boolean
+  thenSetStatus?: string
 }
 
 export const DamageOnContactSystem = (context: Context) =>
@@ -29,6 +49,18 @@ export const DamageOnContactSystem = (context: Context) =>
         // Check if the other entity has the target component class.
         // If it doesn't, it won't be the target of any damage.
         if (!context.world.get(other, damage.targetComponentClass)) continue
+
+        // Check the "unless" condition(s) if applicable.
+        // If any such condition matches, we won't proceed with damage.
+        if (
+          evaluateUnlessConditionsToMaybePrecludeDamage(
+            context.world,
+            damage,
+            entity,
+            other,
+          )
+        )
+          continue
 
         // If configured to damage an entity just once, then track that here.
         // If we've already damaged this entity, we won't damage it again.
@@ -62,3 +94,31 @@ export const DamageOnContactSystem = (context: Context) =>
       }
     },
   })
+
+function evaluateUnlessConditionsToMaybePrecludeDamage(
+  world: World,
+  damage: DamageOnContact,
+  entity: Entity,
+  other: Entity,
+): boolean {
+  const unlessList = damage.config.unless
+  if (!unlessList) return false
+
+  let precluded = false
+  for (const { otherHas, satisfying, thenSetStatus } of unlessList) {
+    const otherComponent = world.get(other, otherHas)
+    if (!otherComponent) continue
+
+    if (satisfying && !satisfying(world, entity, other, otherComponent))
+      continue
+
+    precluded = true
+
+    if (thenSetStatus) {
+      const status = world.get(entity, Agate.Status)
+      if (status) status.set(thenSetStatus)
+    }
+  }
+
+  return precluded
+}
