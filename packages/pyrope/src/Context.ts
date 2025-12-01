@@ -12,6 +12,7 @@ import {
   DamageOnContactSystem,
   SpawnOnStatusSystem,
   MoveSystem,
+  OrbitSystem,
   Camera,
   CameraFocusSystem,
 } from "."
@@ -45,6 +46,7 @@ export class Context extends SystemContext {
 
     this.world.addSystem(Phase.Action, SpawnOnStatusSystem, this)
     this.world.addSystem(Phase.Action, MoveSystem, this)
+    this.world.addSystem(Phase.Action, OrbitSystem, this)
 
     this.world.addSystem(Phase.Reaction, CameraFocusSystem, this)
   }
