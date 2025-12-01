@@ -17,6 +17,7 @@ export interface VoiceNote {
   freqBase: number
   freqSlides?: VoiceNoteSlide[]
   gainEvents?: { time: number; gain: number }[]
+  vibratoEvents?: { time: number; vibrato: number }[]
 }
 
 interface VoiceNoteSlide {
@@ -89,7 +90,7 @@ export class Voice {
     const attackTime = 0.0 // TODO: configurable
     const releaseTime = 0.01 // TODO: configurable
 
-    const { gain, freq } = this
+    const { gain, freq, vibrato } = this
 
     freq.setValueAtTime(note.freqBase, timeStart)
 
@@ -119,5 +120,17 @@ export class Voice {
     gain.cancelScheduledValues(timeEnd - releaseTime)
     gain.setValueAtTime(0, timeEnd - releaseTime)
     gain.linearRampToValueAtTime(0, timeEnd)
+
+    vibrato.cancelScheduledValues(timeStart)
+    // vibrato.setValueAtTime(0, timeStart)
+
+    if (note.vibratoEvents) {
+      note.vibratoEvents.forEach(({ time, vibrato: factor }) => {
+        vibrato.setValueAtTime(factor, timeStart + time)
+      })
+    }
+
+    vibrato.cancelScheduledValues(timeEnd)
+    vibrato.setValueAtTime(0, timeEnd)
   }
 }

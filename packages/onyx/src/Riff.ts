@@ -9,6 +9,8 @@ export interface Riff {
   oct?: string
   vol?: string
   gls?: string
+  vib?: string
+  vibMax?: number // 2 by default (+/- 2 semitones)
 }
 
 const SCALE_CODE_NEG_0_8 = "l".charCodeAt(0)
@@ -286,6 +288,16 @@ export function riffGainAt(riff: Riff, index: number) {
   return gain
 }
 
+export function riffVibratoAt(riff: Riff, index: number) {
+  let vibrato = 0
+  if (!riff.vib) return vibrato
+
+  for (let i = 0; i <= index; i++)
+    vibrato = riffCharCodeToVibrato(riff.vib.charCodeAt(i), riff) ?? vibrato
+
+  return vibrato
+}
+
 export function riffOctaveAt(riff: Riff, index: number) {
   let octave = 4
   if (!riff.oct) return octave
@@ -301,6 +313,21 @@ export function riffCharCodeToGain(code: number) {
     return (code - VOL_CODE_0) / 10
   } else if (code === VOL_CODE_10) {
     return 1
+  } else if (code === VOL_CODE_NONE) {
+    return undefined
+  } else if (isNaN(code)) {
+    return undefined
+  }
+
+  throw new Error(`Unknown riff volume code: ${code}`)
+}
+
+export function riffCharCodeToVibrato(code: number, riff: { vibMax?: number }) {
+  const vibMaxx = riff.vibMax ?? 2
+  if (code >= VOL_CODE_0 && code <= VOL_CODE_9) {
+    return ((code - VOL_CODE_0) / 10) * vibMaxx
+  } else if (code === VOL_CODE_10) {
+    return vibMaxx
   } else if (code === VOL_CODE_NONE) {
     return undefined
   } else if (isNaN(code)) {
@@ -423,6 +450,7 @@ export function riffSeqToVoiceNotes(riff: Riff): [number, VoiceNote][] {
     const seqCharCode = riff.seq.charCodeAt(i)
     const glsCharCode = riff.gls?.charCodeAt(i)
     const volCharCode = riff.vol?.charCodeAt(i)
+    const vibCharCode = riff.vib?.charCodeAt(i)
     if (seqCharCode === SEQ_CODE_SUSTAIN) {
       // Sustain the current note.
       if (note) note.duration += stepDuration
@@ -453,6 +481,15 @@ export function riffSeqToVoiceNotes(riff: Riff): [number, VoiceNote][] {
       if (gain != 1 && riffCharCodeToGain(volCharCode ?? 0) === undefined) {
         note.gainEvents ??= []
         note.gainEvents.push({ time: 0, gain })
+      }
+
+      const vibrato = riffVibratoAt(riff, i)
+      if (
+        vibrato != 0 &&
+        riffCharCodeToVibrato(volCharCode ?? 0, riff) === undefined
+      ) {
+        note.vibratoEvents ??= []
+        note.vibratoEvents.push({ time: 0, vibrato })
       }
     }
 
@@ -486,6 +523,18 @@ export function riffSeqToVoiceNotes(riff: Riff): [number, VoiceNote][] {
       if (gain !== undefined) {
         note.gainEvents ??= []
         note.gainEvents.push({ time: note.duration - stepDuration, gain })
+      }
+    }
+
+    // Check for a vibrato event
+    if (note && vibCharCode) {
+      const vibrato = riffCharCodeToVibrato(vibCharCode, riff)
+      if (vibrato !== undefined) {
+        note.vibratoEvents ??= []
+        note.vibratoEvents.push({
+          time: note.duration - stepDuration,
+          vibrato,
+        })
       }
     }
 
