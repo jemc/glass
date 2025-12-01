@@ -11,20 +11,20 @@ import { Context } from "./Context"
 
 const ALREADY_DAMAGED = Symbol("DamageOnContact._alreadyDamaged")
 
-export interface DamageOnContactConfig {
-  readonly with: ComponentClass
-  readonly amount: number
-  readonly thenDestroy?: boolean
-  readonly justOnce?: boolean
-  readonly unless?: DamageOnContactUnlessConfig[]
-}
-
 export class DamageOnContact {
   static readonly componentId = registerComponent(this);
 
   readonly [ALREADY_DAMAGED]: Set<Entity> = new Set()
 
   constructor(readonly configs: Record<string, DamageOnContactConfig> = {}) {}
+}
+
+export interface DamageOnContactConfig {
+  readonly with: ComponentClass
+  readonly amount: number
+  readonly thenDestroy?: boolean
+  readonly justOnce?: boolean
+  readonly unless?: DamageOnContactUnlessConfig[]
 }
 
 export interface DamageOnContactUnlessConfig<
@@ -38,6 +38,7 @@ export interface DamageOnContactUnlessConfig<
     component: C["prototype"],
   ) => boolean
   thenSetStatus?: string
+  thenSetOtherStatus?: string
 }
 
 export const DamageOnContactSystem = (context: Context) =>
@@ -107,7 +108,12 @@ function evaluateUnlessConditionsToMaybePrecludeDamage(
   if (!unlessList) return false
 
   let precluded = false
-  for (const { otherHas, satisfying, thenSetStatus } of unlessList) {
+  for (const {
+    otherHas,
+    satisfying,
+    thenSetStatus,
+    thenSetOtherStatus,
+  } of unlessList) {
     const otherComponent = world.get(other, otherHas)
     if (!otherComponent) continue
 
@@ -119,6 +125,11 @@ function evaluateUnlessConditionsToMaybePrecludeDamage(
     if (thenSetStatus) {
       const status = world.get(entity, Agate.Status)
       if (status) status.set(thenSetStatus)
+    }
+
+    if (thenSetOtherStatus) {
+      const otherStatus = world.get(other, Agate.Status)
+      if (otherStatus) otherStatus.set(thenSetOtherStatus)
     }
   }
 
