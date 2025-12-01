@@ -32,7 +32,7 @@ export const LoadTileMapSpawnsSystem = (topaz: Context) =>
         const special = specialTiles[tileId]
         if (!special) return
 
-        const { tileWidth, tileHeight } = tileMapLayer.tileset
+        const { x: tileWidth, y: tileHeight } = tileMapLayer.tileset.tileSize
 
         if (special.category === "spawn") {
           load.spawnFactory(

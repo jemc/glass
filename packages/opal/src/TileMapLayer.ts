@@ -56,13 +56,13 @@ export class TileMapLayer {
   readonly tileset: TileMapTileSet
 
   xToIndex(x: number) {
-    // TODO: use bitwise operations when tileset.tileWidth is a power of 2
-    return Math.floor(x / this.tileset.tileWidth)
+    // TODO: use bitwise operations when tileset.tileSize.x is a power of 2
+    return Math.floor(x / this.tileset.tileSize.x)
   }
 
   yToIndex(y: number) {
-    // TODO: use bitwise operations when tileset.tileHeight is a power of 2
-    return Math.floor(y / this.tileset.tileHeight)
+    // TODO: use bitwise operations when tileset.tileSize.y is a power of 2
+    return Math.floor(y / this.tileset.tileSize.y)
   }
 
   constructor(
@@ -101,13 +101,13 @@ export class TileMapLayer {
     this.tileIds = new Uint32Array2D(
       new Vector2(cel.w, cel.h),
       new Vector2(
-        Math.floor(this.cel.xpos / this.tileset.tileWidth),
-        Math.floor(this.cel.ypos / this.tileset.tileHeight),
+        Math.floor(this.cel.xpos / this.tileset.tileSize.x),
+        Math.floor(this.cel.ypos / this.tileset.tileSize.y),
       ),
     )
     new Uint32Array(cel.rawCelData.buffer).forEach((tileBits, index) => {
-      const startX = this.cel.xpos / this.tileset.tileWidth
-      const startY = this.cel.ypos / this.tileset.tileHeight
+      const startX = this.cel.xpos / this.tileset.tileSize.x
+      const startY = this.cel.ypos / this.tileset.tileSize.y
       const x = (index % this.cel.w) + startX
       const y = (index - x + startX) / this.cel.w + startY
       let tile = tileBits & tilemapMetadata.bitmaskForTileId

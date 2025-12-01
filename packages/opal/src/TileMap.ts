@@ -1,7 +1,7 @@
 import Aseprite from "ase-parser"
 import { Box2 } from "@glass/core"
 import { TileMapLayer } from "./TileMapLayer"
-import { TileMapTileSet } from "./TileMapTileSet"
+import { TileMapTileSet, TileMapTileSetAseprite } from "./TileMapTileSet"
 
 export class TileMap {
   private layers = new Map<string, TileMapLayer>()
@@ -25,7 +25,7 @@ export class TileMap {
     let tileset = this.tilesets[index]
     if (tileset) return tileset
 
-    tileset = new TileMapTileSet(this.ase, index)
+    tileset = new TileMapTileSetAseprite(this.ase, index)
     this.tilesets[index] = tileset
     return tileset
   }

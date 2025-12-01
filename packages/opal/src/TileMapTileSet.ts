@@ -1,13 +1,18 @@
 import Aseprite from "ase-parser"
-import { Vector2 } from "@glass/core"
+import { ReadVector2, Vector2 } from "@glass/core"
 import { Render } from "./Render"
 import { TextureSurface } from "./TextureSurface"
 
-export class TileMapTileSet {
+export interface TileMapTileSet {
+  readonly tileSize: ReadVector2
+  makeTextureSurface(render: Render): TextureSurface
+}
+
+export class TileMapTileSetAseprite implements TileMapTileSet {
   private tileset: Aseprite.Tileset
   private rawTilesetData: Buffer
 
-  readonly tileSize: Vector2
+  readonly tileSize: ReadVector2
 
   constructor(
     private ase: Aseprite,
@@ -25,27 +30,11 @@ export class TileMapTileSet {
     this.tileSize = new Vector2(tileset.tileWidth, tileset.tileHeight)
   }
 
-  get tileWidth() {
-    return this.tileSize.x
-  }
-
-  get tileHeight() {
-    return this.tileSize.y
-  }
-
-  assertTileSize(expectedSize: number) {
-    const { tileWidth, tileHeight } = this
-    if (tileWidth !== expectedSize || tileHeight !== expectedSize)
-      throw new Error(
-        `Tileset has unexpected tile size ${tileWidth}x${tileHeight}`,
-      )
-  }
-
   makeTextureSurface(render: Render): TextureSurface {
     if (this.ase.colorDepth !== 32)
       throw new Error("Only 32-bit tilesets are supported currently")
 
-    const { tileHeight, tileWidth } = this
+    const { x: tileWidth, y: tileHeight } = this.tileSize
     const tilesPerRow = 1 // TODO: not hard-coded
     const pixelsPerTile = tileWidth * tileHeight
     const pixelsPerTileRow = pixelsPerTile * tilesPerRow
@@ -77,5 +66,29 @@ export class TileMapTileSet {
 
     const texture = TextureSurface.fromImage(render, imageData)
     return texture
+  }
+}
+
+export class TileMapTileSetTiled implements TileMapTileSet {
+  readonly tileSize: ReadVector2
+
+  constructor(
+    xml: Document,
+    private imageData: ImageData,
+  ) {
+    const tilesetTag = xml.getElementsByTagName("tileset")[0]
+    if (!tilesetTag) throw new Error(`No <tileset> tag found in Tiled XML`)
+
+    this.tileSize = new Vector2(
+      parseInt(tilesetTag.getAttribute("tilewidth") || "16"),
+      parseInt(tilesetTag.getAttribute("tileheight") || "16"),
+    )
+
+    // TODO: parse animation data in the XML
+  }
+
+  makeTextureSurface(render: Render): TextureSurface {
+    // TODO: how to deal with the varying width/height of different source images?
+    return TextureSurface.fromImage(render, this.imageData)
   }
 }
