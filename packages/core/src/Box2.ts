@@ -12,6 +12,17 @@ abstract class BaseBox2 {
     )
   }
 
+  clone(): Box2 {
+    return new Box2(this.center.clone(), this.radii.clone())
+  }
+
+  cloneMutable(): MutableBox2 {
+    return new MutableBox2(
+      this.center.cloneMutable(),
+      this.radii.cloneMutable(),
+    )
+  }
+
   doesContain(point: ReadVector2) {
     if (Math.abs(point.x - this.center.x) > this.radii.x) return false
     if (Math.abs(point.y - this.center.y) > this.radii.y) return false
@@ -49,6 +60,14 @@ abstract class BaseBox2 {
 
   get height() {
     return this.radii.y + this.radii.y
+  }
+
+  get halfWidth() {
+    return this.radii.x
+  }
+
+  get halfHeight() {
+    return this.radii.y
   }
 }
 
