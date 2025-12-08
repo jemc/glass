@@ -44,7 +44,7 @@ describe("StatusAffectsGauges", () => {
     )
 
     function tick() {
-      world.clock.tick(world.clock.timestamp + 1)
+      world.clock.tick(world.clock.timestamp + 20)
     }
     function tickMany(n: number) {
       for (let i = 0; i < n; i++) tick()

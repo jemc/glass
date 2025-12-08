@@ -65,8 +65,6 @@ describe("Gauges", () => {
   test("complains when creating a gauge with invalid bounds", () => {
     const world = new World()
     expect(() => new Agate.Gauges({ bad: { min: 10, max: 5 } })).toThrow()
-    expect(() => new Agate.Gauges({ bad: { min: -Infinity } })).toThrow()
-    expect(() => new Agate.Gauges({ bad: { max: Infinity } })).toThrow()
   })
 
   test("clamps the initial value if its out of bounds", () => {

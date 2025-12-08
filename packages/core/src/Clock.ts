@@ -38,6 +38,7 @@ export class Clock {
 
   private maxFPS = 60
   private maxFPSInterval = 1000 / this.maxFPS
+  private actualTimestamp = 0
 
   // Run the next frame, using the given `timestamp`, and call the held `runFn`.
   //
@@ -64,7 +65,8 @@ export class Clock {
     const write: Writable<Clock> = this
     write.frame++
     write.timestamp = lastTimestamp
-    write.currentFramesPerSecond = 1000 / delta
+    write.currentFramesPerSecond = 1000 / (timestamp - this.actualTimestamp)
+    this.actualTimestamp = timestamp
 
     // Run the designated run function that the clock is driving.
     this.runFn()

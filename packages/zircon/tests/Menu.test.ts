@@ -82,7 +82,7 @@ describe("Menu", () => {
     let timestamp = 0
     function tick() {
       // Update the world.
-      world.clock.tick(++timestamp)
+      world.clock.tick((timestamp += 20))
       // Confirm statuses of menu items.
       for (const item of allItems) {
         const s = world.get(item, Agate.Status)!

@@ -21,7 +21,7 @@ describe("GaugesSetStatus", () => {
     )
 
     function tick() {
-      world.clock.tick(world.clock.timestamp + 1)
+      world.clock.tick(world.clock.timestamp + 20)
     }
     function status() {
       return [...world.get(entity, Agate.Status)!.values()]
