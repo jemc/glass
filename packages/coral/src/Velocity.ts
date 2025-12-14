@@ -56,143 +56,6 @@ export class Velocity {
   }
 }
 
-function tryMoveRight(
-  entityA: Entity,
-  coral: Context,
-  blockedBy: BlockedBy,
-  a: Body,
-  posA: Opal.Position,
-) {
-  for (const [entityB, [posB, b]] of blockedBy.entitiesThatMayBlock()) {
-    if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      const a = coral.world.get(entityA, Body)
-      if (!a) continue
-
-      // TODO: Take posB into account for tilemaps not at (0,0)
-      const x = posA.coords.x + a.relativeX1 + 1
-      const y0 = posA.coords.y + a.relativeY0
-      const y1 = posA.coords.y + a.relativeY1 - 1
-      if (b.tileMapIsSolidInXYRange(coral, x, x, y0, y1)) {
-        return false
-      }
-    }
-  }
-  return true
-}
-
-function tryMoveLeft(
-  entityA: Entity,
-  coral: Context,
-  blockedBy: BlockedBy,
-  a: Body,
-  posA: Opal.Position,
-) {
-  for (const [entityB, [posB, b]] of blockedBy.entitiesThatMayBlock()) {
-    if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      const a = coral.world.get(entityA, Body)
-      if (!a) continue
-
-      // TODO: Take posB into account for tilemaps not at (0,0)
-      const x = posA.coords.x + a.relativeX0 - 1
-      const y0 = posA.coords.y + a.relativeY0
-      const y1 = posA.coords.y + a.relativeY1 - 1
-      if (b.tileMapIsSolidInXYRange(coral, x, x, y0, y1)) {
-        return false
-      }
-    }
-  }
-  return true
-}
-
-function tryMoveUp(
-  entityA: Entity,
-  coral: Context,
-  blockedBy: BlockedBy,
-  a: Body,
-  posA: Opal.Position,
-) {
-  for (const [entityB, [posB, b]] of blockedBy.entitiesThatMayBlock()) {
-    if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      const a = coral.world.get(entityA, Body)
-      if (!a) continue
-
-      // TODO: Take posB into account for tilemaps not at (0,0)
-      const x0 = posA.coords.x + a.relativeX0
-      const x1 = posA.coords.x + a.relativeX1 - 1
-      const y = posA.coords.y + a.relativeY0 - 1
-      if (b.tileMapIsSolidInXYRange(coral, x0, x1, y, y)) {
-        return false
-      }
-    }
-  }
-  return true
-}
-
-function tryMoveDown(
-  entityA: Entity,
-  coral: Context,
-  blockedBy: BlockedBy,
-  a: Body,
-  posA: Opal.Position,
-) {
-  for (const [entityB, [posB, b]] of blockedBy.entitiesThatMayBlock()) {
-    if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      const a = coral.world.get(entityA, Body)
-      if (!a) continue
-
-      // TODO: Take posB into account for tilemaps not at (0,0)
-      const x0 = posA.coords.x + a.relativeX0
-      const x1 = posA.coords.x + a.relativeX1 - 1
-      const y = posA.coords.y + a.relativeY1 + 1
-      if (b.tileMapIsSolidInXYRange(coral, x0, x1, y, y)) {
-        // TODO: allow "riding" on things in more than just the downward direction
-        coral.world.set(entityA, [new Riding(entityB)])
-        return false
-      }
-    }
-  }
-
-  for (const [
-    entityB,
-    [posB, b],
-  ] of blockedBy.entitiesThatMayBlockDownwardOnly()) {
-    if (a.shape === Body.Shape.Box && b.shape === Body.Shape.Box) {
-      const a = coral.world.get(entityA, Body)
-      if (!a) continue
-
-      // Only block if the bottom edge of A is one pixel above the top of B.
-      if (
-        b.relativeY0 + posB.coords.y == posA.coords.y + a.relativeY1 + 1 &&
-        b.relativeX0 + posB.coords.x <= posA.coords.x + a.relativeX1 - 1 &&
-        b.relativeX1 + posB.coords.x - 1 >= posA.coords.x + a.relativeX0
-      ) {
-        // TODO: allow "riding" on things in more than just the downward direction
-        coral.world.set(entityA, [new Riding(entityB)])
-        return false
-      }
-    } else if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      const a = coral.world.get(entityA, Body)
-      if (!a) continue
-
-      // TODO: Take posB into account for tilemaps not at (0,0)
-      const x0 = posA.coords.x + a.relativeX0
-      const x1 = posA.coords.x + a.relativeX1 - 1
-      const y = posA.coords.y + a.relativeY1 + 1
-      if (b.tileMapIsSolidInXYRange(coral, x0, x1, y, y)) {
-        // TODO: allow "riding" on things in more than just the downward direction
-        coral.world.set(entityA, [new Riding(entityB)])
-        return false
-      }
-    } else {
-      throw new Error(
-        `BlockedBy.downwardOnly hasn't implemented this shape pair yet: ${a.shape} ${b.shape}`,
-      )
-    }
-  }
-
-  return true
-}
-
 export const VelocitySystem = (coral: Context) =>
   System.for(coral, [Velocity, Opal.Position], {
     shouldMatchAll: [Velocity],
@@ -223,33 +86,14 @@ export const VelocitySystem = (coral: Context) =>
 
       for (let i = 0; i < totalSubsteps; i++) {
         for (const [entity, [velocity, position]] of entities) {
-          // Determine if this body is blocked by something.
+          // Determine if this is a body that can be blocked by something.
           // We do this check regardless of velocity, which is useful for
           // checking things like whether a character is standing on the ground,
           // which may be true even when the character has a zero velocity.
           const blockedBy = world.get(entity, BlockedBy)
           const body = world.get(entity, Body)
           if (blockedBy && body) {
-            if (
-              !blockedBy.wasBlockedOnRight &&
-              !tryMoveRight(entity, coral, blockedBy, body, position)
-            )
-              blockedBy.markBlockedOnRight()
-            if (
-              !blockedBy.wasBlockedOnLeft &&
-              !tryMoveLeft(entity, coral, blockedBy, body, position)
-            )
-              blockedBy.markBlockedOnLeft()
-            if (
-              !blockedBy.wasBlockedOnBottom &&
-              !tryMoveDown(entity, coral, blockedBy, body, position)
-            )
-              blockedBy.markBlockedOnBottom()
-            if (
-              !blockedBy.wasBlockedOnTop &&
-              !tryMoveUp(entity, coral, blockedBy, body, position)
-            )
-              blockedBy.markBlockedOnTop()
+            blockedBy.updateForSubstep(coral, entity, body, position)
           }
 
           // Determine if this entity should move along the X axis this substep.
