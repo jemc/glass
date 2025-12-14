@@ -86,43 +86,30 @@ export class Body {
   checkOverlap(
     coral: Context,
     b: Body,
-    posA: { coords: ReadVector2 },
-    posB: { coords: ReadVector2 },
+    positionA: { coords: ReadVector2 },
+    positionB: { coords: ReadVector2 },
   ): boolean {
     const a = this
+    const posA = positionA.coords
+    const posB = positionB.coords
 
     // Simplify this function by moving the simpler shape to the "a" side,
     // if there's currently a simpler shape on the "b" side.
     // This means we don't need as many branches in our shape-vs-shape checks.
-    if (a.shape > b.shape) return b.checkOverlap(coral, a, posB, posA)
+    if (a.shape > b.shape) return b.checkOverlap(coral, a, positionB, positionA)
 
     if (this.shape === Body.Shape.Box && b.shape === Body.Shape.Box) {
-      return checkBoxOverlapsBox(
-        posA.coords,
-        a.boxBounds,
-        posB.coords,
-        b.boxBounds,
-      )
+      return checkBoxOverlapsBox(posA, a.boxBounds, posB, b.boxBounds)
     } else if (
       this.shape === Body.Shape.Box &&
       b.shape === Body.Shape.Rounded
     ) {
-      return checkBoxOverlapsRounded(
-        posA.coords,
-        a.boxBounds,
-        posB.coords,
-        b.boxBounds,
-      )
+      return checkBoxOverlapsRounded(posA, a.boxBounds, posB, b.boxBounds)
     } else if (
       this.shape === Body.Shape.Rounded &&
       b.shape === Body.Shape.Rounded
     ) {
-      return checkRoundedOverlapsRounded(
-        posA.coords,
-        a.boxBounds,
-        posB.coords,
-        b.boxBounds,
-      )
+      return checkRoundedOverlapsRounded(posA, a.boxBounds, posB, b.boxBounds)
     } else {
       throw new Error(
         "Collision detection not yet implemented for these shapes.",
