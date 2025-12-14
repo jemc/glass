@@ -579,7 +579,7 @@ function checkBoxTouchRightwardTileMap(
   tileMap: Body,
 ): boolean {
   const layer = tileMap.fetchTileMapLayer(coral)
-  const x = posL.x - tileMapPos.x + boundsL.x1 + 1
+  const x = posL.x - tileMapPos.x + boundsL.x1
   if (!layer || !layer.xIsAligned(x)) return false
 
   const y0 = posL.y - tileMapPos.y + boundsL.y0
@@ -612,7 +612,7 @@ function checkBoxTouchDownwardTileMap(
   tileMap: Body,
 ): boolean {
   const layer = tileMap.fetchTileMapLayer(coral)
-  const y = posU.y - tileMapPos.y + boundsU.y1 + 1
+  const y = posU.y - tileMapPos.y + boundsU.y1
   if (!layer || !layer.xIsAligned(y)) return false
 
   const x0 = posU.x - tileMapPos.x + boundsU.x0
