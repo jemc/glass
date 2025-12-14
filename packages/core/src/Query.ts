@@ -169,3 +169,34 @@ export class Query<
     return bits.isSuperSetOf(this._requiredBits)
   }
 }
+
+// Utility function to iterate over the combined values for a list of queries.
+export function queryListValues<T>(
+  queries: Iterable<{ entities: Iterable<T> }> | undefined,
+): Iterable<T> {
+  if (!queries) return [].values()
+  let outerIter = queries[Symbol.iterator]()
+  let innerIter: Iterator<T> | null = null
+
+  return {
+    [Symbol.iterator]() {
+      return {
+        next: () => {
+          while (true) {
+            if (innerIter) {
+              const innerResult = innerIter.next()
+              if (!innerResult.done) return innerResult
+
+              innerIter = null
+            }
+
+            const outerResult = outerIter.next()
+            if (outerResult.done) return { done: true, value: undefined }
+
+            innerIter = outerResult.value.entities[Symbol.iterator]()
+          }
+        },
+      }
+    },
+  }
+}

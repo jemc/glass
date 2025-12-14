@@ -4,6 +4,7 @@ import {
   registerComponent,
   MutableVector2,
   ReadVector2,
+  World,
 } from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
@@ -99,108 +100,182 @@ export const VelocitySystem = (coral: Context) =>
           // Determine if this entity should move along the X axis this substep.
           // TODO: use modular arithmetic to get them interspersed better.
           if (velocity.vector.x > 0) {
-            let willMove = false
+            let shouldMove = false
             if (velocity.vector.x >= i + 1) {
-              willMove = true
+              shouldMove = true
             } else if (velocity.vector.x + velocity[RESIDUALS].x > i + 1) {
-              willMove = true
+              shouldMove = true
               velocity[RESIDUALS].x = 0
             } else {
               velocity[RESIDUALS].x +=
                 velocity.vector.x - Math.floor(velocity.vector.x)
             }
-            if (willMove) {
-              if (blockedBy?.wasBlockedOnRight) {
-                velocity.setHorizontalConstantVelocity(0)
-              } else {
-                position.updateCoords((coords) => (coords.x += 1))
-
-                // TODO: move riders in more than just horizontal directions
-                world.getCollected(entity, Riding)?.forEach((ridingEntity) => {
-                  const ridingPosition = coral.world.get(
-                    ridingEntity,
-                    Opal.Position,
-                  )
-                  if (ridingPosition) {
-                    ridingPosition.updateCoords((coords) => (coords.x += 1))
-                  }
-                })
-              }
+            if (shouldMove) {
+              tryMoveRight(coral, entity, velocity, position, blockedBy)
             }
           } else if (velocity.vector.x < 0) {
-            let willMove = false
+            let shouldMove = false
             if (velocity.vector.x <= -i - 1) {
-              willMove = true
+              shouldMove = true
             } else if (velocity.vector.x + velocity[RESIDUALS].x < -i - 1) {
-              willMove = true
+              shouldMove = true
               velocity[RESIDUALS].x = 0
             } else {
               velocity[RESIDUALS].x +=
                 velocity.vector.x - Math.ceil(velocity.vector.x)
             }
-            if (willMove) {
-              if (blockedBy?.wasBlockedOnLeft) {
-                velocity.setHorizontalConstantVelocity(0)
-              } else {
-                position.updateCoords((coords) => (coords.x -= 1))
-
-                // TODO: move riders in more than just horizontal directions
-                world.getCollected(entity, Riding)?.forEach((ridingEntity) => {
-                  const ridingPosition = coral.world.get(
-                    ridingEntity,
-                    Opal.Position,
-                  )
-                  if (ridingPosition) {
-                    ridingPosition.updateCoords((coords) => (coords.x -= 1))
-                  }
-                })
-              }
+            if (shouldMove) {
+              tryMoveLeft(coral, entity, velocity, position, blockedBy)
             }
           }
 
           // Determine if this entity should move along the Y axis this substep.
           if (velocity.vector.y > 0) {
-            let willMove = false
+            let shouldMove = false
             if (velocity.vector.y >= i + 1) {
-              willMove = true
+              shouldMove = true
             } else if (velocity.vector.y + velocity[RESIDUALS].y > i + 1) {
-              willMove = true
+              shouldMove = true
               velocity[RESIDUALS].y = 0
             } else {
               velocity[RESIDUALS].y +=
                 velocity.vector.y - Math.floor(velocity.vector.y)
             }
-            if (willMove) {
-              if (blockedBy?.wasBlockedOnBottom) {
-                velocity.setVerticalConstantVelocity(0)
-              } else {
-                position.updateCoords((coords) => (coords.y += 1))
-                // TODO: handle clearing riding status for more than just downward riding
-                world.remove(entity, [Riding])
-              }
+            if (shouldMove) {
+              tryMoveDown(coral, entity, velocity, position, blockedBy)
             }
           } else if (velocity.vector.y < 0) {
-            let willMove = false
+            let shouldMove = false
             if (velocity.vector.y <= -i - 1) {
-              willMove = true
+              shouldMove = true
             } else if (velocity.vector.y + velocity[RESIDUALS].y < -i - 1) {
-              willMove = true
+              shouldMove = true
               velocity[RESIDUALS].y = 0
             } else {
               velocity[RESIDUALS].y +=
                 velocity.vector.y - Math.ceil(velocity.vector.y)
             }
-            if (willMove) {
-              if (blockedBy?.wasBlockedOnTop) {
-                velocity.setVerticalConstantVelocity(0)
-              } else {
-                position.updateCoords((coords) => (coords.y -= 1))
-                // TODO: handle clearing riding status for more than just downward riding
-                world.remove(entity, [Riding])
-              }
+            if (shouldMove) {
+              tryMoveUp(coral, entity, velocity, position, blockedBy)
             }
           }
         }
       }
     },
   })
+
+function tryMoveRight(
+  coral: Context,
+  entity: number,
+  velocity: Velocity,
+  pos: Opal.Position,
+  blockedBy: BlockedBy | undefined,
+) {
+  if (blockedBy?.wasBlockedOnRight) {
+    velocity.setHorizontalConstantVelocity(0)
+  } else {
+    pos.updateCoords((coords) => (coords.x += 1))
+
+    // Also try to move any entities riding on this one.
+    coral.world.getCollected(entity, Riding)?.forEach((ridingEntity) => {
+      const ridingVelocity = coral.world.get(ridingEntity, Velocity)
+      const ridingPosition = coral.world.get(ridingEntity, Opal.Position)
+      if (ridingVelocity && ridingPosition)
+        tryMoveRight(
+          coral,
+          ridingEntity,
+          ridingVelocity,
+          ridingPosition,
+          coral.world.get(ridingEntity, BlockedBy),
+        )
+    })
+  }
+}
+
+function tryMoveLeft(
+  coral: Context,
+  entity: number,
+  velocity: Velocity,
+  pos: Opal.Position,
+  blockedBy: BlockedBy | undefined,
+) {
+  if (blockedBy?.wasBlockedOnLeft) {
+    velocity.setHorizontalConstantVelocity(0)
+  } else {
+    pos.updateCoords((coords) => (coords.x -= 1))
+
+    // Also try to move any entities riding on this one.
+    coral.world.getCollected(entity, Riding)?.forEach((ridingEntity) => {
+      const ridingVelocity = coral.world.get(ridingEntity, Velocity)
+      const ridingPosition = coral.world.get(ridingEntity, Opal.Position)
+      if (ridingVelocity && ridingPosition)
+        tryMoveLeft(
+          coral,
+          ridingEntity,
+          ridingVelocity,
+          ridingPosition,
+          coral.world.get(ridingEntity, BlockedBy),
+        )
+    })
+  }
+}
+
+function tryMoveDown(
+  coral: Context,
+  entity: number,
+  velocity: Velocity,
+  pos: Opal.Position,
+  blockedBy: BlockedBy | undefined,
+) {
+  if (blockedBy?.wasBlockedOnBottom) {
+    velocity.setVerticalConstantVelocity(0)
+  } else {
+    pos.updateCoords((coords) => (coords.y += 1))
+    // TODO: handle clearing riding status for more than just downward riding
+    coral.world.remove(entity, [Riding])
+
+    // Also try to move any entities riding on this one.
+    coral.world.getCollected(entity, Riding)?.forEach((ridingEntity) => {
+      const ridingVelocity = coral.world.get(ridingEntity, Velocity)
+      const ridingPosition = coral.world.get(ridingEntity, Opal.Position)
+      if (ridingVelocity && ridingPosition)
+        tryMoveDown(
+          coral,
+          ridingEntity,
+          ridingVelocity,
+          ridingPosition,
+          coral.world.get(ridingEntity, BlockedBy),
+        )
+    })
+  }
+}
+
+function tryMoveUp(
+  coral: Context,
+  entity: number,
+  velocity: Velocity,
+  pos: Opal.Position,
+  blockedBy: BlockedBy | undefined,
+) {
+  if (blockedBy?.wasBlockedOnTop) {
+    velocity.setVerticalConstantVelocity(0)
+  } else {
+    pos.updateCoords((coords) => (coords.y -= 1))
+    // TODO: handle clearing riding status for more than just downward riding
+    coral.world.remove(entity, [Riding])
+
+    // Also try to move any entities riding on this one.
+    coral.world.getCollected(entity, Riding)?.forEach((ridingEntity) => {
+      const ridingVelocity = coral.world.get(ridingEntity, Velocity)
+      const ridingPosition = coral.world.get(ridingEntity, Opal.Position)
+      if (ridingVelocity && ridingPosition)
+        tryMoveUp(
+          coral,
+          ridingEntity,
+          ridingVelocity,
+          ridingPosition,
+          coral.world.get(ridingEntity, BlockedBy),
+        )
+    })
+  }
+}

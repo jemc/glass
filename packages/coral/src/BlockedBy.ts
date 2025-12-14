@@ -1,8 +1,16 @@
-import { registerComponent, QueryLike, System, Entity } from "@glass/core"
+import {
+  registerComponent,
+  QueryLike,
+  System,
+  Entity,
+  queryListValues,
+} from "@glass/core"
 import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 import { Body } from "./Body"
 import { Riding } from "./Riding"
+
+const RESET_MARKS = Symbol("BlockedBy._resetMarks")
 
 export class BlockedBy {
   static readonly componentId = registerComponent(this)
@@ -19,6 +27,42 @@ export class BlockedBy {
   ) {}
 
   private _bits: number = 0
+
+  public [RESET_MARKS]() {
+    this._bits = 0
+  }
+
+  private markBlockedOnTop() {
+    this._bits |= BlockedBy.Bits.Top
+  }
+
+  private markBlockedOnBottom() {
+    this._bits |= BlockedBy.Bits.Bottom
+  }
+
+  private markBlockedOnLeft() {
+    this._bits |= BlockedBy.Bits.Left
+  }
+
+  private markBlockedOnRight() {
+    this._bits |= BlockedBy.Bits.Right
+  }
+
+  get wasBlockedOnTop() {
+    return (this._bits & BlockedBy.Bits.Top) !== 0
+  }
+
+  get wasBlockedOnBottom() {
+    return (this._bits & BlockedBy.Bits.Bottom) !== 0
+  }
+
+  get wasBlockedOnLeft() {
+    return (this._bits & BlockedBy.Bits.Left) !== 0
+  }
+
+  get wasBlockedOnRight() {
+    return (this._bits & BlockedBy.Bits.Right) !== 0
+  }
 
   updateForSubstep(
     context: Context,
@@ -41,109 +85,6 @@ export class BlockedBy {
     if (!wasBlockedOnTop && !checkTop(context, entity, this, body, pos))
       this.markBlockedOnTop()
   }
-
-  resetMarks() {
-    this._bits = 0
-  }
-
-  markBlockedOnTop() {
-    this._bits |= BlockedBy.Bits.Top
-  }
-
-  markBlockedOnBottom() {
-    this._bits |= BlockedBy.Bits.Bottom
-  }
-
-  markBlockedOnLeft() {
-    this._bits |= BlockedBy.Bits.Left
-  }
-
-  markBlockedOnRight() {
-    this._bits |= BlockedBy.Bits.Right
-  }
-
-  get wasBlockedOnTop() {
-    return (this._bits & BlockedBy.Bits.Top) !== 0
-  }
-
-  get wasBlockedOnBottom() {
-    return (this._bits & BlockedBy.Bits.Bottom) !== 0
-  }
-
-  get wasBlockedOnLeft() {
-    return (this._bits & BlockedBy.Bits.Left) !== 0
-  }
-
-  get wasBlockedOnRight() {
-    return (this._bits & BlockedBy.Bits.Right) !== 0
-  }
-
-  // TODO: refactor this into a generic iterator utility
-  entitiesThatMayBlock(): Iterable<
-    [Entity, [Opal.Position, Body, ...unknown[]]]
-  > {
-    let outerIter = this.queries.values()
-    let innerIter: Iterator<
-      [Entity, [Opal.Position, Body, ...unknown[]]]
-    > | null = null
-
-    return {
-      [Symbol.iterator]() {
-        return {
-          next: () => {
-            while (true) {
-              if (innerIter) {
-                const innerResult = innerIter.next()
-                if (!innerResult.done) return innerResult
-
-                innerIter = null
-              }
-
-              const outerResult = outerIter.next()
-              if (outerResult.done) return { done: true, value: undefined }
-
-              innerIter = outerResult.value.entities[Symbol.iterator]()
-            }
-          },
-        }
-      },
-    }
-  }
-
-  // TODO: refactor this into a generic iterator utility
-  entitiesThatMayBlockDownwardOnly(): Iterable<
-    [Entity, [Opal.Position, Body, ...unknown[]]]
-  > {
-    const queries = this.additionalQueries.downwardOnly
-    if (!queries) return [].values()
-
-    let outerIter = queries.values() ?? []
-    let innerIter: Iterator<
-      [Entity, [Opal.Position, Body, ...unknown[]]]
-    > | null = null
-
-    return {
-      [Symbol.iterator]() {
-        return {
-          next: () => {
-            while (true) {
-              if (innerIter) {
-                const innerResult = innerIter.next()
-                if (!innerResult.done) return innerResult
-
-                innerIter = null
-              }
-
-              const outerResult = outerIter.next()
-              if (outerResult.done) return { done: true, value: undefined }
-
-              innerIter = outerResult.value.entities[Symbol.iterator]()
-            }
-          },
-        }
-      },
-    }
-  }
 }
 
 export namespace BlockedBy {
@@ -158,7 +99,7 @@ export namespace BlockedBy {
 export const ResetBlockedBySystem = (coral: Context) =>
   System.for(coral, [BlockedBy], {
     runEach(entity, blockedBy) {
-      blockedBy.resetMarks()
+      blockedBy[RESET_MARKS]()
     },
   })
 
@@ -169,7 +110,7 @@ function checkRight(
   a: Body,
   posA: Opal.Position,
 ) {
-  for (const [entityB, [posB, b]] of blockedBy.entitiesThatMayBlock()) {
+  for (const [entityB, [posB, b]] of queryListValues(blockedBy.queries)) {
     if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
       const a = coral.world.get(entityA, Body)
       if (!a) continue
@@ -193,11 +134,8 @@ function checkLeft(
   a: Body,
   posA: Opal.Position,
 ) {
-  for (const [entityB, [posB, b]] of blockedBy.entitiesThatMayBlock()) {
+  for (const [entityB, [posB, b]] of queryListValues(blockedBy.queries)) {
     if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      const a = coral.world.get(entityA, Body)
-      if (!a) continue
-
       // TODO: Take posB into account for tilemaps not at (0,0)
       const x = posA.coords.x + a.relativeX0 - 1
       const y0 = posA.coords.y + a.relativeY0
@@ -217,11 +155,8 @@ function checkTop(
   a: Body,
   posA: Opal.Position,
 ) {
-  for (const [entityB, [posB, b]] of blockedBy.entitiesThatMayBlock()) {
+  for (const [entityB, [posB, b]] of queryListValues(blockedBy.queries)) {
     if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      const a = coral.world.get(entityA, Body)
-      if (!a) continue
-
       // TODO: Take posB into account for tilemaps not at (0,0)
       const x0 = posA.coords.x + a.relativeX0
       const x1 = posA.coords.x + a.relativeX1 - 1
@@ -241,11 +176,8 @@ function checkBottom(
   a: Body,
   posA: Opal.Position,
 ) {
-  for (const [entityB, [posB, b]] of blockedBy.entitiesThatMayBlock()) {
+  for (const [entityB, [posB, b]] of queryListValues(blockedBy.queries)) {
     if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      const a = coral.world.get(entityA, Body)
-      if (!a) continue
-
       // TODO: Take posB into account for tilemaps not at (0,0)
       const x0 = posA.coords.x + a.relativeX0
       const x1 = posA.coords.x + a.relativeX1 - 1
@@ -258,41 +190,42 @@ function checkBottom(
     }
   }
 
-  for (const [
-    entityB,
-    [posB, b],
-  ] of blockedBy.entitiesThatMayBlockDownwardOnly()) {
-    if (a.shape === Body.Shape.Box && b.shape === Body.Shape.Box) {
-      const a = coral.world.get(entityA, Body)
-      if (!a) continue
+  if (blockedBy.additionalQueries.downwardOnly) {
+    for (const [entityB, [posB, b]] of queryListValues(
+      blockedBy.additionalQueries.downwardOnly,
+    )) {
+      if (a.shape === Body.Shape.Box && b.shape === Body.Shape.Box) {
+        const a = coral.world.get(entityA, Body)
+        if (!a) continue
 
-      // Only block if the bottom edge of A is one pixel above the top of B.
-      if (
-        b.relativeY0 + posB.coords.y == posA.coords.y + a.relativeY1 + 1 &&
-        b.relativeX0 + posB.coords.x <= posA.coords.x + a.relativeX1 - 1 &&
-        b.relativeX1 + posB.coords.x - 1 >= posA.coords.x + a.relativeX0
-      ) {
-        // TODO: allow "riding" on things in more than just the downward direction
-        coral.world.set(entityA, [new Riding(entityB)])
-        return false
-      }
-    } else if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      const a = coral.world.get(entityA, Body)
-      if (!a) continue
+        // Only block if the bottom edge of A is one pixel above the top of B.
+        if (
+          b.relativeY0 + posB.coords.y == posA.coords.y + a.relativeY1 + 1 &&
+          b.relativeX0 + posB.coords.x <= posA.coords.x + a.relativeX1 - 1 &&
+          b.relativeX1 + posB.coords.x - 1 >= posA.coords.x + a.relativeX0
+        ) {
+          // TODO: allow "riding" on things in more than just the downward direction
+          coral.world.set(entityA, [new Riding(entityB)])
+          return false
+        }
+      } else if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
+        const a = coral.world.get(entityA, Body)
+        if (!a) continue
 
-      // TODO: Take posB into account for tilemaps not at (0,0)
-      const x0 = posA.coords.x + a.relativeX0
-      const x1 = posA.coords.x + a.relativeX1 - 1
-      const y = posA.coords.y + a.relativeY1 + 1
-      if (b.tileMapIsSolidInXYRange(coral, x0, x1, y, y)) {
-        // TODO: allow "riding" on things in more than just the downward direction
-        coral.world.set(entityA, [new Riding(entityB)])
-        return false
+        // TODO: Take posB into account for tilemaps not at (0,0)
+        const x0 = posA.coords.x + a.relativeX0
+        const x1 = posA.coords.x + a.relativeX1 - 1
+        const y = posA.coords.y + a.relativeY1 + 1
+        if (b.tileMapIsSolidInXYRange(coral, x0, x1, y, y)) {
+          // TODO: allow "riding" on things in more than just the downward direction
+          coral.world.set(entityA, [new Riding(entityB)])
+          return false
+        }
+      } else {
+        throw new Error(
+          `BlockedBy.downwardOnly hasn't implemented this shape pair yet: ${a.shape} ${b.shape}`,
+        )
       }
-    } else {
-      throw new Error(
-        `BlockedBy.downwardOnly hasn't implemented this shape pair yet: ${a.shape} ${b.shape}`,
-      )
     }
   }
 
