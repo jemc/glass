@@ -55,6 +55,14 @@ export class TileMapLayer {
   readonly userData: TileMapLayerUserData
   readonly tileset: TileMapTileSet
 
+  xIsAligned(x: number) {
+    return x % this.tileset.tileSize.x === 0
+  }
+
+  yIsAligned(y: number) {
+    return y % this.tileset.tileSize.y === 0
+  }
+
   xToIndex(x: number) {
     // TODO: use bitwise operations when tileset.tileSize.x is a power of 2
     return Math.floor(x / this.tileset.tileSize.x)

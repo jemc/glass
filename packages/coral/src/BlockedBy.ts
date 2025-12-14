@@ -121,18 +121,8 @@ function checkRight(
   posA: Opal.Position,
 ) {
   for (const [entityB, [posB, b]] of queryListValues(blockedBy.queries)) {
-    if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      // TODO: Take posB into account for tilemaps not at (0,0)
-      const x = posA.coords.x + a.relativeX1 + 1
-      const y0 = posA.coords.y + a.relativeY0
-      const y1 = posA.coords.y + a.relativeY1 - 1
-      if (b.tileMapIsSolidInXYRange(coral, x, x, y0, y1)) {
-        return false
-      }
-    } else {
-      throw new Error(
-        `BlockedBy hasn't implemented this shape pair yet: ${a.shape} ${b.shape}`,
-      )
+    if (a.checkSurfaceRightward(coral, posA, b, posB)) {
+      return false
     }
   }
   return true
@@ -146,18 +136,8 @@ function checkLeft(
   posA: Opal.Position,
 ) {
   for (const [entityB, [posB, b]] of queryListValues(blockedBy.queries)) {
-    if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      // TODO: Take posB into account for tilemaps not at (0,0)
-      const x = posA.coords.x + a.relativeX0 - 1
-      const y0 = posA.coords.y + a.relativeY0
-      const y1 = posA.coords.y + a.relativeY1 - 1
-      if (b.tileMapIsSolidInXYRange(coral, x, x, y0, y1)) {
-        return false
-      }
-    } else {
-      throw new Error(
-        `BlockedBy hasn't implemented this shape pair yet: ${a.shape} ${b.shape}`,
-      )
+    if (b.checkSurfaceRightward(coral, posB, a, posA)) {
+      return false
     }
   }
   return true
@@ -171,18 +151,8 @@ function checkTop(
   posA: Opal.Position,
 ) {
   for (const [entityB, [posB, b]] of queryListValues(blockedBy.queries)) {
-    if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      // TODO: Take posB into account for tilemaps not at (0,0)
-      const x0 = posA.coords.x + a.relativeX0
-      const x1 = posA.coords.x + a.relativeX1 - 1
-      const y = posA.coords.y + a.relativeY0 - 1
-      if (b.tileMapIsSolidInXYRange(coral, x0, x1, y, y)) {
-        return false
-      }
-    } else {
-      throw new Error(
-        `BlockedBy hasn't implemented this shape pair yet: ${a.shape} ${b.shape}`,
-      )
+    if (b.checkSurfaceDownward(coral, posB, a, posA)) {
+      return false
     }
   }
   return true
@@ -196,20 +166,10 @@ function checkBottom(
   posA: Opal.Position,
 ) {
   for (const [entityB, [posB, b]] of queryListValues(blockedBy.queries)) {
-    if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      // TODO: Take posB into account for tilemaps not at (0,0)
-      const x0 = posA.coords.x + a.relativeX0
-      const x1 = posA.coords.x + a.relativeX1 - 1
-      const y = posA.coords.y + a.relativeY1 + 1
-      if (b.tileMapIsSolidInXYRange(coral, x0, x1, y, y)) {
-        // TODO: allow "riding" on things in more than just the downward direction
-        coral.world.set(entityA, [new Riding(entityB)])
-        return false
-      }
-    } else {
-      throw new Error(
-        `BlockedBy hasn't implemented this shape pair yet: ${a.shape} ${b.shape}`,
-      )
+    if (a.checkSurfaceDownward(coral, posA, b, posB)) {
+      // TODO: allow "riding" on things in more than just the downward direction
+      coral.world.set(entityA, [new Riding(entityB)])
+      return false
     }
   }
 
@@ -217,31 +177,10 @@ function checkBottom(
     for (const [entityB, [posB, b]] of queryListValues(
       blockedBy.additionalQueries.downwardOnly,
     )) {
-      if (a.shape === Body.Shape.Box && b.shape === Body.Shape.Box) {
-        // Only block if the bottom edge of A is one pixel above the top of B.
-        if (
-          b.relativeY0 + posB.coords.y == posA.coords.y + a.relativeY1 + 1 &&
-          b.relativeX0 + posB.coords.x <= posA.coords.x + a.relativeX1 - 1 &&
-          b.relativeX1 + posB.coords.x - 1 >= posA.coords.x + a.relativeX0
-        ) {
-          // TODO: allow "riding" on things in more than just the downward direction
-          coral.world.set(entityA, [new Riding(entityB)])
-          return false
-        }
-      } else if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-        // TODO: Take posB into account for tilemaps not at (0,0)
-        const x0 = posA.coords.x + a.relativeX0
-        const x1 = posA.coords.x + a.relativeX1 - 1
-        const y = posA.coords.y + a.relativeY1 + 1
-        if (b.tileMapIsSolidInXYRange(coral, x0, x1, y, y)) {
-          // TODO: allow "riding" on things in more than just the downward direction
-          coral.world.set(entityA, [new Riding(entityB)])
-          return false
-        }
-      } else {
-        throw new Error(
-          `BlockedBy.downwardOnly hasn't implemented this shape pair yet: ${a.shape} ${b.shape}`,
-        )
+      if (a.checkSurfaceDownward(coral, posA, b, posB)) {
+        // TODO: allow "riding" on things in more than just the downward direction
+        coral.world.set(entityA, [new Riding(entityB)])
+        return false
       }
     }
   }

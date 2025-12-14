@@ -117,6 +117,61 @@ export class Body {
     }
   }
 
+  checkSurfaceRightward(
+    coral: Context,
+    positionL: { coords: ReadVector2 },
+    r: Body,
+    positionR: { coords: ReadVector2 },
+  ): boolean {
+    const l = this
+    const posL = positionL.coords
+    const posR = positionR.coords
+
+    if (l.shape === Body.Shape.Box && r.shape === Body.Shape.Box) {
+      return checkBoxTouchRightwardBox(posL, l.boxBounds, posR, r.boxBounds)
+    } else if (l.shape === Body.Shape.Box && r.shape === Body.Shape.TileMap) {
+      return checkBoxTouchRightwardTileMap(coral, posL, l.boxBounds, posR, r)
+    } else if (l.shape === Body.Shape.TileMap && r.shape === Body.Shape.Box) {
+      return checkBoxTouchLeftwardTileMap(coral, posR, r.boxBounds, posL, l)
+    } else {
+      throw new Error(
+        "Rightward surface detection not yet implemented for these shapes.",
+      )
+    }
+  }
+
+  checkSurfaceDownward(
+    coral: Context,
+    positionU: { coords: ReadVector2 },
+    d: Body,
+    positionD: { coords: ReadVector2 },
+  ): boolean {
+    const u = this
+    const posU = positionU.coords
+    const posD = positionD.coords
+
+    if (this.shape === Body.Shape.Box && d.shape === Body.Shape.Box) {
+      return checkBoxTouchDownwardBox(posU, u.boxBounds, posD, d.boxBounds)
+    } else if (u.shape === Body.Shape.Box && d.shape === Body.Shape.TileMap) {
+      return checkBoxTouchDownwardTileMap(coral, posU, u.boxBounds, posD, d)
+    } else if (u.shape === Body.Shape.TileMap && d.shape === Body.Shape.Box) {
+      return checkBoxTouchUpwardTileMap(coral, posD, d.boxBounds, posU, u)
+    } else {
+      throw new Error(
+        "Downward surface detection not yet implemented for these shapes.",
+      )
+    }
+  }
+
+  fetchTileMapLayer(coral: Context) {
+    if (this.shape !== Body.Shape.TileMap)
+      throw new TypeError("This is not a TileMap collision shape.")
+
+    return coral.opal.tileMaps
+      .get(this.tileMapName!)
+      ?.layer(this.tileMapLayerName!)
+  }
+
   tileMapIsSolidInXYRange(
     coral: Context,
     x0: number,
@@ -196,6 +251,32 @@ function checkBoxOverlapsBox(
   if (aY0 >= bY1 || bY0 >= aY1) return false
 
   return true
+}
+
+function checkBoxTouchRightwardBox(
+  posL: ReadVector2,
+  boundsL: ReadBox2,
+  posR: ReadVector2,
+  boundsR: ReadBox2,
+): boolean {
+  return (
+    posL.x + boundsL.x1 + 1 !== posR.x + boundsR.x0 &&
+    posL.y + boundsL.y0 < posR.y + boundsR.y1 &&
+    posL.y + boundsL.y1 > posR.y + boundsR.y0
+  )
+}
+
+function checkBoxTouchDownwardBox(
+  posU: ReadVector2,
+  boundsU: ReadBox2,
+  posD: ReadVector2,
+  boundsD: ReadBox2,
+): boolean {
+  return (
+    posU.y + boundsU.y1 + 1 === posD.y + boundsD.y0 &&
+    posU.x + boundsU.x0 < posD.x + boundsD.x1 &&
+    posU.x + boundsU.x1 > posD.x + boundsD.x0
+  )
 }
 
 function checkCircleOverlapsCircle(
@@ -488,4 +569,70 @@ function checkRoundedOverlapsRounded(
     middleBox.radii.y -= radius
   }
   return checkBoxOverlapsRounded(posA, middleBox, posB, boundsB)
+}
+
+function checkBoxTouchRightwardTileMap(
+  coral: Context,
+  posL: ReadVector2,
+  boundsL: ReadBox2,
+  tileMapPos: ReadVector2,
+  tileMap: Body,
+): boolean {
+  const layer = tileMap.fetchTileMapLayer(coral)
+  const x = posL.x - tileMapPos.x + boundsL.x1 + 1
+  if (!layer || !layer.xIsAligned(x)) return false
+
+  const y0 = posL.y - tileMapPos.y + boundsL.y0
+  const y1 = posL.y - tileMapPos.y + boundsL.y1 - 1
+  return layer.isNonZeroInXYRange(x, x, y0, y1)
+}
+
+function checkBoxTouchLeftwardTileMap(
+  coral: Context,
+  posR: ReadVector2,
+  boundsR: ReadBox2,
+  tileMapPos: ReadVector2,
+  tileMap: Body,
+): boolean {
+  const layer = tileMap.fetchTileMapLayer(coral)
+  let x = posR.x - tileMapPos.x + boundsR.x0
+  if (!layer || !layer.xIsAligned(x)) return false
+  x -= 1
+
+  const y0 = posR.y - tileMapPos.y + boundsR.y0
+  const y1 = posR.y - tileMapPos.y + boundsR.y1 - 1
+  return layer.isNonZeroInXYRange(x, x, y0, y1)
+}
+
+function checkBoxTouchDownwardTileMap(
+  coral: Context,
+  posU: ReadVector2,
+  boundsU: ReadBox2,
+  tileMapPos: ReadVector2,
+  tileMap: Body,
+): boolean {
+  const layer = tileMap.fetchTileMapLayer(coral)
+  const y = posU.y - tileMapPos.y + boundsU.y1 + 1
+  if (!layer || !layer.xIsAligned(y)) return false
+
+  const x0 = posU.x - tileMapPos.x + boundsU.x0
+  const x1 = posU.x - tileMapPos.x + boundsU.x1 - 1
+  return layer.isNonZeroInXYRange(x0, x1, y, y)
+}
+
+function checkBoxTouchUpwardTileMap(
+  coral: Context,
+  posD: ReadVector2,
+  boundsD: ReadBox2,
+  tileMapPos: ReadVector2,
+  tileMap: Body,
+): boolean {
+  const layer = tileMap.fetchTileMapLayer(coral)
+  let y = posD.y - tileMapPos.y + boundsD.y0
+  if (!layer || !layer.xIsAligned(y)) return false
+  y -= 1
+
+  const x0 = posD.x - tileMapPos.x + boundsD.x0
+  const x1 = posD.x - tileMapPos.x + boundsD.x1 - 1
+  return tileMap.tileMapIsSolidInXYRange(coral, x0, x1, y, y)
 }
