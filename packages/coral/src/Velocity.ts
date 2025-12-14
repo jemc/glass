@@ -9,14 +9,15 @@ import { Opal } from "@glass/opal"
 import { Context } from "./Context"
 import { BlockedBy } from "./BlockedBy"
 import { Body } from "./Body"
+import { Riding } from "./Riding"
 
 const VELOCITY = Symbol("Velocity._velocity")
 const RESIDUALS = Symbol("Velocity._residuals")
 
 export class Velocity {
-  static readonly componentId = registerComponent(this);
+  static readonly componentId = registerComponent(this)
 
-  readonly [VELOCITY] = new MutableVector2();
+  readonly [VELOCITY] = new MutableVector2()
   readonly [RESIDUALS] = new MutableVector2()
 
   // TODO: Find a better name for this.
@@ -144,10 +145,51 @@ function tryMoveDown(
       const x1 = posA.coords.x + a.relativeX1 - 1
       const y = posA.coords.y + a.relativeY1 + 1
       if (b.tileMapIsSolidInXYRange(coral, x0, x1, y, y)) {
+        // TODO: allow "riding" on things in more than just the downward direction
+        coral.world.set(entityA, [new Riding(entityB)])
         return false
       }
     }
   }
+
+  for (const [
+    entityB,
+    [posB, b],
+  ] of blockedBy.entitiesThatMayBlockDownwardOnly()) {
+    if (a.shape === Body.Shape.Box && b.shape === Body.Shape.Box) {
+      const a = coral.world.get(entityA, Body)
+      if (!a) continue
+
+      // Only block if the bottom edge of A is one pixel above the top of B.
+      if (
+        b.relativeY0 + posB.coords.y == posA.coords.y + a.relativeY1 + 1 &&
+        b.relativeX0 + posB.coords.x <= posA.coords.x + a.relativeX1 - 1 &&
+        b.relativeX1 + posB.coords.x - 1 >= posA.coords.x + a.relativeX0
+      ) {
+        // TODO: allow "riding" on things in more than just the downward direction
+        coral.world.set(entityA, [new Riding(entityB)])
+        return false
+      }
+    } else if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
+      const a = coral.world.get(entityA, Body)
+      if (!a) continue
+
+      // TODO: Take posB into account for tilemaps not at (0,0)
+      const x0 = posA.coords.x + a.relativeX0
+      const x1 = posA.coords.x + a.relativeX1 - 1
+      const y = posA.coords.y + a.relativeY1 + 1
+      if (b.tileMapIsSolidInXYRange(coral, x0, x1, y, y)) {
+        // TODO: allow "riding" on things in more than just the downward direction
+        coral.world.set(entityA, [new Riding(entityB)])
+        return false
+      }
+    } else {
+      throw new Error(
+        `BlockedBy.downwardOnly hasn't implemented this shape pair yet: ${a.shape} ${b.shape}`,
+      )
+    }
+  }
+
   return true
 }
 
@@ -228,6 +270,17 @@ export const VelocitySystem = (coral: Context) =>
                 velocity.setHorizontalConstantVelocity(0)
               } else {
                 position.updateCoords((coords) => (coords.x += 1))
+
+                // TODO: move riders in more than just horizontal directions
+                world.getCollected(entity, Riding)?.forEach((ridingEntity) => {
+                  const ridingPosition = coral.world.get(
+                    ridingEntity,
+                    Opal.Position,
+                  )
+                  if (ridingPosition) {
+                    ridingPosition.updateCoords((coords) => (coords.x += 1))
+                  }
+                })
               }
             }
           } else if (velocity.vector.x < 0) {
@@ -246,6 +299,17 @@ export const VelocitySystem = (coral: Context) =>
                 velocity.setHorizontalConstantVelocity(0)
               } else {
                 position.updateCoords((coords) => (coords.x -= 1))
+
+                // TODO: move riders in more than just horizontal directions
+                world.getCollected(entity, Riding)?.forEach((ridingEntity) => {
+                  const ridingPosition = coral.world.get(
+                    ridingEntity,
+                    Opal.Position,
+                  )
+                  if (ridingPosition) {
+                    ridingPosition.updateCoords((coords) => (coords.x -= 1))
+                  }
+                })
               }
             }
           }
@@ -267,6 +331,8 @@ export const VelocitySystem = (coral: Context) =>
                 velocity.setVerticalConstantVelocity(0)
               } else {
                 position.updateCoords((coords) => (coords.y += 1))
+                // TODO: handle clearing riding status for more than just downward riding
+                world.remove(entity, [Riding])
               }
             }
           } else if (velocity.vector.y < 0) {
@@ -285,6 +351,8 @@ export const VelocitySystem = (coral: Context) =>
                 velocity.setVerticalConstantVelocity(0)
               } else {
                 position.updateCoords((coords) => (coords.y -= 1))
+                // TODO: handle clearing riding status for more than just downward riding
+                world.remove(entity, [Riding])
               }
             }
           }

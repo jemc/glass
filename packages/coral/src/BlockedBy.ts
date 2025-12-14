@@ -10,6 +10,11 @@ export class BlockedBy {
     readonly queries: ReadonlyArray<
       QueryLike<[typeof Opal.Position, typeof Body]>
     >,
+    readonly additionalQueries: {
+      downwardOnly?: ReadonlyArray<
+        QueryLike<[typeof Opal.Position, typeof Body]>
+      >
+    } = {},
   ) {}
 
   private _bits: number = 0
@@ -50,10 +55,46 @@ export class BlockedBy {
     return (this._bits & BlockedBy.Bits.Right) !== 0
   }
 
+  // TODO: refactor this into a generic iterator utility
   entitiesThatMayBlock(): Iterable<
     [Entity, [Opal.Position, Body, ...unknown[]]]
   > {
     let outerIter = this.queries.values()
+    let innerIter: Iterator<
+      [Entity, [Opal.Position, Body, ...unknown[]]]
+    > | null = null
+
+    return {
+      [Symbol.iterator]() {
+        return {
+          next: () => {
+            while (true) {
+              if (innerIter) {
+                const innerResult = innerIter.next()
+                if (!innerResult.done) return innerResult
+
+                innerIter = null
+              }
+
+              const outerResult = outerIter.next()
+              if (outerResult.done) return { done: true, value: undefined }
+
+              innerIter = outerResult.value.entities[Symbol.iterator]()
+            }
+          },
+        }
+      },
+    }
+  }
+
+  // TODO: refactor this into a generic iterator utility
+  entitiesThatMayBlockDownwardOnly(): Iterable<
+    [Entity, [Opal.Position, Body, ...unknown[]]]
+  > {
+    const queries = this.additionalQueries.downwardOnly
+    if (!queries) return [].values()
+
+    let outerIter = queries.values() ?? []
     let innerIter: Iterator<
       [Entity, [Opal.Position, Body, ...unknown[]]]
     > | null = null

@@ -9,7 +9,21 @@ export class SolidWalls {
   constructor() {}
 }
 
+export class SolidWallsDownwardOnly {
+  static readonly componentId = registerComponent(this)
+
+  constructor() {}
+}
+
 export const BlockedBySolidWallsQuery = (cache: QueryCache, context: Context) =>
   Query.for(context, [Opal.Position, Coral.Body, SolidWalls], {
     shouldMatchAll: [SolidWalls],
+  })
+
+export const BlockedBySolidWallsDownwardOnlyQuery = (
+  cache: QueryCache,
+  context: Context,
+) =>
+  Query.for(context, [Opal.Position, Coral.Body, SolidWallsDownwardOnly], {
+    shouldMatchAll: [SolidWallsDownwardOnly],
   })
