@@ -170,6 +170,7 @@ function tryMoveRight(
   velocity: Velocity,
   pos: Opal.Position,
   blockedBy: BlockedBy | undefined,
+  dueToRiding = false,
 ) {
   if (blockedBy?.wasBlockedOnRight) {
     velocity.setHorizontalConstantVelocity(0)
@@ -180,14 +181,28 @@ function tryMoveRight(
     coral.world.getCollected(entity, Riding)?.forEach((ridingEntity) => {
       const ridingVelocity = coral.world.get(ridingEntity, Velocity)
       const ridingPosition = coral.world.get(ridingEntity, Opal.Position)
-      if (ridingVelocity && ridingPosition)
+      const ridingBlockedBy = coral.world.get(ridingEntity, BlockedBy)
+      if (ridingVelocity && ridingPosition) {
+        if (ridingBlockedBy) {
+          const ridingBody = coral.world.get(ridingEntity, Body)
+          if (ridingBody) {
+            ridingBlockedBy.updateForSubstep(
+              coral,
+              ridingEntity,
+              ridingBody,
+              ridingPosition,
+            )
+          }
+        }
         tryMoveRight(
           coral,
           ridingEntity,
           ridingVelocity,
           ridingPosition,
-          coral.world.get(ridingEntity, BlockedBy),
+          ridingBlockedBy,
+          true,
         )
+      }
     })
   }
 }
@@ -198,6 +213,7 @@ function tryMoveLeft(
   velocity: Velocity,
   pos: Opal.Position,
   blockedBy: BlockedBy | undefined,
+  dueToRiding = false,
 ) {
   if (blockedBy?.wasBlockedOnLeft) {
     velocity.setHorizontalConstantVelocity(0)
@@ -208,14 +224,28 @@ function tryMoveLeft(
     coral.world.getCollected(entity, Riding)?.forEach((ridingEntity) => {
       const ridingVelocity = coral.world.get(ridingEntity, Velocity)
       const ridingPosition = coral.world.get(ridingEntity, Opal.Position)
-      if (ridingVelocity && ridingPosition)
+      const ridingBlockedBy = coral.world.get(ridingEntity, BlockedBy)
+      if (ridingVelocity && ridingPosition) {
+        if (ridingBlockedBy) {
+          const ridingBody = coral.world.get(ridingEntity, Body)
+          if (ridingBody) {
+            ridingBlockedBy.updateForSubstep(
+              coral,
+              ridingEntity,
+              ridingBody,
+              ridingPosition,
+            )
+          }
+        }
         tryMoveLeft(
           coral,
           ridingEntity,
           ridingVelocity,
           ridingPosition,
-          coral.world.get(ridingEntity, BlockedBy),
+          ridingBlockedBy,
+          true,
         )
+      }
     })
   }
 }
@@ -226,26 +256,42 @@ function tryMoveDown(
   velocity: Velocity,
   pos: Opal.Position,
   blockedBy: BlockedBy | undefined,
+  dueToRiding = false,
 ) {
   if (blockedBy?.wasBlockedOnBottom) {
     velocity.setVerticalConstantVelocity(0)
+    if (dueToRiding) console.log("riding entity couldn't move down!")
   } else {
     pos.updateCoords((coords) => (coords.y += 1))
     // TODO: handle clearing riding status for more than just downward riding
-    coral.world.remove(entity, [Riding])
+    if (!dueToRiding) coral.world.remove(entity, [Riding])
 
     // Also try to move any entities riding on this one.
     coral.world.getCollected(entity, Riding)?.forEach((ridingEntity) => {
       const ridingVelocity = coral.world.get(ridingEntity, Velocity)
       const ridingPosition = coral.world.get(ridingEntity, Opal.Position)
-      if (ridingVelocity && ridingPosition)
+      const ridingBlockedBy = coral.world.get(ridingEntity, BlockedBy)
+      if (ridingVelocity && ridingPosition) {
+        if (ridingBlockedBy) {
+          const ridingBody = coral.world.get(ridingEntity, Body)
+          if (ridingBody) {
+            ridingBlockedBy.updateForSubstep(
+              coral,
+              ridingEntity,
+              ridingBody,
+              ridingPosition,
+            )
+          }
+        }
         tryMoveDown(
           coral,
           ridingEntity,
           ridingVelocity,
           ridingPosition,
-          coral.world.get(ridingEntity, BlockedBy),
+          ridingBlockedBy,
+          true,
         )
+      }
     })
   }
 }
@@ -256,26 +302,41 @@ function tryMoveUp(
   velocity: Velocity,
   pos: Opal.Position,
   blockedBy: BlockedBy | undefined,
+  dueToRiding = false,
 ) {
   if (blockedBy?.wasBlockedOnTop) {
     velocity.setVerticalConstantVelocity(0)
   } else {
     pos.updateCoords((coords) => (coords.y -= 1))
     // TODO: handle clearing riding status for more than just downward riding
-    coral.world.remove(entity, [Riding])
+    if (!dueToRiding) coral.world.remove(entity, [Riding])
 
     // Also try to move any entities riding on this one.
     coral.world.getCollected(entity, Riding)?.forEach((ridingEntity) => {
       const ridingVelocity = coral.world.get(ridingEntity, Velocity)
       const ridingPosition = coral.world.get(ridingEntity, Opal.Position)
-      if (ridingVelocity && ridingPosition)
+      const ridingBlockedBy = coral.world.get(ridingEntity, BlockedBy)
+      if (ridingVelocity && ridingPosition) {
+        if (ridingBlockedBy) {
+          const ridingBody = coral.world.get(ridingEntity, Body)
+          if (ridingBody) {
+            ridingBlockedBy.updateForSubstep(
+              coral,
+              ridingEntity,
+              ridingBody,
+              ridingPosition,
+            )
+          }
+        }
         tryMoveUp(
           coral,
           ridingEntity,
           ridingVelocity,
           ridingPosition,
-          coral.world.get(ridingEntity, BlockedBy),
+          ridingBlockedBy,
+          true,
         )
+      }
     })
   }
 }

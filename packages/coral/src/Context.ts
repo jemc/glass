@@ -3,6 +3,7 @@ import { Opal } from "@glass/opal"
 import {
   StatusOnContactSystem,
   ResetBlockedBySystem,
+  RefreshBlockedBySystem,
   StatusSetsBoundsSystem,
   VelocitySystem,
   SensorSystem,
@@ -26,6 +27,7 @@ export class Context extends SystemContext {
     this.world.addSystem(Phase.Reaction, ResetBlockedBySystem, this)
     this.world.addSystem(Phase.Reaction, StatusSetsBoundsSystem, this)
     this.world.addSystem(Phase.Reaction, VelocitySystem, this)
+    this.world.addSystem(Phase.Reaction, RefreshBlockedBySystem, this)
     this.world.addSystem(Phase.Reaction, SensorSystem, this)
   }
 

@@ -70,6 +70,7 @@ export class BlockedBy {
     body: Body,
     pos: Opal.Position,
   ) {
+    this[RESET_MARKS]() // TODO: don't reset this all the time
     const {
       wasBlockedOnRight,
       wasBlockedOnLeft,
@@ -96,10 +97,19 @@ export namespace BlockedBy {
   }
 }
 
+// TODO: It may be possible to get rid of this
 export const ResetBlockedBySystem = (coral: Context) =>
   System.for(coral, [BlockedBy], {
     runEach(entity, blockedBy) {
       blockedBy[RESET_MARKS]()
+    },
+  })
+
+export const RefreshBlockedBySystem = (coral: Context) =>
+  System.for(coral, [BlockedBy, Body, Opal.Position], {
+    shouldMatchAll: [BlockedBy],
+    runEach(entity, blockedBy, body, position) {
+      blockedBy.updateForSubstep(coral, entity, body, position)
     },
   })
 
@@ -112,9 +122,6 @@ function checkRight(
 ) {
   for (const [entityB, [posB, b]] of queryListValues(blockedBy.queries)) {
     if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-      const a = coral.world.get(entityA, Body)
-      if (!a) continue
-
       // TODO: Take posB into account for tilemaps not at (0,0)
       const x = posA.coords.x + a.relativeX1 + 1
       const y0 = posA.coords.y + a.relativeY0
@@ -122,6 +129,10 @@ function checkRight(
       if (b.tileMapIsSolidInXYRange(coral, x, x, y0, y1)) {
         return false
       }
+    } else {
+      throw new Error(
+        `BlockedBy hasn't implemented this shape pair yet: ${a.shape} ${b.shape}`,
+      )
     }
   }
   return true
@@ -143,6 +154,10 @@ function checkLeft(
       if (b.tileMapIsSolidInXYRange(coral, x, x, y0, y1)) {
         return false
       }
+    } else {
+      throw new Error(
+        `BlockedBy hasn't implemented this shape pair yet: ${a.shape} ${b.shape}`,
+      )
     }
   }
   return true
@@ -164,6 +179,10 @@ function checkTop(
       if (b.tileMapIsSolidInXYRange(coral, x0, x1, y, y)) {
         return false
       }
+    } else {
+      throw new Error(
+        `BlockedBy hasn't implemented this shape pair yet: ${a.shape} ${b.shape}`,
+      )
     }
   }
   return true
@@ -187,6 +206,10 @@ function checkBottom(
         coral.world.set(entityA, [new Riding(entityB)])
         return false
       }
+    } else {
+      throw new Error(
+        `BlockedBy hasn't implemented this shape pair yet: ${a.shape} ${b.shape}`,
+      )
     }
   }
 
@@ -195,9 +218,6 @@ function checkBottom(
       blockedBy.additionalQueries.downwardOnly,
     )) {
       if (a.shape === Body.Shape.Box && b.shape === Body.Shape.Box) {
-        const a = coral.world.get(entityA, Body)
-        if (!a) continue
-
         // Only block if the bottom edge of A is one pixel above the top of B.
         if (
           b.relativeY0 + posB.coords.y == posA.coords.y + a.relativeY1 + 1 &&
@@ -209,9 +229,6 @@ function checkBottom(
           return false
         }
       } else if (a.shape === Body.Shape.Box && b.shape === Body.Shape.TileMap) {
-        const a = coral.world.get(entityA, Body)
-        if (!a) continue
-
         // TODO: Take posB into account for tilemaps not at (0,0)
         const x0 = posA.coords.x + a.relativeX0
         const x1 = posA.coords.x + a.relativeX1 - 1
