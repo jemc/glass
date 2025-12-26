@@ -17,7 +17,7 @@
     "@playwright/test": "^1.42.1",
     "@types/node": "^20.11.16",
     "@vitest/browser": "^1.6.1",
-    "ase-parser": "git+https://github.com/jemc/ase-parser.git#294a69e66d6ea6fc6a6622a60ae40f7ee27166a4",
+    "ase-parser": "git+https://github.com/jemc/ase-parser.git#0719c60c1e031452339fc1d4fe34d65792964cc5",
     "assert-browserify": "^2.0.0",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",

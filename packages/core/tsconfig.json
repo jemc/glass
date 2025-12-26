@@ -5,7 +5,8 @@
     "tests"
   ],
   "compilerOptions": {
-    "composite": true,
+    "declaration": true,
+    "declarationDir": "./dist",
     "outDir": "./dist"
   },
   "references": []

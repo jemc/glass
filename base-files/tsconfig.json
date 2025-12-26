@@ -5,6 +5,8 @@
     "tests"
   ],
   "compilerOptions": {
+    "declaration": true,
+    "declarationDir": "./dist",
     "outDir": "./dist"
   }
 }
