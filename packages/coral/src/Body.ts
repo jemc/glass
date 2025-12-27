@@ -140,6 +140,15 @@ export class Body {
     }
   }
 
+  checkSurfaceLeftward(
+    coral: Context,
+    positionR: { coords: ReadVector2 },
+    l: Body,
+    positionL: { coords: ReadVector2 },
+  ): boolean {
+    return l.checkSurfaceRightward(coral, positionL, this, positionR)
+  }
+
   checkSurfaceDownward(
     coral: Context,
     positionU: { coords: ReadVector2 },
@@ -161,6 +170,15 @@ export class Body {
         "Downward surface detection not yet implemented for these shapes.",
       )
     }
+  }
+
+  checkSurfaceUpward(
+    coral: Context,
+    positionD: { coords: ReadVector2 },
+    u: Body,
+    positionU: { coords: ReadVector2 },
+  ): boolean {
+    return u.checkSurfaceDownward(coral, positionU, this, positionD)
   }
 
   fetchTileMapLayer(coral: Context) {
