@@ -12,20 +12,28 @@ export class BitMask {
     this.data.fill(0)
   }
 
+  hashCode(): number {
+    let hash = 0
+    for (const word of this.data.values()) {
+      hash = (hash * 31 + word) >>> 0
+    }
+    return hash
+  }
+
   // Return the boolean value of the bit at the given index.
   get(bitIndex: number): boolean {
     const wordIndex = bitIndex >> 4 // floored division by 16
     const word = this.data[wordIndex]
     if (!word) return false
 
-    const bit = 1 << bitIndex % 16
+    const bit = 1 << (bitIndex % 16)
     return (word & bit) !== 0
   }
 
   // Set the bit at the given index to have the given boolean value.
   set(bitIndex: number, value: boolean): boolean {
     const wordIndex = bitIndex >> 4 // floored division by 16
-    const bit = 1 << bitIndex % 16
+    const bit = 1 << (bitIndex % 16)
 
     // Ensure the data has enough words to reach this word index.
     if (this.data.length <= wordIndex) {
@@ -36,8 +44,8 @@ export class BitMask {
     }
 
     // Set the bit in the data according to the requested boolean value.
-    if (value) this.data[wordIndex] |= bit
-    else this.data[wordIndex] &= ~bit
+    if (value) this.data[wordIndex]! |= bit
+    else this.data[wordIndex]! &= ~bit
 
     return true
   }

@@ -11,15 +11,18 @@ import { Context } from "./Context"
 import { BlockedBy } from "./BlockedBy"
 import { Body } from "./Body"
 import { Riding } from "./Riding"
+import { _CanBlock } from "./_CanBlock"
 
 const VELOCITY = Symbol("Velocity._velocity")
 const RESIDUALS = Symbol("Velocity._residuals")
+const SCRATCH = Symbol("Velocity._scratch")
 
 export class Velocity {
   static readonly componentId = registerComponent(this)
 
-  readonly [VELOCITY] = new MutableVector2()
-  readonly [RESIDUALS] = new MutableVector2()
+  readonly [VELOCITY] = new MutableVector2(0, 0)
+  readonly [RESIDUALS] = new MutableVector2(0, 0)
+  readonly [SCRATCH] = new MutableVector2(0, 0)
 
   // TODO: Find a better name for this.
   get vector(): ReadVector2 {
@@ -74,10 +77,8 @@ export const VelocitySystem = (coral: Context) =>
           Math.abs(velocity.vector.x) + Math.abs(velocity[RESIDUALS].x)
         const absDy =
           Math.abs(velocity.vector.y) + Math.abs(velocity[RESIDUALS].y)
-        const entityFastest = absDx > absDy ? absDx : absDy
-        if (entityFastest > totalSubsteps) {
-          totalSubsteps = entityFastest
-        }
+        if (absDx > totalSubsteps) totalSubsteps = absDx
+        if (absDy > totalSubsteps) totalSubsteps = absDy
       }
       totalSubsteps = Math.max(Math.ceil(totalSubsteps), 1)
 
@@ -103,12 +104,8 @@ export const VelocitySystem = (coral: Context) =>
             let shouldMove = false
             if (velocity.vector.x >= i + 1) {
               shouldMove = true
-            } else if (velocity.vector.x + velocity[RESIDUALS].x > i + 1) {
+            } else if (velocity.vector.x + velocity[RESIDUALS].x >= i + 1) {
               shouldMove = true
-              velocity[RESIDUALS].x = 0
-            } else {
-              velocity[RESIDUALS].x +=
-                velocity.vector.x - Math.floor(velocity.vector.x)
             }
             if (shouldMove) {
               tryMoveRight(coral, entity, velocity, position, blockedBy)
@@ -117,16 +114,14 @@ export const VelocitySystem = (coral: Context) =>
             let shouldMove = false
             if (velocity.vector.x <= -i - 1) {
               shouldMove = true
-            } else if (velocity.vector.x + velocity[RESIDUALS].x < -i - 1) {
+            } else if (velocity.vector.x + velocity[RESIDUALS].x <= -i - 1) {
               shouldMove = true
-              velocity[RESIDUALS].x = 0
-            } else {
-              velocity[RESIDUALS].x +=
-                velocity.vector.x - Math.ceil(velocity.vector.x)
             }
             if (shouldMove) {
               tryMoveLeft(coral, entity, velocity, position, blockedBy)
             }
+          } else {
+            velocity[RESIDUALS].x = 0
           }
 
           // Determine if this entity should move along the Y axis this substep.
@@ -134,12 +129,8 @@ export const VelocitySystem = (coral: Context) =>
             let shouldMove = false
             if (velocity.vector.y >= i + 1) {
               shouldMove = true
-            } else if (velocity.vector.y + velocity[RESIDUALS].y > i + 1) {
+            } else if (velocity.vector.y + velocity[RESIDUALS].y >= i + 1) {
               shouldMove = true
-              velocity[RESIDUALS].y = 0
-            } else {
-              velocity[RESIDUALS].y +=
-                velocity.vector.y - Math.floor(velocity.vector.y)
             }
             if (shouldMove) {
               tryMoveDown(coral, entity, velocity, position, blockedBy)
@@ -148,18 +139,27 @@ export const VelocitySystem = (coral: Context) =>
             let shouldMove = false
             if (velocity.vector.y <= -i - 1) {
               shouldMove = true
-            } else if (velocity.vector.y + velocity[RESIDUALS].y < -i - 1) {
+            } else if (velocity.vector.y + velocity[RESIDUALS].y <= -i - 1) {
               shouldMove = true
-              velocity[RESIDUALS].y = 0
-            } else {
-              velocity[RESIDUALS].y +=
-                velocity.vector.y - Math.ceil(velocity.vector.y)
             }
             if (shouldMove) {
               tryMoveUp(coral, entity, velocity, position, blockedBy)
             }
+          } else {
+            velocity[RESIDUALS].y = 0
           }
         }
+      }
+
+      ///
+      // Calculate residual velocities for the next frame.
+      for (const [entity, [velocity, position]] of entities) {
+        const combX = velocity.vector.x + velocity[RESIDUALS].x
+        const combY = velocity.vector.y + velocity[RESIDUALS].y
+        velocity[RESIDUALS].x =
+          combX > 0 ? combX - Math.floor(combX) : combX - Math.ceil(combX)
+        velocity[RESIDUALS].y =
+          combY > 0 ? combY - Math.floor(combY) : combY - Math.ceil(combY)
       }
     },
   })
@@ -260,7 +260,6 @@ function tryMoveDown(
 ) {
   if (blockedBy?.wasBlockedOnBottom) {
     velocity.setVerticalConstantVelocity(0)
-    if (dueToRiding) console.log("riding entity couldn't move down!")
   } else {
     pos.updateCoords((coords) => (coords.y += 1))
     // TODO: handle clearing riding status for more than just downward riding
@@ -307,6 +306,56 @@ function tryMoveUp(
   if (blockedBy?.wasBlockedOnTop) {
     velocity.setVerticalConstantVelocity(0)
   } else {
+    // Also try to collect riding status for downward riding
+    const canBlock = coral.world.get(entity, _CanBlock)
+    if (canBlock) {
+      const body = coral.world.get(entity, Body)
+      if (body) {
+        for (const canBlockEntitySet of canBlock.entitySets) {
+          for (const canBlockEntity of canBlockEntitySet) {
+            const canBlockBody = coral.world.get(canBlockEntity, Body)
+            const canBlockPosition = coral.world.get(
+              canBlockEntity,
+              Opal.Position,
+            )
+            if (canBlockBody && canBlockPosition) {
+              if (
+                canBlockBody.checkSurfaceDownward(
+                  coral,
+                  canBlockPosition,
+                  body,
+                  pos,
+                )
+              ) {
+                coral.world.set(entity, [new Riding(canBlockEntity)])
+              }
+            }
+          }
+        }
+        for (const canBlockEntitySet of canBlock.entitySetsDownwardOnly) {
+          for (const canBlockEntity of canBlockEntitySet) {
+            const canBlockBody = coral.world.get(canBlockEntity, Body)
+            const canBlockPosition = coral.world.get(
+              canBlockEntity,
+              Opal.Position,
+            )
+            if (canBlockBody && canBlockPosition) {
+              if (
+                canBlockBody.checkSurfaceDownward(
+                  coral,
+                  canBlockPosition,
+                  body,
+                  pos,
+                )
+              ) {
+                coral.world.set(canBlockEntity, [new Riding(entity)])
+              }
+            }
+          }
+        }
+      }
+    }
+
     pos.updateCoords((coords) => (coords.y -= 1))
     // TODO: handle clearing riding status for more than just downward riding
     if (!dueToRiding) coral.world.remove(entity, [Riding])

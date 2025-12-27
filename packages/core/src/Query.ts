@@ -44,6 +44,8 @@ export interface QueryLike<T extends ComponentClasses = ComponentClass[]> {
     Entity,
     ComponentInstances<[...T, ...ComponentClass[]]>
   >
+
+  readonly _requiredBits: BitMask
 }
 
 export class QueryCache {
@@ -198,5 +200,68 @@ export function queryListValues<T>(
         },
       }
     },
+  }
+}
+
+// Utility class to map from lists of queries to a associated values,
+// where each different array identities comprised of the same queries
+// are treated as the same key.
+// TODO: This could be reimplemented as a more generic type similar to AutoMap.
+export class QueryListMap<T> {
+  // TODO: This should be a weak map to avoid keeping the arrays alive forever.
+  // Need to use FinalizationRegistry to create an IterableWeakMap.
+  // See https://github.com/tc39/proposal-weakrefs#iterable-weakmaps
+  private map = new AutoMap<number, Map<QueryLike[], T>>(Map)
+
+  private hash(queries: QueryLike[]): number {
+    let hash = 0
+    for (const query of queries) {
+      hash ^= query._requiredBits.hashCode()
+    }
+    return hash
+  }
+
+  private areSameQueries(a: QueryLike[], b: QueryLike[]): boolean {
+    if (a.length !== b.length) return false
+    for (let i = 0; i < a.length; i++) {
+      if (a[i] !== b[i]) return false
+    }
+    return true
+  }
+
+  clearAll() {
+    this.map.clear()
+  }
+
+  clearInner() {
+    for (const byHash of this.map.values()) {
+      byHash.clear()
+    }
+  }
+
+  set(key: number, queries: QueryLike[], value: T) {
+    const hash = this.hash(queries)
+    const byHash = this.map.getOrCreate(hash)
+    byHash.set(queries, value)
+  }
+
+  get(key: number, queries: QueryLike[]): T | undefined {
+    const hash = this.hash(queries)
+    const byHash = this.map.get(hash)
+    if (!byHash) return undefined
+    for (const [key, value] of byHash.entries()) {
+      if (this.areSameQueries(key, queries)) return value
+    }
+  }
+
+  getOrCreate(queries: QueryLike[], create: () => T): T {
+    const hash = this.hash(queries)
+    const byHash = this.map.getOrCreate(hash)
+    for (const [key, value] of byHash.entries()) {
+      if (this.areSameQueries(key, queries)) return value
+    }
+    const created = create()
+    byHash.set(queries, created)
+    return created
   }
 }

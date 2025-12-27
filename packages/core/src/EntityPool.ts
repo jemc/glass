@@ -51,7 +51,7 @@ export class EntityPool {
     // Set the indicated bit to 1 in the pool.
     const byteIndex = entity >> 3
     const bitIndex = entity & 0b111
-    this.bitPool[byteIndex] |= 1 << bitIndex
+    this.bitPool[byteIndex]! |= 1 << bitIndex
 
     // If we've freed a bit that is before the firstNonZeroByteIndex,
     // move the firstNonZeroByteIndex back to the now-partially-freed byte.

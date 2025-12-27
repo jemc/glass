@@ -225,6 +225,19 @@ export class World {
       | undefined
   }
 
+  getOrCreate<T extends ComponentClass>(
+    entity: Entity,
+    componentType: T,
+    createFn: () => T["prototype"],
+  ): T["prototype"] {
+    // TODO: consider optimizing this more
+    const got = this.get(entity, componentType)
+    if (got) return got
+    const created = createFn()
+    this.set(entity, [created])
+    return created
+  }
+
   getForMany<T extends ComponentClass>(
     entities: { values: () => Iterable<Entity> },
     componentType: T,
