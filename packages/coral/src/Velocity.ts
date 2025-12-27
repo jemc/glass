@@ -72,15 +72,19 @@ export const VelocitySystem = (coral: Context) =>
       // and set that as the number of substeps to simulate.
 
       let totalSubsteps = 0
-      for (const [entity, [velocity, position]] of entities) {
-        const absDx =
-          Math.abs(velocity.vector.x) + Math.abs(velocity[RESIDUALS].x)
-        const absDy =
-          Math.abs(velocity.vector.y) + Math.abs(velocity[RESIDUALS].y)
+      for (const [entity, [v, position]] of entities) {
+        const absDx = (v[SCRATCH].x = Math.abs(v[VELOCITY].x + v[RESIDUALS].x))
+        const absDy = (v[SCRATCH].y = Math.abs(v[VELOCITY].y + v[RESIDUALS].y))
         if (absDx > totalSubsteps) totalSubsteps = absDx
         if (absDy > totalSubsteps) totalSubsteps = absDy
       }
-      totalSubsteps = Math.max(Math.ceil(totalSubsteps), 1)
+      totalSubsteps = Math.floor(totalSubsteps, 1)
+      // totalSubsteps = Math.max(Math.ceil(totalSubsteps), 1)
+
+      for (const [entity, [v, position]] of entities) {
+        v[SCRATCH].x = totalSubsteps / v[SCRATCH].x
+        v[SCRATCH].y = totalSubsteps / v[SCRATCH].y
+      }
 
       ///
       // Move each entity forward one pixel at a time during each substep.
@@ -99,52 +103,29 @@ export const VelocitySystem = (coral: Context) =>
           }
 
           // Determine if this entity should move along the X axis this substep.
-          // TODO: use modular arithmetic to get them interspersed better.
+          const shouldMoveX =
+            Math.floor(i % velocity[SCRATCH].x) === 0 &&
+            velocity[SCRATCH].x <= totalSubsteps
           if (velocity.vector.x > 0) {
-            let shouldMove = false
-            if (velocity.vector.x >= i + 1) {
-              shouldMove = true
-            } else if (velocity.vector.x + velocity[RESIDUALS].x >= i + 1) {
-              shouldMove = true
-            }
-            if (shouldMove) {
+            if (shouldMoveX)
               tryMoveRight(coral, entity, velocity, position, blockedBy)
-            }
           } else if (velocity.vector.x < 0) {
-            let shouldMove = false
-            if (velocity.vector.x <= -i - 1) {
-              shouldMove = true
-            } else if (velocity.vector.x + velocity[RESIDUALS].x <= -i - 1) {
-              shouldMove = true
-            }
-            if (shouldMove) {
+            if (shouldMoveX)
               tryMoveLeft(coral, entity, velocity, position, blockedBy)
-            }
           } else {
             velocity[RESIDUALS].x = 0
           }
 
           // Determine if this entity should move along the Y axis this substep.
+          const shouldMoveY =
+            Math.floor(i % velocity[SCRATCH].y) === 0 &&
+            velocity[SCRATCH].y <= totalSubsteps
           if (velocity.vector.y > 0) {
-            let shouldMove = false
-            if (velocity.vector.y >= i + 1) {
-              shouldMove = true
-            } else if (velocity.vector.y + velocity[RESIDUALS].y >= i + 1) {
-              shouldMove = true
-            }
-            if (shouldMove) {
+            if (shouldMoveY)
               tryMoveDown(coral, entity, velocity, position, blockedBy)
-            }
           } else if (velocity.vector.y < 0) {
-            let shouldMove = false
-            if (velocity.vector.y <= -i - 1) {
-              shouldMove = true
-            } else if (velocity.vector.y + velocity[RESIDUALS].y <= -i - 1) {
-              shouldMove = true
-            }
-            if (shouldMove) {
+            if (shouldMoveY)
               tryMoveUp(coral, entity, velocity, position, blockedBy)
-            }
           } else {
             velocity[RESIDUALS].y = 0
           }
@@ -154,8 +135,8 @@ export const VelocitySystem = (coral: Context) =>
       ///
       // Calculate residual velocities for the next frame.
       for (const [entity, [velocity, position]] of entities) {
-        const combX = velocity.vector.x + velocity[RESIDUALS].x
-        const combY = velocity.vector.y + velocity[RESIDUALS].y
+        const combX = velocity[VELOCITY].x + velocity[RESIDUALS].x
+        const combY = velocity[VELOCITY].y + velocity[RESIDUALS].y
         velocity[RESIDUALS].x =
           combX > 0 ? combX - Math.floor(combX) : combX - Math.ceil(combX)
         velocity[RESIDUALS].y =
